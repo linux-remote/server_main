@@ -5,20 +5,34 @@
  */
 
 var app = require('../app');
-var http = require('http');
+var CONF = global.CONF;
+
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || global.CONF.port);
+var port = normalizePort(process.env.PORT || CONF.port);
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server;
+
+if(CONF.https){
+  
+  var https = require('https');
+  server = https.createServer(app);
+  require('../local_modules/ssl-cert-generator');
+  
+}else{
+  var http = require('http');
+  server = http.createServer(app);
+}
+
 
 /**
  * Listen on provided port, on all network interfaces.
