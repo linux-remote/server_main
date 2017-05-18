@@ -1,7 +1,8 @@
-var devConf = require('./development')
+var devConf = require('./development');
+var _ = require('lodash');
+
 var conf = {
-  https: true,
-  wss: true
+
 }
 
-module.exports = Object.assign(devConf, conf);
+module.exports = _.merge(devConf, conf);

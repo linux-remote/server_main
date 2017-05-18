@@ -16,9 +16,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', function(req, res){
-  res.send('Hello World3!');
+if(global.CONF.ssl === true){
+  var sslSelfSigned = global.CONF.sslSelfSigned;
+  app.use('/downloadCACert/:key', function(req, res, next){
+    if(req.params.key === sslSelfSigned.caCertDownloadUrlKey){
+      res.sendFile(global.CONF.SSL_SELF_SIGN_CA_CERT_PATH);
+    }else{
+      next();
+    }
+  });
+}
+
+
+app.get('/', function(req, res){
+  res.send('Hello Linux Remote!');
 });
+
 app.use('/api', routes);
 
 // catch 404 and forward to error handler
@@ -34,13 +47,12 @@ if(global.IS_PRO){
     // set locals, only providing error in development
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.json(err);
   });
 }else{
-
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error');
+    res.json(err);
   });
 }
 
