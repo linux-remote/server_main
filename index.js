@@ -8,7 +8,6 @@ var NODE_ENV = process.env.NODE_ENV || 'development';
 var conf = require('./conf/' + NODE_ENV);
 
 var server;
-//var app = require('./app');
 
 module.exports = function(userConf){
 
