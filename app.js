@@ -5,14 +5,20 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var middleWare = require('./lib/middleWare');
+var mountClient = require('./lib/mount-client');
+var apiRouter = require('./api/router');
 var app = express();
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(global.ROOT_PATH, 'public', 'favicon.png')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(logger(global.IS_PRO ? 'pro' : 'dev'));
+
+if(global.CONF.client){
+  mountClient(app, client);
+}else{
+  app.use(middleWare.CORS);
+}
 
 if(global.CONF.ssl === true){
   var sslSelfSigned = global.CONF.sslSelfSigned;
@@ -29,29 +35,16 @@ app.get('/', function(req, res){
   res.send('Hello Linux Remote!');
 });
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+app.use(middleWare.notFound);
 
 // http error handler
-if(global.IS_PRO){
-  app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    // render the error page
-    res.status(err.status || 500);
-    res.json(err);
-  });
-}else{
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.json(err);
-  });
-}
-
-
+app.use(middleWare.errHandle);
 
 module.exports = app;
