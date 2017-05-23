@@ -12,8 +12,8 @@
     "express": "~4.14.1",
     "lodash": "^4.17.4",
     "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.2",
     "sas": "^3.0.4",
+    "serve-favicon": "~2.3.2",
     "ssl-self-signed": "~0.0.3"
   }
 }

@@ -1,6 +1,6 @@
 module.exports = {
   port: 3000,
-
+  
   //*************safe*************
 
   ssl: true,  // self-signed
@@ -12,6 +12,8 @@ module.exports = {
     CA: null, // will auto create
     //  {key: 'someKeyFilePath', cert: 'somecertFilePath'}, 
     caCertDownloadKey: 'abcdefg.ca.crt',
-  }
+  },
+
+  sessionSecret : 'asdfskgfxcmxuwer.jsfdssfss'
 }
 //    wss: 'self-signed',
