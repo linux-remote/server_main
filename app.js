@@ -5,10 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var SessStore = require('./lib/session')(session);
 
 var middleWare = require('./lib/middleWare');
 var mountClient = require('./lib/mount-client');
 var apiRouter = require('./api/router');
+
 var app = express();
 var CONF = global.CONF;
 
@@ -60,16 +62,18 @@ app.use(session({
     cookie: {
         httpOnly: true
     },
-    // store: new MongoStore({
-    //     url:"mongodb://"+conf.mongodb.host+':'+conf.mongodb.port+'/'+conf.mongodb.db
-    //     ,username:conf.mongodb.username,password:conf.mongodb.password
-    //     ,reapInterval:1000 * 60 * 60 * 12   // 12 小时清理一次.
-    //     ,autoDestroy:1000 * 60 * 60 * 24 *2 // 没有maxAge的话,2天后将会被清理.
-    // }),
+    store: new SessStore({
+      dir: path.resolve(__dirname, 'data/session')
+    }),
     resave: true,
     saveUninitialized: true
 }));
-
+// app.use(function(req ,res, next){
+//   if(!req.session.user){
+//     req.session.dontCreateSession = true;
+//   }
+//   next();
+// });
 
 app.use('/api', apiRouter);
 
