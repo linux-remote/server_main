@@ -16,7 +16,8 @@ module.exports = function(userConf){
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
   global.CONF = conf;
-
+  global.CONF.NODE_ENV = NODE_ENV;
+  
   var init = require('./lib/init');
   
   init(function(err, result){
