@@ -1,3 +1,7 @@
+
+// 当一个前端买了一台linux服务器，一场战斗打响了。
+// 此文件为入口文件，主要作用为：初始化并启动服务器，listen端口。
+
 var http = require('http');
 var https = require('https');
 
@@ -9,9 +13,10 @@ var conf = require('./conf/' + NODE_ENV);
 
 var server;
 
-module.exports = function(userConf){
 
-  conf = _.merge(conf, userConf);
+function index(userConf){
+
+  conf = _.merge(conf, userConf); //?用不用深度merge
 
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
@@ -20,7 +25,7 @@ module.exports = function(userConf){
   
   var init = require('./lib/init');
   
-  init(function(err, result){
+  init(function(err, httpsOpts){
 
     var app = require('./app');
 
@@ -28,7 +33,7 @@ module.exports = function(userConf){
     app.set('port', port);
 
     if(conf.ssl){
-      server = https.createServer(result, app);
+      server = https.createServer(httpsOpts, app);
     }else{
       server = http.createServer(app);
     }
@@ -42,7 +47,7 @@ module.exports = function(userConf){
 }
 
 
-
+module.exports = index;
 
 //*******************************************************************************/
 //The following is copy and modify from express-generator's bin/www file.
