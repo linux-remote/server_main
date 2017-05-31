@@ -1,12 +1,12 @@
 var express = require('express');
 var app = express();
 var session = require('express-session');
-var SessStore = require('./fs-session-store')(session);
+var SessStore = require('./lib/fs-session-store')(session);
 const path = require('path');
 const http = require('http');
-console.log('server listen on ' + PORT);
-const PORT = process.env.PORT;
 
+const PORT = process.env.PORT;
+console.log('server listen on ' + PORT);
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 

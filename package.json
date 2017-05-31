@@ -10,15 +10,17 @@
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "express": "~4.14.1",
-    "express-session": "https://github.com/hezedu/base_url_session/tarball/880fe48e3d0a542ba7b8d17557dcef29d111b847",
+    "express-session": "https://codeload.github.com/hezedu/base_url_session/legacy.tar.gz/880fe48e3d0a542ba7b8d17557dcef29d111b847",
     "find-free-port": "^1.0.2",
+    "freeport": "^1.0.5",
+    "http-proxy-middleware": "^0.17.4",
     "lodash": "^4.17.4",
     "morgan": "~1.7.0",
     "request": "^2.81.0",
     "sas": "^3.0.4",
     "serve-favicon": "~2.3.2",
     "ssh2": "^0.5.4",
-    "ssl-self-signed": "~0.0.3"
+    "ssl-self-signed": "^1.0.2"
   },
   "devDependencies": {
     "chalk": "^1.1.3"

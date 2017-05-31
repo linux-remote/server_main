@@ -20,12 +20,19 @@ function index(userConf){
 
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
+
+  conf.NODE_ENV = NODE_ENV;
+  conf.DATA_FOLDER_NAME = 'linux-remote-data';
+  conf.DATA_PATH = `/opt/${conf.DATA_FOLDER_NAME}`;
+
   global.CONF = conf;
   global.CONF.NODE_ENV = NODE_ENV;
   
+  
   var init = require('./lib/init');
   
-  init(function(err, httpsOpts){
+  init(function(err, result){
+    if(err) throw err;
 
     var app = require('./app');
 
@@ -33,7 +40,7 @@ function index(userConf){
     app.set('port', port);
 
     if(conf.ssl){
-      server = https.createServer(httpsOpts, app);
+      server = https.createServer(result.ssl, app);
     }else{
       server = http.createServer(app);
     }

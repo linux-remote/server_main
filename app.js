@@ -45,31 +45,31 @@ app.use('/api/user', function(req, res, next){
 var _ = require('lodash');
 var util = require('./lib/util');
 
-app.use('/api/user/:userName', 
-function(req, res, next){
-  const loginedList = req.session.loginedList;
-  const userName = req.params.userName;
-  var curlUser = _.find(loginedList, {userName});
-  if(!curlUser){
-    return next(util.codeErrWrap(2, userName + req.session.id));
-  }
+// app.use('/api/user/:userName', 
+// function(req, res, next){
+//   const loginedList = req.session.loginedList;
+//   const userName = req.params.userName;
+//   var curlUser = _.find(loginedList, {userName});
+//   if(!curlUser){
+//     return next(util.codeErrWrap(2, userName + req.session.id));
+//   }
 
-  req._proxyConfig = {
-    port: curlUser.port,
-    mainSid : req.session.id
-  };
+//   req._proxyConfig = {
+//     port: curlUser.port,
+//     mainSid : req.session.id
+//   };
 
-  next();
+//   next();
 
-},
-proxy({
-    target: 'http://127.0.0.1:',
-    router(req){
-      var config = req._proxyConfig;
+// },
+// proxy({
+//     target: 'http://127.0.0.1:',
+//     router(req){
+//       var config = req._proxyConfig;
 
-      return this.target + config.port;
-    }
-}));
+//       return this.target + config.port;
+//     }
+// }));
 
 app.response.__proto__.apiOk = function(data){
   this.json({
