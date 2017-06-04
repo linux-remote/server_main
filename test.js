@@ -1,3 +1,10 @@
+var http = require('http');
 var path = require('path');
-var tplDataFolder = path.join(__dirname, '_tpl-data');
-console.log('tplDataFolder', tplDataFolder);
+var pipeName = '/root/testhttp.sock';
+
+console.log('pipeName', pipeName);
+http.createServer(function(req, res){
+  res.end('hello world!')
+}).listen(pipeName, function(){
+  console.log(arguments)
+});

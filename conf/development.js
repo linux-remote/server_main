@@ -10,8 +10,7 @@ module.exports = {
   sslSelfSigned: {
     commonName: '192.168.56.101',
     CA: null, // will auto create
-    //  {key: 'someKeyFilePath', cert: 'somecertFilePath'}, 
-    caCertDownloadKey: 'abcdefg.ca.crt',
+    CACertFirstDownloadKey: 'abc',
   },
 
   sessionSecret : 'asdfskgfxcmxuwer.jsfdssfss'

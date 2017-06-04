@@ -1,6 +1,12 @@
 
 // 当一个前端买了一台linux服务器，一场战斗打响了。
 // 此文件为入口文件，主要作用为：初始化并启动服务器，listen端口。
+var execSync = require('child_process').execSync;
+const I = execSync('whoami').toString().trim();
+
+if(I !== 'root'){
+  throw new Error('linux-remote 必须以root身份启动!');
+}
 
 var http = require('http');
 var https = require('https');
