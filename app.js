@@ -97,6 +97,10 @@ app.post('/api/verifyDownloadCACert', function(req, res, next){
   }
 });
 
+app.get('/api/getDownloadCACertStatus', function(req, res, next){
+  res.apiOk(sslSelfSigned._indexData.CADownloadedCount);
+});
+
 app.get('/api/downloadCACert/:key', function(req, res, next){
   var _indexData = sslSelfSigned._indexData;
   if(_indexData.CADownloadedCount === 1){
