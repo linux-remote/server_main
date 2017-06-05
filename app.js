@@ -11,7 +11,6 @@ var fs = require('fs');
 var middleWare = require('./lib/middleWare');
 var mountClient = require('./lib/mount-client');
 var proxy = require('http-proxy-middleware');
-var _ = require('lodash');
 var util = require('./lib/util');
 
 var app = express();
@@ -44,50 +43,63 @@ app.use(session({
         httpOnly: true
     },
     store: new SessStore({
-      dir: path.resolve(__dirname, 'data/session')
+      dir: CONF.TMP_PATH
     }),
     resave: true,
     saveUninitialized: true
 }));
 
+// ============================首页============================
+if(!CONF.IS_PRO){
+  app.get('/', function(req, res, next){
+    const session = req.session;
+    res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
+  });
+}
+// ============================首页完============================
 
-app.get('/', function(req, res, next){
-  const session = req.session;
-  res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
-});
-
+// ============================前端加载============================
+// 测试环境是分开的。正式是合起来的。
 if(CONF.client){
   mountClient(app, client);
 }else{
   app.use(middleWare.CORS);
 }
+// ============================前端加载完============================
 
-app.use('/api/user/:userName',
+// ============================代理用户app============================
+app.use('/api/user/:username',
 function(req, res, next){
   const loginedList = req.session.loginedList || [];
   //console.log('req.session', req.session);
-  const userName = req.params.userName;
-  var curlUser = loginedList.indexOf(userName);
-  console.log('curlUser', curlUser, userName, req.session);
+  const username = req.params.username;
+  var curlUser = loginedList.indexOf(username);
   if(curlUser === -1){
-    return next(util.codeErrWrap(2, userName));
+    return next(util.codeErrWrap(2, username));
   }
-  req._proxyPipeName = util.getTmpName(req.session.id, userName) + '.sock'
+  req._proxyPipeName = util.getTmpName(req.session.id, username) + '.sock'
+  console.log('req._proxyPipeName', req._proxyPipeName);
   next();
 },
-proxy({
-    target: 'http://127.0.0.1:',
-    router(req){
-      return this.target + req._proxyPipeName;
-    }
-}),
-function(req, res, next){
-  req.apiOk({
-    isLogin: false
-  })
+middleWare.proxy,
+function(err, req, res, next){
+  res.apiError(5);
+  console.error('onError',err);
 });
+// proxy({
+//     target: 'http://unix:',
+//     router(req){
+//       return this.target + req._proxyPipeName + ':';
+//     },
+//     onError(err, req, res){
+//       console.error('onError',err);
+//       res.apiError(5);
+//     }
+// }));
 
+// ============================代理用户app完============================
 
+// ============================第一次下载CA 证书============================
 var sslSelfSigned = CONF.sslSelfSigned;
 sslSelfSigned._indexData = sslSelfSigned._indexData || {CADownloadedCount: 1};
 app.post('/api/verifyDownloadCACert', function(req, res, next){
@@ -126,7 +138,7 @@ app.get('/api/downloadCACert/:key', function(req, res, next){
     res.apiError(3);
   }
 });
-
+// ============================第一次下载CA 证书 完============================
 
 
 // ============================login============================
@@ -135,6 +147,7 @@ var login = require('./api/login');
 
 app.get('/api/touch', login.touch);
 app.post('/api/login', login.login);
+app.post('/api/logout', login.logout);
 // ============================login end============================
 
 // catch 404 and forward to error handler

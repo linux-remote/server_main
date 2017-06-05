@@ -1,7 +1,6 @@
 var login = require('../lib/login');
 
 exports.touch = function(req, res, next){
-  console.log('curlUser', req.session);
   const data = {
     CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
     loginedList: req.session.loginedList || []
@@ -15,7 +14,13 @@ exports.touch = function(req, res, next){
 
 exports.login = function(req, res, next){
   var {username, password} = req.body;
-  login(username, password, req.session.id, function(err, port){
+  var loginedList = req.session.loginedList || [];
+  if(loginedList.indexOf(username) !== -1){
+    return res.apiOk({
+      alreadyLogined: true
+    });
+  }
+  login(username, password, req.session.id, function(err){
     if(err){
       return next(err);
     }
@@ -23,7 +28,15 @@ exports.login = function(req, res, next){
       req.session.loginedList = [];
     }
     req.session.loginedList.push(username);
-    console.log('req.session', req.session);
-    res.apiOk(port);
+    res.apiOk(req.session.loginedList);
   });
+}
+
+exports.logout = function(req, res, next){
+  var i = req.session.loginedList.indexOf(req.body.username);
+
+  if(i !== -1){
+    req.session.loginedList.splice(i, 1);
+  }
+  res.apiOk(req.session.loginedList);
 }

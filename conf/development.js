@@ -1,11 +1,11 @@
 module.exports = {
   port: 3000,
-  
+
   //*************safe*************
 
   ssl: true,  // self-signed
   //   false, not ssl
-  //   {key: 'someKeyFilePath', cert: 'somecertFilePath'}, 
+  //   {key: 'someKeyFilePath', cert: 'somecertFilePath'},
 
   sslSelfSigned: {
     commonName: '192.168.56.101',

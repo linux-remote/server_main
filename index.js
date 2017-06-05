@@ -4,39 +4,41 @@
 var execSync = require('child_process').execSync;
 const I = execSync('whoami').toString().trim();
 
+// 1判定是否是root登录
 if(I !== 'root'){
-  throw new Error('linux-remote 必须以root身份启动!');
+  throw new Error('linux-remote needs sudo start-up!');
 }
 
 var http = require('http');
 var https = require('https');
 
 var sas = require('sas');
-var _ = require('lodash');
+
 
 var NODE_ENV = process.env.NODE_ENV || 'development';
 var conf = require('./conf/' + NODE_ENV);
 
 var server;
 
-
+var _ = require('lodash');
 function index(userConf){
 
   conf = _.merge(conf, userConf); //?用不用深度merge
 
+  // 2定义全局变量
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
-
   conf.NODE_ENV = NODE_ENV;
   conf.DATA_FOLDER_NAME = 'linux-remote-data';
   conf.DATA_PATH = `/opt/${conf.DATA_FOLDER_NAME}`;
-
+  conf.TMP_PATH = conf.DATA_PATH + '/tmp';
   global.CONF = conf;
   global.CONF.NODE_ENV = NODE_ENV;
-  
-  
+
+
   var init = require('./lib/init');
-  
+
+  // 3初始化
   init(function(err, result){
     if(err) throw err;
 
@@ -51,6 +53,7 @@ function index(userConf){
       server = http.createServer(app);
     }
 
+    // 3起动main app.
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
