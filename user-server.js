@@ -1,14 +1,32 @@
+const {execSync, spawn} = require('child_process');
+const path = require('path');
+
+console.log('IS_WATCHER', process.env.IS_WATCHER);
+console.log('process.mainModule.filename', process.mainModule.filename);
+if(!process.env.IS_WATCHER){
+  const child = spawn(process.argv[0], [process.mainModule.filename], {
+    detached: true,
+    env: {
+      IS_WATCHER: true,
+      NODE_ENV: process.env.NODE_ENV,
+      PORT: process.env.PORT
+    },
+    stdio: 'ignore'
+  });
+  child.unref();
+  return;
+}
+
+
 var express = require('express');
 var app = express();
 var session = require('express-session');
 var sessStore = require('./lib/fs-session-store')(session);
-const path = require('path');
+
 const http = require('http');
-const execSync = require('child_process').execSync;
+
 
 const PORT = process.env.PORT;
-
-
 
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -21,7 +39,7 @@ app.get('/', function(req, res, next){
 });
 
 app.get('/exit', function(req, res, next){
-  res.send('exit', function(){
+  res.send('exit', null, function(){
     process.exit();
   });
 });
