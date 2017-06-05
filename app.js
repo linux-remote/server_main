@@ -11,6 +11,8 @@ var fs = require('fs');
 var middleWare = require('./lib/middleWare');
 var mountClient = require('./lib/mount-client');
 var proxy = require('http-proxy-middleware');
+var _ = require('lodash');
+var util = require('./lib/util');
 
 var app = express();
 var CONF = global.CONF;
@@ -30,11 +32,15 @@ app.response.__proto__.apiError = function(code, msg){
   middleWare.errHandle(util.codeErrWrap(code, msg), this.req, this);
 }
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
 app.use(session({
     secret: CONF.sessionSecret,
     name: 'main_sid',
     cookie: {
-        path: '/api',
+        //path: '/api',
         httpOnly: true
     },
     store: new SessStore({
@@ -45,36 +51,9 @@ app.use(session({
 }));
 
 
-// app.use('/api', function(req, res, next){
-//   if(!req.session.loginedList){
-//     req.session.loginedList = [];
-//   }
-//   next();
-// });
-
-var _ = require('lodash');
-var util = require('./lib/util');
-
-app.use('/api/user/:userName',
-function(req, res, next){
-  const loginedList = req.session.loginedList || [];
-  const userName = req.params.userName;
-  var curlUser = _.find(loginedList, {userName});
-  if(!curlUser){
-    return next(util.codeErrWrap(2, userName));
-  }
-  req._proxyPipeName = util.getPipeName(req.session.id, userName) + '.sock'
-  next();
-},
-proxy({
-    target: 'http://127.0.0.1:',
-    router(req){
-      return this.target + req._proxyPipeName;
-    }
-}));
-
 app.get('/', function(req, res, next){
-  res.send('Hello! This is linux-Remote-server!');
+  const session = req.session;
+  res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
 });
 
 if(CONF.client){
@@ -83,8 +62,30 @@ if(CONF.client){
   app.use(middleWare.CORS);
 }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/api/user/:userName',
+function(req, res, next){
+  const loginedList = req.session.loginedList || [];
+  //console.log('req.session', req.session);
+  const userName = req.params.userName;
+  var curlUser = loginedList.indexOf(userName);
+  console.log('curlUser', curlUser, userName, req.session);
+  if(curlUser === -1){
+    return next(util.codeErrWrap(2, userName));
+  }
+  req._proxyPipeName = util.getTmpName(req.session.id, userName) + '.sock'
+  next();
+},
+proxy({
+    target: 'http://127.0.0.1:',
+    router(req){
+      return this.target + req._proxyPipeName;
+    }
+}),
+function(req, res, next){
+  req.apiOk({
+    isLogin: false
+  })
+});
 
 
 var sslSelfSigned = CONF.sslSelfSigned;
@@ -128,13 +129,9 @@ app.get('/api/downloadCACert/:key', function(req, res, next){
 
 
 
-app.use(cookieParser());
-
 // ============================login============================
 
 var login = require('./api/login');
-
-const API_LOGIN_PATH = '/api/login';
 
 app.get('/api/touch', login.touch);
 app.post('/api/login', login.login);

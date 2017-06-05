@@ -1,11 +1,16 @@
 var login = require('../lib/login');
 
 exports.touch = function(req, res, next){
-  res.apiOk({
+  console.log('curlUser', req.session);
+  const data = {
     CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
-    CACertPath: CONF.ssl.caCertPath,
     loginedList: req.session.loginedList || []
-  });
+  }
+
+  if(!data.CADownloadedCount){
+    data.CACertPath = CONF.ssl.caCertPath;
+  }
+  res.apiOk(data);
 }
 
 exports.login = function(req, res, next){
@@ -17,12 +22,8 @@ exports.login = function(req, res, next){
     if(!req.session.loginedList){
       req.session.loginedList = [];
     }
-    req.session.loginedList.push({
-      userName: username,
-      port
-    });
+    req.session.loginedList.push(username);
+    console.log('req.session', req.session);
     res.apiOk(port);
   });
 }
-
-
