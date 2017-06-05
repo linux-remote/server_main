@@ -73,16 +73,14 @@ function(req, res, next){
   const loginedList = req.session.loginedList || [];
   //console.log('req.session', req.session);
   const username = req.params.username;
-  var curlUser = loginedList.indexOf(username);
-  if(curlUser === -1){
-    return next(util.codeErrWrap(2, username));
+  if(loginedList.indexOf(username) === -1){
+    return res.apiError(2);
   }
-  req._proxyPipeName = util.getTmpName(req.session.id, username) + '.sock'
-  console.log('req._proxyPipeName', req._proxyPipeName);
   next();
 },
 middleWare.proxy,
 function(err, req, res, next){
+  // err.code ECONNREFUSED 进程挂了
   res.apiError(5);
   console.error('onError',err);
 });

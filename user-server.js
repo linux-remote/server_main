@@ -4,9 +4,12 @@ var session = require('express-session');
 var sessStore = require('./lib/fs-session-store')(session);
 const path = require('path');
 const http = require('http');
+const execSync = require('child_process').execSync;
 
 const PORT = process.env.PORT;
-console.log('server listen on ' + PORT);
+
+
+
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
@@ -47,4 +50,18 @@ app.get('/api/user/:userName', function(req, res, next){
   res.send(msg);
 });
 
-http.createServer(app).listen(PORT);
+
+var server = http.createServer(app);
+server.listen(PORT);
+server.on('listening', onListening);
+
+function onListening() {
+  var addr = server.address();
+  // var bind = typeof addr === 'string'
+  //   ? 'pipe ' + addr
+  //   : 'port ' + addr.port;
+  console.log('Listening on pipe ' + addr);
+  console.log('NODE_ENV ' + process.env.NODE_ENV);
+  console.log('更改权限到600: ' + PORT);
+  execSync('chmod 600 ' + PORT);
+}
