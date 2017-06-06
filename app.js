@@ -81,19 +81,10 @@ function(req, res, next){
 middleWare.proxy,
 function(err, req, res, next){
   // err.code ECONNREFUSED 进程挂了
+  // err.code ENOENT 目录没权限
   res.apiError(5);
   console.error('onError',err);
 });
-// proxy({
-//     target: 'http://unix:',
-//     router(req){
-//       return this.target + req._proxyPipeName + ':';
-//     },
-//     onError(err, req, res){
-//       console.error('onError',err);
-//       res.apiError(5);
-//     }
-// }));
 
 // ============================代理用户app完============================
 

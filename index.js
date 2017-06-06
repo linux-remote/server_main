@@ -29,9 +29,9 @@ function index(userConf){
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
   conf.NODE_ENV = NODE_ENV;
-  conf.DATA_FOLDER_NAME = 'linux-remote-data';
-  conf.DATA_PATH = `/opt/${conf.DATA_FOLDER_NAME}`;
-  conf.TMP_PATH = conf.DATA_PATH + '/tmp';
+  conf.DATA_FOLDER_NAME = '.linux-remote-data';
+  conf.DATA_PATH = `/root/${conf.DATA_FOLDER_NAME}`;
+  conf.TMP_PATH = '/var/tmp/linux-remote';
   global.CONF = conf;
   global.CONF.NODE_ENV = NODE_ENV;
 
