@@ -1,18 +1,14 @@
 module.exports = {
   port: 3000,
-
-  //*************safe*************
-
-  ssl: true,  // self-signed
-  //   false, not ssl
-  //   {key: 'someKeyFilePath', cert: 'somecertFilePath'},
-
+  ssl: true,
   sslSelfSigned: {
     commonName: '192.168.56.101',
     CA: null, // will auto create
     CACertFirstDownloadKey: 'abc',
   },
 
-  sessionSecret : 'asdfskgfxcmxuwer.jsfdssfss'
+  sessionSecret : 'asdfskgfxcmxuwer.jsfdssfss',
+
+  sshPort: 22,
+  ttl: 60 * 1000
 }
-//    wss: 'self-signed',
