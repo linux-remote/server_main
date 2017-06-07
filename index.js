@@ -125,5 +125,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   console.log('Listening on ' + bind);
+  console.log('pid ' + process.pid);
   console.log('NODE_ENV ' + process.env.NODE_ENV);
 }
