@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "supervisor -i node_modules,.git _start.js",
-    "testuser": "supervisor -i node_modules,.git user-server.js"
+    "test": "supervisor -w main,common _start.js",
+    "testuser": "supervisor -w user,common _start-user.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
