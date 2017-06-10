@@ -11,7 +11,7 @@ var fs = require('fs');
 var middleWare = require('./lib/middleWare');
 var mountClient = require('./lib/mount-client');
 var proxy = require('http-proxy-middleware');
-var util = require('./lib/util');
+var util = require('./common/util');
 
 var app = express();
 var CONF = global.CONF;

@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "supervisor -w main,common _start.js",
-    "testuser": "supervisor -w user,common _start-user.js"
+    "start": "supervisor -i node_modules, user, .git _start.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -20,6 +19,8 @@
     "ssl-self-signed": "^1.0.2"
   },
   "devDependencies": {
-    "chalk": "^1.1.3"
+    "babel-eslint": "^7.2.3",
+    "chalk": "^1.1.3",
+    "eslint": "^3.19.0"
   }
 }
