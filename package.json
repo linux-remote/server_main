@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "supervisor -i node_modules, user, .git _start.js"
+    "start": "supervisor -i node_modules,user,public,.git _start.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
-    "chalk": "^1.1.3",
     "eslint": "^3.19.0"
   }
 }

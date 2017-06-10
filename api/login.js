@@ -1,17 +1,6 @@
 var login = require('../lib/login');
 
-exports.touch = function(req, res, next){
-  const data = {
-    CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
-    loginedList: req.session.loginedList || []
-  }
-
-  if(!data.CADownloadedCount){
-    data.CACertPath = CONF.ssl.caCertPath;
-  }
-  res.apiOk(data);
-}
-
+// post
 exports.login = function(req, res, next){
   var {username, password} = req.body;
   var loginedList = req.session.loginedList || [];
@@ -32,9 +21,9 @@ exports.login = function(req, res, next){
   });
 }
 
-exports.logout = function(req, res, next){
+// post
+exports.logout = function(req, res){
   var i = req.session.loginedList.indexOf(req.body.username);
-
   if(i !== -1){
     req.session.loginedList.splice(i, 1);
   }
