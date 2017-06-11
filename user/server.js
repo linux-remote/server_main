@@ -9,7 +9,8 @@ if(/\.sock$/.test(PORT) === true){
 const http = require('http');
 const express = require('express');
 const logger = require('morgan');
-
+const desk = require('./api/desk');
+const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -21,8 +22,29 @@ global.IS_PRO = NODE_ENV === 'production';
 
 var app = express();
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-
+apiWarp(app);
 // app.use(cookieParser());
+const MAX_AGE = 1000 * 60 * 10;
+console.log('server start');
+var now = Date.now();
+console.log('TTL start: ' + now);
+const TTL = function(){
+  setTimeout(() =>{
+    if(Date.now() - now >= MAX_AGE){
+      console.log('TTL end: ' + Date.now());
+      return process.exit();
+    }else{
+      TTL();
+    }
+  }, MAX_AGE + 10);
+}
+
+TTL();
+
+app.use(function(req, res, next){
+  now = Date.now();
+  next();
+});
 
 app.get('/', function(req, res){
   var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
@@ -30,14 +52,8 @@ app.get('/', function(req, res){
   res.send(msg);
 });
 
-app.get('/info', function(req, res){
-  // var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
-  // msg += 'pid: ' + process.pid;
-  res.send({
-    code: 0,
-    data: 'hello!'
-  });
-});
+app.get('/info', desk.info);
+app.get('/time', desk.time);
 
 app.delete('/exit', function(req, res){
   res.send('exit');
