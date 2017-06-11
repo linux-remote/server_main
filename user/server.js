@@ -39,7 +39,7 @@ app.get('/info', function(req, res){
   });
 });
 
-app.get('/exit', function(req, res){
+app.delete('/exit', function(req, res){
   res.send('exit');
   res.on('finish', function(){
     console.log('User server exit!');

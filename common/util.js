@@ -38,11 +38,15 @@ exports.getTmpName = function(sid, username){
   return `${global.CONF.TMP_PATH}/${sid}-${username}`
 }
 
-exports.emptyObject = function(){
-  var o = new Object(null);
-  o.__proto__ = null;
-  return o;
-}
+// exports.getTmpName = function(sid, username){
+//   return `${global.CONF.TMP_PATH}/${sid}-${username}`
+// }
+
+// exports.emptyObject = function(){
+//   var o = new Object(null);
+//   o.__proto__ = null;
+//   return o;
+// }
 
 
 //*******************************************************************************/
