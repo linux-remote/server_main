@@ -14,6 +14,7 @@ router.get('/touch', index.touch);
 router.post('/login', login.login);
 router.post('/logout', login.logout);
 
-router.use('/user/:username', user.proxy);
+router.use('/user/:username', user.beforeProxy, user.proxy, user.proxyErrorHandler);
+
 
 module.exports = router;

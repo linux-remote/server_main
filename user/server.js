@@ -1,4 +1,61 @@
+const {execSync} = require('child_process');
+const PORT = process.env.PORT;
 
+if(/\.sock$/.test(PORT) === true){
+  execSync('rm -rf ' + PORT);
+  //console.log(`删除${PORT}文件成功！`);
+}
+
+const http = require('http');
+const express = require('express');
+const logger = require('morgan');
+
+const {onListening, onError} = require('../common/util');
+
+const NODE_ENV = process.env.NODE_ENV || 'development';
+global.IS_PRO = NODE_ENV === 'production';
+
+// var session = require('express-session');
+// var cookieParser = require('cookie-parser');
+// var sessStore = require('./lib/fs-session-store')(session);
+
+var app = express();
+app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
+
+// app.use(cookieParser());
+
+app.get('/', function(req, res){
+  var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
+  msg += 'pid: ' + process.pid;
+  res.send(msg);
+});
+
+app.get('/info', function(req, res){
+  // var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
+  // msg += 'pid: ' + process.pid;
+  res.send({
+    code: 0,
+    data: 'hello!'
+  });
+});
+
+app.get('/exit', function(req, res){
+  res.send('exit');
+  res.on('finish', function(){
+    console.log('User server exit!');
+    process.exit();
+  });
+});
+
+var server = http.createServer(app);
+server.listen(PORT);
+
+server.on('listening', onListening(server, function(){
+  execSync('chmod 600 ' + PORT);
+  console.log('User server start!\n');
+}));
+
+server.on('error', onError);
 
 //var PRE_EXIT_CODE = process.env.PRE_EXIT_CODE || ''
 // function loop(){
@@ -37,57 +94,6 @@
 // if(!process.env.IS_WATCHER){
 //   return loop();
 // }
-const fs = require('fs');
-const PORT = process.env.PORT;
-fs.unlinkSync(PORT);
-
-const {execSync, spawn} = require('child_process');
-const path = require('path');
-
-const {onListening, onError, normalizePort} = require('./common/server-util');
-
-const NODE_ENV = process.env.NODE_ENV || 'development';
-global.IS_PRO = NODE_ENV === 'production';
-
-var express = require('express');
-var logger = require('morgan');
-// var session = require('express-session');
-// var cookieParser = require('cookie-parser');
-// var sessStore = require('./lib/fs-session-store')(session);
-
-
-var app = express();
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-
-// app.use(cookieParser());
-
-app.get('/', function(req, res, next){
-  var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
-  msg += 'pid: ' + process.pid;
-  res.send(msg);
-});
-
-app.get('/exit', function(req, res, next){
-  res.send('exit:' + PRE_EXIT_CODE);
-  res.on('finish', function(){
-    process.exit();
-  });
-});
-
-
-var server = http.createServer(app);
-server.listen(PORT);
-
-server.on('listening', onListening(server, function(){
-  console.log('更改权限到600: ' + PORT);
-  execSync('chmod 600 ' + PORT);
-}));
-
-server.on('error', onError);
-
-
-
-
 // app.get('/exit', function(req, res, next){
 //   res.send('exit', null, function(){
 //     console.log('exit');
@@ -109,8 +115,6 @@ server.on('error', onError);
 //     resave: true,
 //     saveUninitialized: true
 // }));
-
-
 
 // app.get('/api/user/:userName', function(req, res, next){
 //   var msg = '当前用户:' + req.params.userName;

@@ -1,4 +1,3 @@
-var request = require('request');
 var util = require('./util');
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
@@ -15,23 +14,6 @@ exports.CORS = function(req, res, next) {
     next();
   }
 }
-
-request.GET = request.get;
-request.POST = request.post;
-request.PUT = request.put;
-request.DELETE = request.delete;
-
-exports.proxy = function(req, res, next){
-  var method = req.method;
-  var path = req.url;
-  var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
-  var x = request[method](unixSocket + req.url);
-  x.on('error', next);
-  req.pipe(x);
-  x.pipe(res);
-}
-
-
 
 // exports.needLogin = function(req, res, next) {
 //   if (!req.session || !req.session.user) {
@@ -51,7 +33,7 @@ exports.notFound = function(req, res, next) {
 
 //errHandle
 
-exports.errHandle = function(err, req, res, next) {
+exports.errHandle = function(err, req, res) {
 
   let msg = `${err.name}: ${err.message}`;
   let data;

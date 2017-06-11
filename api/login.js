@@ -13,6 +13,7 @@ exports.login = function(req, res, next){
     if(err){
       return next(err);
     }
+
     if(!req.session.loginedList){
       req.session.loginedList = [];
     }

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "supervisor -i node_modules,user,public,.git _start.js"
+    "start": "supervisor -i node_modules,user,public,.git,user-server.js _start.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
@@ -16,7 +16,8 @@
     "sas": "^3.0.4",
     "serve-favicon": "~2.3.2",
     "ssh2": "^0.5.4",
-    "ssl-self-signed": "^1.0.2"
+    "ssl-self-signed": "^1.0.2",
+    "watch": "^1.0.2"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
