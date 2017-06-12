@@ -18,8 +18,6 @@ const CONF = global.CONF;
 apiWarp(app);
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(global.ROOT_PATH, 'public', 'favicon.png')));
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -38,20 +36,25 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// index
-if(!CONF.IS_PRO){
-  app.get('/', function(req, res){
-    const session = req.session;
-    res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
-  });
-}
-
 // ============================前端加载============================
 // 测试环境是分开的。正式是合起来的。
 if(CONF.client){
   mountClient(app, CONF.client);
 }else{
   app.use(middleWare.CORS);
+}
+
+const apiUser = require('./api/user');
+app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy, apiUser.proxyErrorHandler)
+
+
+app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
+// index
+if(!CONF.IS_PRO){
+  app.get('/', function(req, res){
+    const session = req.session;
+    res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
+  });
 }
 
 app.use('/api', apiRouter);

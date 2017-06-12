@@ -35,12 +35,7 @@ function loop(){
   ls = spawn(process.argv[0], ['server.js'], {
     detached: true,
     cwd:__dirname,
-    env: {
-      NODE_ENV: process.env.NODE_ENV,
-      PORT: process.env.PORT
-    }
-    //,inherit
-    ,stdio: 'inherit'
+    stdio: 'inherit'
   });
 
   // ls.stdout.on('data', (data) => {
