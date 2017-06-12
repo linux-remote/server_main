@@ -33,7 +33,6 @@ module.exports = function(server){
   });
 
   webSocketServer.on('connection', function connection(ws, req) {
-    console.log('req', req.session);
     //const location = url.parse(req.url, true);
     // You might use location.query.access_token to authenticate or share sessions
     // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
@@ -41,6 +40,30 @@ module.exports = function(server){
     //   console.log('received: %s', message);
     // });
 
+    const request = require('request');
+    const fs = require('fs');
+    var j = request.jar();
+    console.log('req.headers.cookie', req.headers.cookie)
+    var cookie = request.cookie(req.headers.cookie);
+    var url = `https://${req.headers.host}/getSession`;
+    j.setCookie(cookie, url);
+
+    request.get({
+      url,
+      jar: j,
+      agentOptions: {
+        ca: fs.readFileSync(global.CONF.DATA_PATH + '/ssl-self-signed/CA.crt')
+      },
+      end(data){
+        console.log('data', data);
+      }
+    }, function(err, req, body){
+      console.log('data end', body);
+    });
+    //req.pipe(x);
+    // x.on('end', function(err){
+    //   console.log('data end', arguments);
+    // });
     ws.send(JSON.stringify({type:'init', data}));
   });
 

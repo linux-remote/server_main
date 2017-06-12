@@ -57,6 +57,12 @@ if(!CONF.IS_PRO){
   });
 }
 
+app.use('/getSession', function(req, res){
+  // if(req.hostname !== '127.0.0.1'){
+  //   return next({status: 403})
+  // }
+  res.json(req.session);
+});
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
