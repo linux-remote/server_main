@@ -11,7 +11,6 @@ if(I !== 'root'){
 
 const http = require('http');
 const https = require('https');
-const createWebSocketServer = require('./web-socket-server');
 const _ = require('lodash');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const {onListening, onError, normalizePort} = require('./common/util');
@@ -54,7 +53,7 @@ function index(userConf){
     server.on('error', onError(port));
     server.on('listening', onListening(server));
 
-
+    const createWebSocketServer = require('./web-socket-server');
     createWebSocketServer(server);
 
   });

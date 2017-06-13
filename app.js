@@ -4,9 +4,7 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const session = require('express-session');
-const SessStore = require('./lib/fs-session-store')(session);
-
+const sessMiddleware = require('./lib/sess-middleware');
 const middleWare = require('./common/middleWare');
 const mountClient = require('./lib/mount-client');
 const apiWarp = require('./common/api-warp');
@@ -22,19 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(session({
-  secret: CONF.sessionSecret,
-  name: 'main_sid',
-  cookie: {
-    //path: '/api',
-    httpOnly: true
-  },
-  store: new SessStore({
-    dir: CONF.TMP_PATH
-  }),
-  resave: true,
-  saveUninitialized: true
-}));
+app.use(sessMiddleware);
 
 // ============================前端加载============================
 // 测试环境是分开的。正式是合起来的。
