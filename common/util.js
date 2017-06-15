@@ -53,7 +53,7 @@ exports.errLog = function(errMsg, req){
 // }
 
 exports.getTmpName = function(sid, username){
-  return `${global.CONF.TMP_PATH}/${sid}-${username}`
+  return `${global.CONF.TMP_PATH}/${sid}+${username}`
 }
 
 // exports.getTmpName = function(sid, username){

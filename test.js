@@ -9,6 +9,13 @@
 //   console.log(arguments)
 // });
 
-var {chmodSync} = require('fs');
+var uid = require('uid-safe');
+for(let i = 0; i < 99999; i++){
+  const str = uid.sync(18);
+  if(str.indexOf('$') !== -1){
+    throw new Error('str have "."');
+  }
+}
+//console.log(uuid.sync(18));
 
-chmodSync('./test.js', 0o600);
+//chmodSync('./test.js', 0o600);
