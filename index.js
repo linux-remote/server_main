@@ -36,7 +36,7 @@ function index(userConf){
   // 3初始化
   init(function(err, result){
     if(err) throw err;
-
+    require('./lib/tmp-ttl');
     const app = require('./app');
     const port = normalizePort(process.env.PORT || conf.port);
     app.set('port', port);
