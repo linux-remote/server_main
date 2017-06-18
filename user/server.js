@@ -63,8 +63,6 @@ app.get('/', function(req, res){
   res.send(msg);
 });
 
-
-
 app.get('/info', desk.info);
 app.use('/fs', fsApi);
 
