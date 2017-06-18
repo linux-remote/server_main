@@ -16,14 +16,11 @@ const CONF = global.CONF;
 apiWarp(app);
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(global.ROOT_PATH, 'public', 'favicon.png')));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 
 app.use(sessMiddleware);
 
-// ============================前端加载============================
-// 测试环境是分开的。正式是合起来的。
 if(CONF.client){
   mountClient(app, CONF.client);
 }else{
@@ -32,6 +29,12 @@ if(CONF.client){
 
 const apiUser = require('./api/user');
 app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy, apiUser.proxyErrorHandler)
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// ============================前端加载============================
+// 测试环境是分开的。正式是合起来的。
 
 
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));

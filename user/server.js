@@ -11,6 +11,8 @@ const express = require('express');
 const logger = require('morgan');
 const desk = require('./api/desk');
 const fsApi = require('./api/fs');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 
@@ -23,9 +25,15 @@ global.IS_PRO = NODE_ENV === 'production';
 
 var app = express();
 apiWarp(app);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
+
+
 app.get('/time', desk.time);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-
 // app.use(cookieParser());
 const MAX_AGE = 1000 * 60 * 60 * 12;
 // console.log('server start');
@@ -54,6 +62,8 @@ app.get('/', function(req, res){
   msg += 'pid: ' + process.pid;
   res.send(msg);
 });
+
+
 
 app.get('/info', desk.info);
 app.use('/fs', fsApi);
