@@ -12,7 +12,7 @@
 var uid = require('uid-safe');
 for(let i = 0; i < 99999; i++){
   const str = uid.sync(18);
-  if(str.indexOf('$') !== -1){
+  if(str.indexOf('+') !== -1){
     throw new Error('str have "."');
   }
 }

@@ -2,7 +2,6 @@ const WebSocket = require('ws');
 const fs = require('fs');
 const {execSync} = require('child_process');
 const url = require('url');
-const {hostname, arch} = require('os');
 const sessMiddleware = require('./lib/sess-middleware');
 
 function getTimeZoneName(){
@@ -32,8 +31,16 @@ module.exports = function(server){
 
   const d = new Date();
   var data = {
-    hostname: hostname(),
-    arch : arch(),
+    // homedir: os.homedir(),
+    // arch : os.arch(),
+    // freemem: os.freemem(),
+    // cpus: os.cpus(),
+    // loadavg: os.loadavg(),
+    // networkInterfaces: os.networkInterfaces(),
+    // release: os.release(),
+    // tmpdir: os.tmpdir(),
+    // totalmem: os.totalmem(),
+
     timeZoneName: getTimeZoneName(),
     timeZoneOffset: d.getTimezoneOffset(),
     time: d.getTime()

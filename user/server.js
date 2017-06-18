@@ -10,6 +10,7 @@ const http = require('http');
 const express = require('express');
 const logger = require('morgan');
 const desk = require('./api/desk');
+const fsApi = require('./api/fs');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 
@@ -26,27 +27,27 @@ app.get('/time', desk.time);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 
 // app.use(cookieParser());
-// const MAX_AGE = 1000 * 60 * 10;
+const MAX_AGE = 1000 * 60 * 60 * 12;
 // console.log('server start');
-// var now = Date.now();
-// console.log('TTL start: ' + now);
-// const TTL = function(){
-//   setTimeout(() =>{
-//     if(Date.now() - now >= MAX_AGE){
-//       console.log('TTL end: ' + Date.now());
-//       return process.exit();
-//     }else{
-//       TTL();
-//     }
-//   }, MAX_AGE + 10);
-// }
-//
-// TTL();
+var now = Date.now();
+console.log('TTL start: ' + now);
+const TTL = function(){
+  setTimeout(() =>{
+    if(Date.now() - now >= MAX_AGE){
+      console.log('TTL end: ' + Date.now());
+      return process.exit();
+    }else{
+      TTL();
+    }
+  }, MAX_AGE + 10);
+}
 
-// app.use(function(req, res, next){
-//   now = Date.now();
-//   next();
-// });
+TTL();
+
+app.use(function(req, res, next){
+  now = Date.now();
+  next();
+});
 
 app.get('/', function(req, res){
   var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
@@ -55,7 +56,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/info', desk.info);
-
+app.use('/fs', fsApi);
 
 app.delete('/exit', function(req, res){
   res.send('exit');

@@ -1,10 +1,11 @@
 const os = require('os');
 const {execSync} = require('child_process');
-const fs = require('fs');
+// const fs = require('fs');
 //const util = require('../../common/util');
 exports.info = function(req, res){
   res.apiOk({
-    hostname: os.hostname()
+    hostname: os.hostname(),
+    homedir: os.homedir()
     //username: process.env.USER,
   })
 }
