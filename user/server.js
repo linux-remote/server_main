@@ -30,7 +30,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
-
+app.get('/test500', function(req, res, next){
+  next(new Error('test500'));
+  process.exit();
+});
 
 app.get('/time', desk.time);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
