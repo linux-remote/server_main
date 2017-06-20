@@ -12,7 +12,7 @@ exports.proxy = function(req, res, next){
   var x = request[method](unixSocket + req.url);
   x.on('error', function(err){
     next(err);
-    console.log('x.error', err);
+    //console.log('x.error', err);
   });
   req.pipe(x);
   x.pipe(res);

@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.get('/time', desk.time);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 // app.use(cookieParser());
-const MAX_AGE = 1000 * 60 * 60 * 12;
+const MAX_AGE = 1000 * 60 * 10;
 // console.log('server start');
 var now = Date.now();
 console.log('TTL start: ' + now);
@@ -47,7 +47,7 @@ const TTL = function(){
     }else{
       TTL();
     }
-  }, MAX_AGE + 10);
+  }, MAX_AGE);
 }
 
 TTL();
@@ -55,6 +55,10 @@ TTL();
 app.use(function(req, res, next){
   now = Date.now();
   next();
+});
+
+app.get('/live', function(req,res){
+  res.send('Y');
 });
 
 app.get('/', function(req, res){
