@@ -1,6 +1,7 @@
 {
-  "name": "linux-remote",
-  "version": "0.0.0",
+  "name": "linux-remote-server",
+  "version": "0.0.1",
+  "author": "Du Wei <hezedu@hotmail.com>",
   "main": "index.js",
   "scripts": {
     "start": "supervisor -i node_modules,user,public,.git,user-server.js _start.js"
@@ -9,7 +10,7 @@
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "express": "~4.14.1",
-    "express-session": "https://codeload.github.com/hezedu/base_url_session/legacy.tar.gz/880fe48e3d0a542ba7b8d17557dcef29d111b847",
+    "express-session": "^1.15.3",
     "lodash": "^4.17.4",
     "morgan": "~1.7.0",
     "request": "^2.81.0",
