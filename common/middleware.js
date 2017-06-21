@@ -49,7 +49,6 @@ exports.errHandle = function(err, req, res) {
       msg
     }
   }
-  console.log('next bottom', data)
   res.send(data);
   util.errLog(msg, req);
 };
