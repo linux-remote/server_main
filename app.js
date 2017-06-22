@@ -28,7 +28,7 @@ if(CONF.client){
 }
 
 const apiUser = require('./api/user');
-app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy, apiUser.proxyErrorHandler);
+app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -10,7 +10,7 @@ const codeMap = {
   2: '未登录。',
   3: 'CACertFirstDownloadKey不正确。',
   4: 'CACertFirstDownloadKey已经用过一次了。',
-  5: 'session 失效了'
+  //5: 'session 失效了'
 }
 
 exports.codeErrWrap = function(code, msg = ''){

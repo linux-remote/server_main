@@ -1,13 +1,8 @@
 const WebSocket = require('ws');
 const fs = require('fs');
-const {execSync} = require('child_process');
+const {getTimeZoneName} = require('./lib/util');
 const url = require('url');
 const sessMiddleware = require('./lib/sess-middleware');
-
-function getTimeZoneName(){
-  return execSync('cat /etc/timezone').toString().trim();
-}
-
 
 module.exports = function(server){
   const webSocketServer = new WebSocket.Server({
@@ -29,23 +24,6 @@ module.exports = function(server){
     },
     server });
 
-  const d = new Date();
-  var data = {
-    // homedir: os.homedir(),
-    // arch : os.arch(),
-    // freemem: os.freemem(),
-    // cpus: os.cpus(),
-    // loadavg: os.loadavg(),
-    // networkInterfaces: os.networkInterfaces(),
-    // release: os.release(),
-    // tmpdir: os.tmpdir(),
-    // totalmem: os.totalmem(),
-
-    timeZoneName: getTimeZoneName(),
-    timeZoneOffset: d.getTimezoneOffset(),
-    time: d.getTime()
-  }
-
   function broadcast(data){
     webSocketServer.clients.forEach((client) => {
       client.send(JSON.stringify(data));
@@ -53,16 +31,14 @@ module.exports = function(server){
   }
 
   fs.watchFile('/etc/timezone',  function(){
-    console.log('watch timezone');
-    data.timeZoneName = getTimeZoneName();
     broadcast({
       type: 'timeZoneNameChange',
-      data: {timeZoneName: data.timeZoneName}
+      data: {timeZoneName: getTimeZoneName()}
     });
   });
 
   webSocketServer.on('connection', function connection(ws) {
-    ws.send(JSON.stringify({type:'init', data}));
+    ws.send(JSON.stringify({type:'start', data: {}}));
   });
 
 };
