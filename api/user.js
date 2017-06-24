@@ -4,9 +4,9 @@ request.GET = request.get;
 request.POST = request.post;
 request.PUT = request.put;
 request.DELETE = request.delete;
-const chalk = require('chalk');
+
 // use
-exports.proxy = function(req, res, next){
+exports.proxy = function(req, res){
   var method = req.method;
   var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
   var x = request[method](unixSocket + req.url);
@@ -24,7 +24,7 @@ exports.beforeProxy = function(req, res, next){
   //console.log('req.session', req.session);
   const username = req.params.username;
   if(loginedList.indexOf(username) === -1){
-    return res.apiError(2);
+    return res.status(403).send('forbidden');
   }
   next();
 }

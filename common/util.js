@@ -53,12 +53,8 @@ exports.errLog = function(errMsg, req){
 // }
 
 exports.getTmpName = function(sid, username){
-  return `${global.CONF.TMP_PATH}/${sid}+${username}`
+  return `${global.CONF.SESS_PATH}/${sid}+${username}`
 }
-
-// exports.getTmpName = function(sid, username){
-//   return `${global.CONF.TMP_PATH}/${sid}-${username}`
-// }
 
 // exports.emptyObject = function(){
 //   var o = new Object(null);

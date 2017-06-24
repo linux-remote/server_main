@@ -28,6 +28,8 @@ function index(userConf){
   conf.DATA_FOLDER_NAME = '.linux-remote-data';
   conf.DATA_PATH = `/root/${conf.DATA_FOLDER_NAME}`;
   conf.TMP_PATH = '/var/tmp/linux-remote';
+  conf.SESS_PATH = conf.TMP_PATH + '/session';
+  conf.DUSTBIN_PATH = conf.TMP_PATH + '/dustbin';
   conf.NODE_ENV = NODE_ENV;
   global.CONF = conf;
 

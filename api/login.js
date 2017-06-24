@@ -42,7 +42,7 @@ exports.login = function(req, res, next){
 
   sas([checkIsLogin, userLogin], function(err){
     if(err) return next(err);
-    res.apiOk();
+    res.apiOk(loginedList);
   });
 }
 
@@ -60,13 +60,15 @@ exports.logout = function(req, res){
   request.delete('http://unix:' +
   util.getTmpName(req.session.id, req.body.username) +
   '.sock:/exit', function(){
-    console.log('exit')
-    var i = req.session.loginedList.indexOf(req.body.username);
+    console.log('exit');
+    const loginedList = req.session.loginedList || [];
+    var i = loginedList.indexOf(req.body.username);
     if(i !== -1){
-      req.session.loginedList.splice(i, 1);
+      loginedList.splice(i, 1);
+      req.session.loginedList = loginedList;
     }
     //next();
-    res.apiOk(req.session.loginedList);
+    res.apiOk(loginedList);
 
   })
 

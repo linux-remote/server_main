@@ -80,6 +80,26 @@ function readFile(req, res, next){
   })
 }
 
+function getStatFnAttr(stat){
+  stat.isDirectory = stat.isDirectory();
+  if(!stat.isDirectory){
+    stat.isFile = stat.isFile();
+    if(!stat.isFile){
+      if(stat.isSocket()){
+        stat._type = 'socket';
+      }else if(stat.isFIFO()){
+        stat._type = 'FIFO';
+      }else if(stat.isBlockDevice()){
+        stat._type = 'blockDevice';
+      }else if(stat.isCharacterDevice()){
+        stat._type = 'characterDevice'
+      }else{
+        stat._type = 'unknown';
+      }
+    }
+  }
+}
+
 function readdir(req, res, next){
   const result = [], DIR = req.DIR;
   function _read(callback){
@@ -96,15 +116,66 @@ function readdir(req, res, next){
 
   function _lstat(name){
     return function(callback, i){
-      fs.lstat(path.join(DIR, name), function(err, stat){
+      const _path = path.join(DIR, name);
+
+      // exec('ls -l ' + _path, function(err, data){
+      //   if(err){
+      //     console.log('err',err)
+      //   }else{
+      //     console.log('data', data);
+      //   }
+      // })
+
+      fs.lstat(_path, function(err, stat){
         if(err) return callback(err);
-        result[i.index] = {
-          name,
-          isDirectory: stat.isDirectory(),
-          isSymbolicLink: stat.isSymbolicLink()
-        };
-        callback();
+
+        result[i.index] = stat;
+
+        const isSymbolicLink = stat.isSymbolicLink();
+
+
+        // result[i.index] = {
+        //   name,
+        //   size: stat.size,
+        //   //mode: stat.mode,
+        //   blocks: stat.blocks,
+        //   blksize: stat.blksize,
+        //   nlink: stat.nlink,
+        //   isFile: stat.isFile(),
+        //   // isBlockDevice: stat.isBlockDevice(),
+        //   // isCharacterDevice: stat.isCharacterDevice(),
+        //   // isFIFO: stat.isFIFO(),
+        //   // isSocket: stat.isSocket(),
+        //   isSymbolicLink: isSymbolicLink
+        // };
+
+        if(!isSymbolicLink){
+          stat.name = name;
+          stat.isSymbolicLink = isSymbolicLink;
+          getStatFnAttr(stat);
+          callback();
+        }else{
+
+          fs.readlink(_path, function(err, linkString){
+            if(err) return callback(err);
+            fs.stat(_path, function(err, stat2){
+              if(err) {
+                return callback(err);
+              }
+
+              result[i.index] = stat2;
+
+              stat2.name = name;
+              stat2.linkString = linkString;
+              stat2.isSymbolicLink = isSymbolicLink;
+              getStatFnAttr(stat2);
+              callback();
+            })
+          })
+        }
+
       })
+
     }
   }
   sas(_read, _lstat, function(err){
