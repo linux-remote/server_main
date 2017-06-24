@@ -2,13 +2,23 @@ const CONF = global.CONF;
 const {getTimeZoneName} = require('../lib/util');
 // get
 exports.touch = function(req, res){
-  const data = {
-    CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
-    loginedList: req.session.loginedList || []
-  }
+  let data;
+  if(CONF.ssl.caCertPath){
 
-  if(!data.CADownloadedCount){
-    data.CACertPath = CONF.ssl.caCertPath;
+    data = {
+      isSelfSigned: true,
+      indexNotice: CONF.indexNotice || `<span style="color: red">This webside's ssl cert is selfSigned,<br>The CA cert please ask about creator.</span>`,
+      CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
+      loginedList: req.session.loginedList || []
+    }
+    if(!data.CADownloadedCount){
+      data.CACertPath = CONF.ssl.caCertPath;
+    }
+  }else{
+    data = {
+      isSelfSigned: false,
+      indexNotice: CONF.notice
+    }
   }
   res.apiOk(data);
 }
