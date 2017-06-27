@@ -7,7 +7,7 @@ const path = require('path');
 // const router = express.Router();
 module.exports = function(req, res, next){
   const method = req.method;
-  req.DIR = decodeURIComponent(req.path);
+  req.PATH = decodeURIComponent(req.path);
   if(method === 'GET'){
     if(req.query.dir){
       return readdir(req, res, next);
@@ -26,32 +26,93 @@ module.exports = function(req, res, next){
 
     return updateFile(req, res, next);
   }else if(method === 'DELETE'){
-    return deleteAll(req, res, next);
+    return moveToDustbin(req, res, next);
   }
   next();
 }
 
 function rename(req, res, next){
   const {oldName, newName} = req.body;
-  const oldPath = path.join(req.DIR, oldName);
-  const newPath = path.join(req.DIR, newName);
+  const oldPath = path.join(req.PATH, oldName);
+  const newPath = path.join(req.PATH, newName);
   fs.rename(oldPath, newPath, function(err){
     if(err) return next(err);
     res.apiOk();
   })
 }
-function deleteAll(req, res, next){
-  //const _path = path.join(req.DIR, req.query.name);
-  // console.log('req.DIR', req.DIR, req.query, req.body);
+
+// const COM_CONST = require('')
+// console.log('DUSTBIN_PATH2', DUSTBIN_PATH);
+let iDustPathChahe = false;
+function initDustBin(cb){
+  if(iDustPathChahe) return cb();
+  const iDustPath = path.join(global.APP.DUSTBIN_PATH, global.APP.USER.username)
+  fs.stat(iDustPath, function(err){
+    if(err){
+      if(err.code !== 'ENOENT'){
+        return cb(err);
+      }
+      const mkdir = cb => exec('mkdir -m=777 ' + iDustPath, cb);
+      const chmod = cb => exec('chmod +t ' + iDustPath, cb);
+      const $iDustPath = cb => {
+        iDustPathChahe = iDustPath;
+        cb()
+      }
+      sas([mkdir, chmod, $iDustPath], cb);
+    }else{
+      iDustPathChahe = iDustPath;
+      cb();
+    }
+  })
+}
+
+function moveToDustbin(req, res, next){
+  const _path = req.PATH;
+
+  // console.log('req.PATH', req.PATH, req.query, req.body);
   // return res.apiOk();
-  exec('rm -rf ' + req.DIR, function(err){
+  initDustBin( function(err){
+    if(err) {
+      err.place = 'init dustbin';
+      return next(err);
+    }
+    console.log('path.dirname(_path)', path.dirname(_path))
+    console.log('global.APP.DUSTBIN_PATH', iDustPathChahe)
+    if(path.dirname(_path) === iDustPathChahe){
+      console.log('delete in dustbin')
+      return deleteAll(req, res, next);
+    }
+    // let dustName = [
+    //   _path.replace('/', PATH_SPLIT),
+    //
+    //   Date.now(),
+    // ]
+    const INDEX = Date.now().toString();
+    const dustPath = path.join(iDustPathChahe, INDEX);
+    const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);
+    const move = cb => exec(`mv ${_path} ${dustPath}`, cb);
+    sas({
+      link,
+      move
+    }, function(err){
+      if(err) return next(err);
+      res.apiOk();
+    })
+  })
+}
+
+function deleteAll(req, res, next){
+  //const _path = path.join(req.PATH, req.query.name);
+  // console.log('req.PATH', req.PATH, req.query, req.body);
+  // return res.apiOk();
+  exec('rm -rf ' + req.PATH, function(err){
     if(err) return next(err);
     res.apiOk();
   })
 }
 
 function mkDir(req, res, next){
-  const _path = path.join(req.DIR, req.body.name);
+  const _path = path.join(req.PATH, req.body.name);
   fs.mkdir(_path, err => {
     if(err)  return next(err);
     res.apiOk();
@@ -59,29 +120,28 @@ function mkDir(req, res, next){
 }
 
 function updateFile(req, res, next){
-  //const _path = path.join(req.DIR, req.body.name);
-  fs.writeFile(req.DIR, req.body.text, err => {
+  //const _path = path.join(req.PATH, req.body.name);
+  fs.writeFile(req.PATH, req.body.text, err => {
     if(err) return next(err);
     res.apiOk();
   });
 }
 
 function writeFile(req, res, next){
-  const _path = path.join(req.DIR, req.body.name);
+  const _path = path.join(req.PATH, req.body.name);
   fs.writeFile(_path, '', err => {
     if(err) return next(err);
     res.apiOk();
   });
 }
 function readFile(req, res, next){
-  fs.readFile(req.DIR, 'utf-8', function(err, result){
+  fs.readFile(req.PATH, 'utf-8', function(err, result){
     if(err) return next(err);
     res.apiOk(result);
   })
 }
 
 function getStatFnAttr(stat){
-  stat.type = null;
   if(stat.isDirectory()){
     stat.type = 'directory';
     stat.isDirectory = true;
@@ -104,7 +164,7 @@ function getStatFnAttr(stat){
 }
 
 function readdir(req, res, next){
-  const result = [], DIR = req.DIR;
+  const result = [], DIR = req.PATH;
   function _read(callback){
     fs.readdir(DIR, function(err, files){
       if(err) return callback(err);
@@ -123,6 +183,7 @@ function readdir(req, res, next){
 
       result[i.index] = {
         name: name,
+        type: null,
         error: null
       };
 
@@ -130,6 +191,7 @@ function readdir(req, res, next){
 
         if(error){
           error.place = 'readlink';
+          result[i.index].type = 'error';
           result[i.index].error = error;
           return callback();
         }
@@ -160,12 +222,16 @@ function readdir(req, res, next){
           fs.readlink(_path, function(err, linkString){
             if(err){
               err.place = 'readlink';
+              stat.type = 'error';
+              //console.log('readlink error', err);
               stat.error = err;
               return callback();
             }
+            stat.linkPath = path.resolve(DIR, linkString);
             fs.stat(_path, function(err, stat2){
               if(err) {
                 stat.error = err;
+                stat.type = 'error';
                 err.place = 'stat link path';
                 return callback();
               }
@@ -174,9 +240,12 @@ function readdir(req, res, next){
 
               //stat2.name = name;
               getStatFnAttr(stat2);
-              console.log('start2', stat2.type);
+              //console.log('start2', stat2.type);
               stat.type = stat2.type;
-              stat.linkPath = path.resolve(DIR, linkString);
+
+              stat.isDirectory = stat2.isDirectory;
+              stat.isFile = stat2.isFile;
+              stat.mode = stat2.mode;
               //stat.symbolicLink = stat2;
               callback();
             })

@@ -16,6 +16,12 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
+const COM_CONST = require('../common/const');
+const os = require('os');
+global.APP = {
+  USER: os.userInfo()
+};
+Object.assign(global.APP, COM_CONST);
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 global.IS_PRO = NODE_ENV === 'production';

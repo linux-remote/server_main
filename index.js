@@ -14,7 +14,7 @@ const https = require('https');
 const _ = require('lodash');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const {onListening, onError, normalizePort} = require('./common/util');
-
+const COM_CONST = require('./common/const');
 var conf = require('./conf/' + NODE_ENV);
 
 function index(userConf){
@@ -27,9 +27,10 @@ function index(userConf){
   conf.NODE_ENV = NODE_ENV;
   conf.DATA_FOLDER_NAME = '.linux-remote-data';
   conf.DATA_PATH = `/root/${conf.DATA_FOLDER_NAME}`;
-  conf.TMP_PATH = '/var/tmp/linux-remote';
-  conf.SESS_PATH = conf.TMP_PATH + '/session';
-  conf.DUSTBIN_PATH = conf.TMP_PATH + '/dustbin';
+  Object.assign(conf, COM_CONST);
+  // conf.TMP_PATH = '/var/tmp/linux-remote';
+  // conf.SESS_PATH = conf.TMP_PATH + '/session';
+  // conf.DUSTBIN_PATH = conf.TMP_PATH + '/dustbin';
   conf.NODE_ENV = NODE_ENV;
   global.CONF = conf;
 
