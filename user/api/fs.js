@@ -81,23 +81,25 @@ function readFile(req, res, next){
 }
 
 function getStatFnAttr(stat){
-  stat._type = null;
-  stat.isDirectory = stat.isDirectory();
-  if(!stat.isDirectory){
-    stat.isFile = stat.isFile();
-    if(!stat.isFile){
-      if(stat.isSocket()){
-        stat._type = 'socket';
-      }else if(stat.isFIFO()){
-        stat._type = 'FIFO';
-      }else if(stat.isBlockDevice()){
-        stat._type = 'blockDevice';
-      }else if(stat.isCharacterDevice()){
-        stat._type = 'characterDevice'
-      }else{
-        stat._type = 'unknown';
-      }
-    }
+  stat.type = null;
+  if(stat.isDirectory()){
+    stat.type = 'directory';
+    stat.isDirectory = true;
+  }else if(stat.isFile()){
+    stat.type = 'file';
+    stat.isFile = true;
+  // }else if(stat.isSymbolicLink){
+  //   stat.type = 'symbolicLink';
+  }else if(stat.isSocket()){
+    stat.type = 'socket';
+  }else if(stat.isFIFO()){
+    stat.type = 'FIFO';
+  }else if(stat.isBlockDevice()){
+    stat.type = 'blockDevice';
+  }else if(stat.isCharacterDevice()){
+    stat.type = 'characterDevice'
+  }else{
+    stat.type = 'unknown';
   }
 }
 
@@ -119,22 +121,24 @@ function readdir(req, res, next){
     return function(callback, i){
       const _path = path.join(DIR, name);
 
-      // exec('ls -l ' + _path, function(err, data){
-      //   if(err){
-      //     console.log('err',err)
-      //   }else{
-      //     console.log('data', data);
-      //   }
-      // })
+      result[i.index] = {
+        name: name,
+        error: null
+      };
 
-      fs.lstat(_path, function(err, stat){
-        if(err) return callback(err);
+      fs.lstat(_path, function(error, stat){
+
+        if(error){
+          error.place = 'readlink';
+          result[i.index].error = error;
+          return callback();
+        }
+
+        result[i.index] = Object.assign(stat, result[i.index]);
         //console.log('stat S_IFMT2', fs.constants.S_IFMT)
-        result[i.index] = stat;
-
         const isSymbolicLink = stat.isSymbolicLink();
-
-
+        stat.isSymbolicLink = isSymbolicLink;
+        getStatFnAttr(stat);
         // result[i.index] = {
         //   name,
         //   size: stat.size,
@@ -151,25 +155,29 @@ function readdir(req, res, next){
         // };
 
         if(!isSymbolicLink){
-          stat.name = name;
-          stat.isSymbolicLink = isSymbolicLink;
-          getStatFnAttr(stat);
           callback();
         }else{
-
           fs.readlink(_path, function(err, linkString){
-            if(err) return callback(err);
+            if(err){
+              err.place = 'readlink';
+              stat.error = err;
+              return callback();
+            }
             fs.stat(_path, function(err, stat2){
               if(err) {
-                return callback(err);
+                stat.error = err;
+                err.place = 'stat link path';
+                return callback();
               }
 
-              result[i.index] = stat2;
+              //result[i.index] = stat2;
 
-              stat2.name = name;
-              stat2.linkString = path.resolve(DIR, linkString);
-              stat2.isSymbolicLink = isSymbolicLink;
+              //stat2.name = name;
               getStatFnAttr(stat2);
+              console.log('start2', stat2.type);
+              stat.type = stat2.type;
+              stat.linkPath = path.resolve(DIR, linkString);
+              //stat.symbolicLink = stat2;
               callback();
             })
           })
