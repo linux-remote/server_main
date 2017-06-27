@@ -8,27 +8,53 @@ const path = require('path');
 module.exports = function(req, res, next){
   const method = req.method;
   req.PATH = decodeURIComponent(req.path);
+
   if(method === 'GET'){
     if(req.query.dir){
       return readdir(req, res, next);
     }else{
       return readFile(req, res, next);
     }
-  }else if(method === 'POST'){
-    if(req.body.type === 'file'){
-      return writeFile(req, res, next);
-    }else if(req.body.type === 'rename'){
-      return rename(req, res, next);
-    }else{
-      return mkDir(req, res, next);
-    }
-  }else if(method === 'PUT'){
+  }
 
-    return updateFile(req, res, next);
-  }else if(method === 'DELETE'){
+  if(method === 'DELETE'){
     return moveToDustbin(req, res, next);
   }
+
+  //fs.lstat(req.PATH, (err, stat) => {
+
+    // if(err) return next(err);
+    // req.STAT = stat;
+  if(method === 'PUT'){
+    return updateFile(req, res, next);
+  }
+
+  if(method === 'POST'){
+    const ctrl = bodyMap[req.body.type];
+    if(ctrl){
+      return ctrl(req, res, next);
+    }
+
+  }
+
   next();
+}
+
+const bodyMap = {
+  createSymbolicLink,
+  rename,
+  createFile,
+  createFolder
+}
+
+function createSymbolicLink(req, res, next){
+  const {name} = req.body;
+  let _newPath = path.dirname(req.PATH);
+  _newPath = path.join(_newPath, name);
+  exec('ln -s ' + req.PATH + ' ' + _newPath, (err) => {
+    if(err) return next(err);
+    res.apiOk();
+  })
 }
 
 function rename(req, res, next){
@@ -111,7 +137,7 @@ function deleteAll(req, res, next){
   })
 }
 
-function mkDir(req, res, next){
+function createFolder(req, res, next){
   const _path = path.join(req.PATH, req.body.name);
   fs.mkdir(_path, err => {
     if(err)  return next(err);
@@ -127,7 +153,7 @@ function updateFile(req, res, next){
   });
 }
 
-function writeFile(req, res, next){
+function createFile(req, res, next){
   const _path = path.join(req.PATH, req.body.name);
   fs.writeFile(_path, '', err => {
     if(err) return next(err);
