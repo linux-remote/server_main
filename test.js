@@ -8,11 +8,10 @@
 // }).listen(pipeName, function(){
 //   console.log(arguments)
 // });
-console.log('test');
-var now = Date.now();
-setTimeout(()=>{
-  console.log(Date.now() - now);
-}, 1000)
+var fs = require('fs');
+fs.stat('/var/tmp/linux-remote/session/fySAD1KdbOLGULiXHC6tZ1Qk-7CmKafw+dw.sock', function(err, result){
+  console.log('result.isSocket', result.isSocket());
+})
 
 //console.log(uuid.sync(18));
 

@@ -11,6 +11,7 @@ const express = require('express');
 const logger = require('morgan');
 const desk = require('./api/desk');
 const fsApi = require('./api/fs');
+const execApi = require('./api/exec');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
@@ -72,6 +73,7 @@ app.get('/', function(req, res){
 
 app.get('/info', desk.info);
 app.use('/fs', fsApi);
+app.all('/exec', execApi);
 
 app.delete('/exit', function(req, res){
   res.send('exit');

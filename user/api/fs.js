@@ -81,6 +81,7 @@ function readFile(req, res, next){
 }
 
 function getStatFnAttr(stat){
+  stat._type = null;
   stat.isDirectory = stat.isDirectory();
   if(!stat.isDirectory){
     stat.isFile = stat.isFile();
@@ -128,7 +129,7 @@ function readdir(req, res, next){
 
       fs.lstat(_path, function(err, stat){
         if(err) return callback(err);
-
+        //console.log('stat S_IFMT2', fs.constants.S_IFMT)
         result[i.index] = stat;
 
         const isSymbolicLink = stat.isSymbolicLink();
@@ -166,7 +167,7 @@ function readdir(req, res, next){
               result[i.index] = stat2;
 
               stat2.name = name;
-              stat2.linkString = linkString;
+              stat2.linkString = path.resolve(DIR, linkString);
               stat2.isSymbolicLink = isSymbolicLink;
               getStatFnAttr(stat2);
               callback();

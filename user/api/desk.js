@@ -5,8 +5,21 @@ const {execSync} = require('child_process');
 exports.info = function(req, res){
   res.apiOk({
     hostname: os.hostname(),
-    homedir: os.homedir()
-    //username: process.env.USER,
+    homedir: os.homedir(),
+    userInfo: os.userInfo(),
+    uptime: os.uptime(),
+    type: os.type(),
+    platform: os.platform(),
+    networkInterfaces: os.networkInterfaces(),
+    loadavg: os.loadavg(),
+    totalmem: os.totalmem(),
+    freemem: os.freemem(),
+    tmpdir: os.tmpdir(),
+    endianness: os.endianness(),
+    cpus: os.cpus(),
+    arch: os.arch(),
+    EOL: os.EOL,
+    release: os.release()
   })
 }
 //console.log(process.env.TZ)
