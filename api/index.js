@@ -1,5 +1,5 @@
 const CONF = global.CONF;
-const {getTimeZoneName} = require('../lib/util');
+const {getTimeZoneName} = require('../common/util');
 // get
 exports.touch = function(req, res){
   let data;

@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const fs = require('fs');
-const {getTimeZoneName} = require('./lib/util');
+const {getTimeZoneName} = require('./common/util');
 const url = require('url');
 const sessMiddleware = require('./lib/sess-middleware');
 

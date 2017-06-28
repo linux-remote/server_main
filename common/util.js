@@ -1,3 +1,9 @@
+const {execSync} = require('child_process');
+
+exports.getTimeZoneName = function(){
+  return execSync('cat /etc/timezone').toString().trim();
+}
+
 function getClientIp(req){
   return req.headers['x-forwarded-for'] ||
   req.connection.remoteAddress ||

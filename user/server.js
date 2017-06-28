@@ -9,9 +9,7 @@ if(/\.sock$/.test(PORT) === true){
 const http = require('http');
 const express = require('express');
 const logger = require('morgan');
-const desk = require('./api/desk');
-const fsApi = require('./api/fs');
-const execApi = require('./api/exec');
+
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
@@ -26,6 +24,9 @@ Object.assign(global.APP, COM_CONST);
 const NODE_ENV = process.env.NODE_ENV || 'development';
 global.IS_PRO = NODE_ENV === 'production';
 
+const desk = require('./api/desk');
+const fsApi = require('./api/fs');
+// const execApi = require('./api/exec');
 // var session = require('express-session');
 // var cookieParser = require('cookie-parser');
 // var sessStore = require('./lib/fs-session-store')(session);
@@ -42,7 +43,6 @@ app.get('/test500', function(req, res, next){
   process.exit();
 });
 
-app.get('/time', desk.time);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 // app.use(cookieParser());
 const MAX_AGE = 1000 * 60 * 10;
@@ -66,20 +66,19 @@ app.use(function(req, res, next){
   now = Date.now();
   next();
 });
-
-app.get('/live', function(req,res){
-  res.send('Y');
-});
-
 app.get('/', function(req, res){
   var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
   msg += 'pid: ' + process.pid;
   res.send(msg);
 });
 
-app.get('/info', desk.info);
+app.get('/live', function(req,res){
+  res.send('Y');
+});
+
+app.use(desk);
 app.use('/fs', fsApi);
-app.all('/exec', execApi);
+//app.all('/exec', execApi);
 
 app.delete('/exit', function(req, res){
   res.send('exit');
