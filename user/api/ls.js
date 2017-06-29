@@ -46,15 +46,26 @@ const sas = require('sas');
 // }
 // colors = colors.join(':');
 
-function ls(_path, d, callback){
-  let isD = true;
-  if(typeof d === 'function'){
-    callback = d;
-    d = '';
-    isD = false;
+function ls(_path, opts, callback){
+  let isD = false, d = '', a = '-a';
+
+  if(typeof opts === 'function'){
+    callback = opts;
+    opts = {};
   }
 
-  exec('ls -l --color=none -a -h ' + d + ' -Q --time-style=long-iso ' + _path,
+  if(opts.self){
+    d = '-d'
+    isD = true;
+  }
+
+  if(opts.noDir){
+    a = '-A'
+  }
+  const other = opts.other || '';
+  //console.log('a', opts, a);
+  // const cmd = `ls -l --color=none ${a}  -h ${d} ${sort}  -Q --time-style=long-iso ${_path}`
+  exec(`ls -l --color=none -Q --time-style=long-iso -h ${a} ${d} ${other}  ${_path}`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err) return callback(err);
@@ -107,9 +118,13 @@ function ls(_path, d, callback){
         taskKeys.forEach(i => {
           let v = lsSymbolicLinkTasks[i];
           lsSymbolicLinkTasks[i] = function(cb){
-            ls(v.linkPath, '-d', (err, result) => {
+            ls(v.linkPath, {self: true}, (err, result) => {
               if(err){
-                v.linkTargetError = err.message;
+                let msg = err.message;
+                const index = msg.lastIndexOf(':');
+                msg = msg.substr(index + 1);
+                //No such file or directory
+                v.linkTargetError = msg.trim();
               }else{
                 Object.assign(v, result);
               }

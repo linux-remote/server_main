@@ -32,9 +32,20 @@ exports.notFound = function(req, res, next) {
 
 
 //errHandle
+//const chalk = require('chalk');
+exports.errHandle = function(err, req, res, next) {
 
-exports.errHandle = function(err, req, res) {
-
+  // console.log('err', chalk.green(err.cmd));
+  // for(let i in err){
+  //   console.log(chalk.green(i));
+  // }
+  //
+  if(err.cmd){
+    const index = err.message.lastIndexOf(':');
+    //err.message = err.message.split(err.cmd)[1];
+    err.message = err.message.substr(index + 1);
+  }
+  // console.log(chalk.red('**************'));
   let msg = `${err.name}: ${err.message}`;
   let data;
   if(!err.isCodeError){

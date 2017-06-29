@@ -15,6 +15,7 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const COM_CONST = require('../common/const');
+const middleWare = require('../common/middleWare');
 const os = require('os');
 global.APP = {
   USER: os.userInfo()
@@ -87,6 +88,11 @@ app.delete('/exit', function(req, res){
     process.exit();
   });
 });
+
+// catch 404 and forward to error handler
+app.use(middleWare.notFound);
+// http error handler
+app.use(middleWare.errHandle);
 
 var server = http.createServer(app);
 server.listen(PORT);

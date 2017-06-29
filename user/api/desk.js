@@ -3,6 +3,9 @@ var router = express.Router();
 const {getTimeZoneName} = require('../../common/util');
 const os = require('os');
 const {exec} = require('child_process');
+const dustbin = require('./dustbin');
+
+router.use('/dustbin', dustbin);
 
 router.get('/info', function(req, res){
   exec('groups', (err, result) => {
