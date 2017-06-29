@@ -80,7 +80,7 @@ function initDustBin(cb){
       if(err.code !== 'ENOENT'){
         return cb(err);
       }
-      const mkdir = cb => exec('mkdir -m=1777 ' + iDustPath, cb);
+      const mkdir = cb => exec('mkdir -m=700 ' + iDustPath, cb);
       const $iDustPath = cb => {
         iDustPathChahe = iDustPath;
         cb()

@@ -4,32 +4,22 @@ const {getTimeZoneName} = require('../../common/util');
 const os = require('os');
 const {exec} = require('child_process');
 const dustbin = require('./dustbin');
-
+const serverInfo = require('./server-info');
 router.use('/dustbin', dustbin);
 
-router.get('/info', function(req, res){
+router.get('/info', function(req, res, next){
   exec('groups', (err, result) => {
+    if(err) return next(err);
     res.apiOk({
       groups: result.split(' '),
       hostname: os.hostname(),
-      homedir: os.homedir(),
-      uptime: os.uptime(),
-      type: os.type(),
-      platform: os.platform(),
-      networkInterfaces: os.networkInterfaces(),
-      loadavg: os.loadavg(),
-      totalmem: os.totalmem(),
-      freemem: os.freemem(),
-      tmpdir: os.tmpdir(),
-      endianness: os.endianness(),
-      cpus: os.cpus(),
-      arch: os.arch(),
-      EOL: os.EOL,
-      release: os.release()
+      homedir: os.homedir()
     })
   })
-
 });
+
+router.use('/serverInfo', serverInfo);
+
 
 router.get('/time', function(req, res){
   const d = new Date();
