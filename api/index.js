@@ -7,7 +7,7 @@ exports.touch = function(req, res){
 
     data = {
       isSelfSigned: true,
-      indexNotice: CONF.indexNotice || `<span style="color: red">This webside's ssl cert is selfSigned,<br>The CA cert please ask about creator.</span>`,
+      indexNotice: CONF.indexNotice || `<span style="color: red">This webside's ssl certificate is self-signed,<br>The CA certificate please ask about creator.</span>`,
       CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
       loginedList: req.session.loginedList || []
     }
