@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "body-parser": "~1.16.0",
+    "chalk": "1.1.3",
     "cookie-parser": "~1.4.3",
     "express": "~4.14.1",
     "express-session": "^1.15.3",
@@ -22,9 +23,9 @@
     "serve-favicon": "~2.3.2",
     "ssh2": "^0.5.4",
     "ssl-self-signed": "^1.0.2",
+    "uid-safe": "^2.1.4",
     "watch": "^1.0.2",
-    "ws": "^3.0.0",
-    "chalk": "1.1.3"
+    "ws": "^3.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

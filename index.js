@@ -39,6 +39,8 @@ function index(userConf){
   // 3初始化
   init(function(err, result){
     if(err) throw err;
+    global.CONF.sessionSecret = result.sessionSecret;
+
     require('./lib/tmp-ttl');
     const app = require('./app');
     const port = normalizePort(process.env.PORT || conf.port);
