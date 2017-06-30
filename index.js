@@ -9,10 +9,12 @@ if(I !== 'root'){
   throw new Error('linux-remote needs sudo start-up!');
 }
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
 const http = require('http');
 const https = require('https');
 const _ = require('lodash');
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV;
 const {onListening, onError, normalizePort} = require('./common/util');
 const COM_CONST = require('./common/const');
 var conf = require('./conf/' + NODE_ENV);
@@ -53,7 +55,9 @@ function index(userConf){
 
     server.listen(port);
     server.on('error', onError(port));
-    server.on('listening', onListening(server));
+    server.on('listening', onListening(server, () => {
+      console.log('linux remote server start!\n');
+    }));
 
     const createWebSocketServer = require('./web-socket-server');
     createWebSocketServer(server);

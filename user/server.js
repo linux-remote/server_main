@@ -22,7 +22,7 @@ global.APP = {
 };
 Object.assign(global.APP, COM_CONST);
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV;
 global.IS_PRO = NODE_ENV === 'production';
 
 const desk = require('./api/desk');

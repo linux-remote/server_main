@@ -1,6 +1,6 @@
 {
   "name": "linux-remote-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Du Wei <hezedu@hotmail.com>",
   "main": "index.js",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git@github.com:linux-remote/server.git"
   },
   "scripts": {
-    "start": "supervisor -i node_modules,user,public,.git,user-server.js _start.js"
+    "start": "NODE_ENV=development supervisor -i node_modules,user,public,.git,user-server.js _start.js"
   },
   "dependencies": {
     "body-parser": "~1.16.0",

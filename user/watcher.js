@@ -13,7 +13,6 @@ const {spawn} = require('child_process');
 // console.log('process.env.IS_NOT_FIRST', process.env.IS_NOT_FIRST);
 //
 // console.log('process.argv[0]', process.argv[0]);
-process.env.NODE_ENV = 'production';
 var ls;
 const watch = require('watch');
 const path = require('path');
