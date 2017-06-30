@@ -15,6 +15,10 @@ function fsSys(req, res, next){
     if(req.query.dir){
       return readDir(req, res, next);
     }else{
+
+      if(req.query.download){
+        return res.download(req.PATH);
+      }
       return readFile(req, res, next);
     }
   }
