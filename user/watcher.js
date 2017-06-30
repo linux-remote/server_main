@@ -13,12 +13,10 @@ const {spawn} = require('child_process');
 // console.log('process.env.IS_NOT_FIRST', process.env.IS_NOT_FIRST);
 //
 // console.log('process.argv[0]', process.argv[0]);
-
+process.env.NODE_ENV = 'production';
+var ls;
 const watch = require('watch');
 const path = require('path');
-
-var ls;
-
 function _watch(dir){
   watch.watchTree(dir, {interval: 1}, function(f){
     if(typeof f !== 'object'){
@@ -28,12 +26,15 @@ function _watch(dir){
   });
 }
 
-_watch(__dirname);
-_watch(path.join(__dirname, '../common'));
+if(process.env.NODE_ENV !== 'production'){
+  _watch(__dirname);
+  _watch(path.join(__dirname, '../common'));
+}
 
 function loop(){
   ls = spawn(process.argv[0], ['server.js'], {
     detached: true,
+    //env: process.env,
     cwd:__dirname,
     stdio: 'inherit'
   });
