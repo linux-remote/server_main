@@ -30,18 +30,18 @@ router.get('/time', function(req, res){
   });
 });
 
-const fs = require('fs');
-
-router.get('/fstest', function(req, res){
-  fs.readdir('/home/dw', (err ,result) => {
-    res.apiOk(result.join(' '));
-  })
-});
-router.get('/fslstest', function(req, res){
-  exec('ls -a -l -Q --color --time-style=long-iso /home/dw',{env: {LS_COLORS: 'no=:or=OR'}}, (err, result) => {
-    res.apiOk(result)
-  })
-});
+// const fs = require('fs');
+//
+// router.get('/fstest', function(req, res){
+//   fs.readdir('/home/dw', (err ,result) => {
+//     res.apiOk(result.join(' '));
+//   })
+// });
+// router.get('/fslstest', function(req, res){
+//   exec('ls -a -l -Q --color --time-style=long-iso /home/dw',{env: {LS_COLORS: 'no=:or=OR'}}, (err, result) => {
+//     res.apiOk(result)
+//   })
+// });
 
 // function _getIdName(str){
 //   str = str.split('(');

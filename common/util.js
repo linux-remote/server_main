@@ -12,10 +12,10 @@ function getClientIp(req){
 }
 
 const codeMap = {
-  1: '参数不正确。',
-  2: '未登录。',
-  3: 'CACertFirstDownloadKey不正确。',
-  4: 'CACertFirstDownloadKey已经用过一次了。',
+  1: 'Parameter is incorrect',
+  2: 'Not logged in',
+  3: 'CACertFirstDownloadKey Incorrect',
+  4: 'CACertFirstDownloadKey already used once',
   //5: 'session 失效了'
 }
 
@@ -34,7 +34,7 @@ exports.errLog = function(errMsg, req){
     + '\n host ' + req.headers.host
     + '\n originalUrl ' + req.originalUrl
     + '\n UA ' + req.headers['user-agent']
-    + '\n IP ' + getClientIp(req)
+    //+ '\n IP ' + getClientIp(req)
     + '\n time ' + Date()
     + '\n </errorLog>'
   );

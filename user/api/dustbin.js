@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 // const os = require('os');
 const {exec} = require('child_process');
-//const fs = require('fs');
+const {initDustBin} = require('./fs');
 const sas = require('sas');
 const path = require('path');
 const ls = require('./ls');
@@ -10,33 +10,31 @@ const ls = require('./ls');
 // const router = express.Router();
 const ADDRESS = '/var/tmp/linux-remote/dustbin/' + global.APP.USER.username;
 router.get('/', function(req, res, next){
-
-  ls(ADDRESS, {noDir: true, other: '--reverse'}, (err, result) => {
-    if(err){
-      return next(err);
-    }
-    const result2 = [];
-
-    result.forEach((v, i) => {
-      // let key = v.name;
-      // if(v.name.indexOf('.lnk') === -1){
-      //   obj[key] = v;
-      // }
-      if(i % 2 === 1){
-        let linkItem = result[i - 1].symbolicLink;
-        let linkPath = linkItem.linkPath;
-        let pathObj = path.parse(linkPath);
-        let obj = {
-          delTime: Number(v.name),
-          name: pathObj.base,
-          sourceDir: pathObj.dir,
-          isCover: !linkItem.linkTargetError
-        };
-        Object.assign(v, obj);
-        result2.push(v);
+  initDustBin(err =>{
+    if(err) return next(err);
+    ls(ADDRESS, {noDir: true, other: '--reverse'}, (err, result) => {
+      if(err){
+        return next(err);
       }
-    });
-    res.apiOk(result2);
+      const result2 = [];
+
+      result.forEach((v, i) => {
+        if(i % 2 === 1){
+          let linkItem = result[i - 1].symbolicLink;
+          let linkPath = linkItem.linkPath;
+          let pathObj = path.parse(linkPath);
+          let obj = {
+            delTime: Number(v.name),
+            name: pathObj.base,
+            sourceDir: pathObj.dir,
+            isCover: !linkItem.linkTargetError
+          };
+          Object.assign(v, obj);
+          result2.push(v);
+        }
+      });
+      res.apiOk(result2);
+    })
   })
 })
 

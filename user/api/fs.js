@@ -7,7 +7,7 @@ const path = require('path');
 // const router = express.Router();
 const ls = require('./ls');
 
-module.exports = function(req, res, next){
+function fsSys(req, res, next){
   const method = req.method;
   req.PATH = decodeURIComponent(req.path);
 
@@ -73,7 +73,7 @@ function rename(req, res, next){
 // console.log('DUSTBIN_PATH2', DUSTBIN_PATH);
 let iDustPathChahe = false;
 function initDustBin(cb){
-  if(iDustPathChahe) return cb();
+  if(iDustPathChahe) return cb(null, iDustPathChahe);
   const iDustPath = path.join(global.APP.DUSTBIN_PATH, global.APP.USER.username)
   fs.stat(iDustPath, function(err){
     if(err){
@@ -81,14 +81,17 @@ function initDustBin(cb){
         return cb(err);
       }
       const mkdir = cb => exec('mkdir -m=700 ' + iDustPath, cb);
-      const $iDustPath = cb => {
+
+      sas(mkdir, function(err){
+        if(err){
+          return cb(err);
+        }
         iDustPathChahe = iDustPath;
-        cb()
-      }
-      sas([mkdir,  $iDustPath], cb);
+        cb(null, iDustPathChahe);
+      });
     }else{
       iDustPathChahe = iDustPath;
-      cb();
+      cb(null, iDustPathChahe);
     }
   })
 }
@@ -103,10 +106,7 @@ function moveToDustbin(req, res, next){
       err.place = 'init dustbin';
       return next(err);
     }
-    console.log('path.dirname(_path)', path.dirname(_path))
-    console.log('global.APP.DUSTBIN_PATH', iDustPathChahe)
     if(path.dirname(_path) === iDustPathChahe){
-      console.log('delete in dustbin')
       return deleteAll(req, res, next);
     }
     // let dustName = [
@@ -174,3 +174,7 @@ function readDir(req, res, next){
     res.apiOk(result);
   })
 }
+
+fsSys.initDustBin = initDustBin;
+
+module.exports = fsSys;
