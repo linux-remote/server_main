@@ -15,8 +15,9 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const COM_CONST = require('../common/const');
-const middleWare = require('../common/middleWare');
+const middleWare = require('../common/middleware');
 const os = require('os');
+
 global.APP = {
   USER: os.userInfo()
 };

@@ -33,7 +33,6 @@ if(process.env.NODE_ENV !== 'production'){
 function loop(){
   ls = spawn(process.argv[0], ['server.js'], {
     detached: true,
-    //env: process.env,
     cwd:__dirname,
     stdio: 'inherit'
   });
