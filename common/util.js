@@ -1,7 +1,12 @@
 const {execSync} = require('child_process');
 
 exports.getTimeZoneName = function(){
-  return execSync('cat /etc/timezone').toString().trim();
+  try{
+    execSync('cat /etc/timezone').toString().trim();
+  }catch(e){
+    return '---';
+  }
+
 }
 
 function getClientIp(req){
