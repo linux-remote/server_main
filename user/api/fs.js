@@ -6,6 +6,15 @@ const path = require('path');
 // const express = require('express');
 // const router = express.Router();
 const ls = require('./ls');
+const uploadFolder = require('./fs/upload-folder');
+
+const bodyMap = {
+  createSymbolicLink,
+  rename,
+  createFile,
+  createFolder,
+  uploadFolder
+}
 
 function fsSys(req, res, next){
   const method = req.method;
@@ -36,7 +45,8 @@ function fsSys(req, res, next){
   }
 
   if(method === 'POST'){
-    const ctrl = bodyMap[req.body.type];
+    const ctrl = bodyMap[req.body.type || req.query.type];
+    console.log('req.query.type', req.query.type)
     if(ctrl){
       return ctrl(req, res, next);
     }
@@ -44,13 +54,6 @@ function fsSys(req, res, next){
   }
 
   next();
-}
-
-const bodyMap = {
-  createSymbolicLink,
-  rename,
-  createFile,
-  createFolder
 }
 
 function createSymbolicLink(req, res, next){

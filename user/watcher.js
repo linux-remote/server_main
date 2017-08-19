@@ -20,7 +20,7 @@ function _watch(dir){
   watch.watchTree(dir, {interval: 1}, function(f){
     if(typeof f !== 'object'){
       console.log('watch file reload');
-      ls.kill('__WATCH_FILE_RELOAD__');
+      ls.kill();
     }
   });
 }
