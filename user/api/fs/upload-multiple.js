@@ -14,11 +14,13 @@ module.exports = function(req, res, next) {
   form.multiples = true;
 
   form.parse(req, function(err, fields, files) {
+    if(!files.file.length){
+      return res.end('nothing');
+    }
     var folderDirMap = {}, asyncTasks = {};
-
     files.file.forEach((v) => {
       const dirname = path.dirname(v.name);
-      if(!folderDirMap[dirname]){
+      if(dirname && !folderDirMap[dirname]){
         mkdirp.sync(path.join(toPath, dirname))
       }
       asyncTasks[v.name] = v.path;
