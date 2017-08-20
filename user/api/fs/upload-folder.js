@@ -27,7 +27,7 @@ module.exports = function(req, res, next) {
     const sasIte = function(v){
       return function(cb, i){
         const  p = path.join(toPath, i.index);
-        exec(`mv ${v} ${p}`, cb)
+        exec(`mv ${v} "${p}"`, cb)
       }
     };
 

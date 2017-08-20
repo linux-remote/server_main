@@ -1,21 +1,12 @@
 const {spawn} = require('child_process');
-
-// if(!process.env.IS_NOT_FIRST){
-//   process.env.IS_NOT_FIRST = true;
-//   const child = spawn(process.argv[0], [process.mainModule.filename], {
-//     detached: true,
-//     stdio: 'ignore'
-//   });
-//   child.unref();
-//   return;
-// }
-
-// console.log('process.env.IS_NOT_FIRST', process.env.IS_NOT_FIRST);
-//
-// console.log('process.argv[0]', process.argv[0]);
-var ls;
 const watch = require('watch');
 const path = require('path');
+const request = require('request');
+const chalk = require('chalk');
+
+const isPro = process.env.NODE_ENV === 'production';
+
+var ls;
 function _watch(dir){
   watch.watchTree(dir, {interval: 1}, function(f){
     if(typeof f !== 'object'){
@@ -25,7 +16,7 @@ function _watch(dir){
   });
 }
 
-if(process.env.NODE_ENV !== 'production'){
+if(!isPro){
   _watch(__dirname);
   _watch(path.join(__dirname, '../common'));
 }
@@ -37,17 +28,8 @@ function loop(){
     stdio: 'inherit'
   });
 
-  // ls.stdout.on('data', (data) => {
-  //   console.log(`stdout: ${data}`);
-  // });
-  //
-  // ls.stderr.on('data', (data) => {
-  //   console.log(`stderr: ${data}`);
-  // });
-
   ls.on('close', (code) => {
     if(code !== 0){
-      //console.log(`exited code loop!`, arguments);
       loop();
       checkServerLive();
     }else{
@@ -56,14 +38,15 @@ function loop(){
     }
   });
 }
+
 loop();
 
-const request = require('request');
 const liveUrl = 'http://unix:' + process.env.PORT + ':/live';
-const chalk = require('chalk');
-
 var isCheckServerLive = false;
 function checkServerLive(){
+  if(!isPro){
+    return;
+  }
   if(isCheckServerLive) return;
   isCheckServerLive = true;
   var count = 0;
