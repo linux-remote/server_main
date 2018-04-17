@@ -1,7 +1,9 @@
-
-// 当一个前端买了一台linux服务器，一场战斗打响了。
 // 此文件为入口文件，主要作用为：初始化并启动服务器，listen端口。
+const http = require('http');
+const https = require('https');
+const _ = require('lodash');
 const { execSync } = require('child_process');
+
 const I = execSync('whoami').toString().trim();
 
 // 1判定是否是root登录
@@ -11,9 +13,7 @@ if(I !== 'root'){
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
-const http = require('http');
-const https = require('https');
-const _ = require('lodash');
+
 const NODE_ENV = process.env.NODE_ENV;
 const {onListening, onError, normalizePort} = require('./common/util');
 const COM_CONST = require('./common/const');

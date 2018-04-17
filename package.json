@@ -8,8 +8,8 @@
     "url": "git@github.com:linux-remote/server.git"
   },
   "scripts": {
-    "devInstall": "cnpm i --by=npm --no-bin-links",
-    "start": "NODE_ENV=development supervisor -i node_modules,user,public,.git,user-server.js _start.js"
+    "start": "NODE_ENV=development supervisor -i node_modules,user,public,.git,user-server.js dev_start.js",
+    "_devInstall": "cnpm i --by=npm --no-bin-links"
   },
   "dependencies": {
     "body-parser": "~1.16.0",
