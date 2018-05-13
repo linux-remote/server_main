@@ -6,7 +6,6 @@ exports.getTimeZoneName = function(){
   }catch(e){
     return '---';
   }
-
 }
 
 function getClientIp(req){

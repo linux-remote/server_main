@@ -15,7 +15,7 @@ const CONF = global.CONF;
 
 apiWarp(app);
 // uncomment after placing your favicon in /public
-app.use(favicon(path.join(global.ROOT_PATH, 'public', 'favicon.png')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 
 app.use(cookieParser());
 

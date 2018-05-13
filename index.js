@@ -1,28 +1,25 @@
-// 此文件为入口文件，主要作用为：初始化并启动服务器，listen端口。
+// Entry
+
 const http = require('http');
 const https = require('https');
-const _ = require('lodash');
+
+
+// Should root start up
 const { execSync } = require('child_process');
 
-const I = execSync('whoami').toString().trim();
-
-// 1判定是否是root登录
-if(I !== 'root'){
+if(execSync('whoami').toString().trim() !== 'root'){
   throw new Error('linux-remote needs sudo start-up!');
 }
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
-
-const NODE_ENV = process.env.NODE_ENV;
+const NODE_ENV = process.env.NODE_ENV = (process.env.NODE_ENV || 'production');
 const {onListening, onError, normalizePort} = require('./common/util');
 const COM_CONST = require('./common/const');
-var conf = require('./conf/' + NODE_ENV);
+const conf = require('./conf/def.js');
 
-function index(userConf){
+module.exports = function(userConf){
 
-  conf = _.merge(conf, userConf); //?用不用深度merge
-
+  Object.assign(conf, userConf);
   // 2定义全局变量
   global.IS_PRO = NODE_ENV === 'production';
   global.ROOT_PATH = __dirname;
@@ -30,7 +27,6 @@ function index(userConf){
 
   Object.assign(conf, COM_CONST);
 
-  conf.NODE_ENV = NODE_ENV;
   global.CONF = conf;
 
   const init = require('./lib/init');
@@ -65,6 +61,3 @@ function index(userConf){
   });
 
 }
-
-
-module.exports = index;
