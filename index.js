@@ -14,7 +14,6 @@ if(execSync('whoami').toString().trim() !== 'root'){
 
 const NODE_ENV = process.env.NODE_ENV = (process.env.NODE_ENV || 'production');
 const {onListening, onError, normalizePort} = require('./common/util');
-const COM_CONST = require('./common/const');
 const conf = require('./conf/def.js');
 
 module.exports = function(userConf){
@@ -22,17 +21,15 @@ module.exports = function(userConf){
   Object.assign(conf, userConf);
   // 2定义全局变量
   global.IS_PRO = NODE_ENV === 'production';
-  global.ROOT_PATH = __dirname;
+  global.SESSION_PATH = '/opt/linux-remote/ttl';
+
   conf.NODE_ENV = NODE_ENV;
 
   Object.assign(conf, COM_CONST);
 
   global.CONF = conf;
-
-  const init = require('./lib/init');
-
   // 3初始化
-  init(function(err, result){
+
     if(err) throw err;
     global.CONF.sessionSecret = result.sessionSecret;
 
@@ -58,6 +55,6 @@ module.exports = function(userConf){
     const createWebSocketServer = require('./web-socket-server');
     createWebSocketServer(server);
 
-  });
+
 
 }

@@ -75,18 +75,16 @@ function rename(req, res, next){
   })
 }
 
-// const COM_CONST = require('')
-// console.log('DUSTBIN_PATH2', DUSTBIN_PATH);
 let iDustPathChahe = false;
 function initDustBin(cb){
   if(iDustPathChahe) return cb(null, iDustPathChahe);
-  const iDustPath = path.join(global.APP.DUSTBIN_PATH, global.APP.USER.username)
+  const iDustPath = '/home/' + global.APP.USER.username + '/linux-remote/recycle-bin';
   fs.stat(iDustPath, function(err){
     if(err){
       if(err.code !== 'ENOENT'){
         return cb(err);
       }
-      const mkdir = cb => exec('mkdir -m=700 ' + iDustPath, cb);
+      const mkdir = cb => exec('mkdir -m=755 ' + iDustPath, cb);
 
       sas(mkdir, function(err){
         if(err){

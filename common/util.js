@@ -63,7 +63,7 @@ exports.errLog = function(errMsg, req){
 // }
 
 exports.getTmpName = function(sid, username){
-  return `${global.CONF.SESS_PATH}/${sid}+${username}`
+  return `${global.SESSION_PATH}/${sid}+${username}`
 }
 
 // exports.emptyObject = function(){

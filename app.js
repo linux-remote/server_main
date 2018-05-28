@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 // index
-if(!CONF.IS_PRO){
+if(!global.IS_PRO){
   app.get('/', function(req, res){
     const session = req.session;
     res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));

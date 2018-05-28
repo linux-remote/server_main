@@ -6,7 +6,7 @@ npm install
 sudo npm run init
 createUser linuxRemote
 create data dir: ./data
-create dir: TMP_PATH /var/tmp/linux-remote
+create dir:  /var/tmp/linux-remote
 ./data
   /user
     /session
