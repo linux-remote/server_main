@@ -3,17 +3,12 @@
 const http = require('http');
 const https = require('https');
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+const NODE_ENV = process.env.NODE_ENV;
+const { onListening, 
+      onError, 
+      normalizePort } = require('./common/util');
 
-// Should root start up
-const { execSync } = require('child_process');
-
-if(execSync('whoami').toString().trim() !== 'root'){
-  throw new Error('linux-remote needs sudo start-up!');
-}
-
-
-const NODE_ENV = process.env.NODE_ENV = (process.env.NODE_ENV || 'production');
-const {onListening, onError, normalizePort} = require('./common/util');
 const conf = require('./conf/def.js');
 
 module.exports = function(userConf){
@@ -23,7 +18,6 @@ module.exports = function(userConf){
   global.IS_PRO = NODE_ENV === 'production';
   global.SESSION_PATH = '/opt/linux-remote/ttl';
 
-  conf.NODE_ENV = NODE_ENV;
 
   Object.assign(conf, COM_CONST);
 
@@ -31,7 +25,7 @@ module.exports = function(userConf){
   // 3初始化
 
     if(err) throw err;
-    global.CONF.sessionSecret = result.sessionSecret;
+
 
     require('./lib/tmp-ttl');
     const app = require('./app');
@@ -41,7 +35,7 @@ module.exports = function(userConf){
     var server;
 
     if(conf.ssl){
-      server = https.createServer(result.ssl, app);
+      server = https.createServer(conf.ssl, app);
     }else{
       server = http.createServer(app);
     }
