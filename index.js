@@ -9,7 +9,7 @@ const { onListening,
       onError, 
       normalizePort } = require('./common/util');
 
-const conf = require('./conf/def.js');
+const conf = require('./conf/dev.js');
 
 module.exports = function(userConf){
 
