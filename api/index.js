@@ -3,24 +3,9 @@ const {getTimeZoneName} = require('../common/util');
 // get
 exports.touch = function(req, res){
   let data = {
-    loginedList: req.session.loginedList || []
+    loginedMap: req.session.loginedMap || Object.create(null)
   };
-  // if(CONF.ssl.caCertPath){
 
-  //   data = {
-  //     isSelfSigned: true,
-  //     CADownloadedCount: CONF.sslSelfSigned._indexData.CADownloadedCount,
-  //     loginedList: req.session.loginedList || []
-  //   }
-  //   if(!data.CADownloadedCount){
-  //     data.CACertPath = CONF.ssl.caCertPath;
-  //   }
-  // }else{
-  //   data = {
-  //     isSelfSigned: false,
-  //     indexNotice: CONF.notice
-  //   }
-  // }
   res.apiOk(data);
 }
 

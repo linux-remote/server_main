@@ -5,11 +5,10 @@ const util = require('../common/util');
 // post
 exports.login = function(req, res, next){
   var {username, password} = req.body;
-  var loginedList = req.session.loginedList || [];
+  var loginedMap = req.session.loginedMap || Object.create(null);
 
   function checkIsLogin(callback){
-    const index = loginedList.indexOf(username);
-    if(index !== -1){
+    if(loginedMap[username]){
       // return res.apiOk({
       //   alreadyLogined: true
       // });
@@ -17,7 +16,7 @@ exports.login = function(req, res, next){
       util.getTmpName(req.session.id, req.body.username) +
       '.sock:/live', function(err){
         if(err){
-          loginedList.splice(index, 1);
+          delete(loginedMap[username]);
           return callback();
         }else{
           callback('$up');
@@ -33,42 +32,33 @@ exports.login = function(req, res, next){
       if(err){
         return callback(err);
       }
-      loginedList.push(username);
-      req.session.loginedList = loginedList;
+      loginedMap[username] = true;
+      req.session.loginedMap = loginedMap;
       callback();
-      //res.apiOk(req.session.loginedList);
     });
   }
 
   sas([checkIsLogin, userLogin], function(err){
     if(err) return next(err);
-    res.apiOk(loginedList);
+    res.apiOk(loginedMap);
   });
 }
 
 // post
-// exports.logout = function(req, res, next){
-//   var i = req.session.loginedList.indexOf(req.params.username);
-//   if(i !== -1){
-//     req.session.loginedList.splice(i, 1);
-//   }
-//   next();
-// }
-
-// post
 exports.logout = function(req, res){
+  var username = req.body.username;
   request.delete('http://unix:' +
-  util.getTmpName(req.session.id, req.body.username) +
+  util.getTmpName(req.session.id, username) +
   '.sock:/exit', function(){
     console.log('exit');
-    const loginedList = req.session.loginedList || [];
-    var i = loginedList.indexOf(req.body.username);
-    if(i !== -1){
-      loginedList.splice(i, 1);
-      req.session.loginedList = loginedList;
+    const loginedMap = req.session.loginedMap || Object.create(null);
+    
+    if(loginedMap[username]){
+      delete(loginedMap[username]);
+      req.session.loginedMap = loginedMap;
     }
     //next();
-    res.apiOk(loginedList);
+    res.apiOk(loginedMap);
 
   })
 

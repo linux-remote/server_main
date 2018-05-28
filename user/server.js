@@ -1,12 +1,16 @@
 const {execSync} = require('child_process');
 const PORT = process.env.PORT;
 
-if(/\.sock$/.test(PORT) === true){
+if(/\.sock$/.test(PORT) === true){ //删除旧的 sock 文件, 才能启动.
   execSync('rm -rf ' + PORT);
   //console.log(`删除${PORT}文件成功！`);
 }
+
+const NODE_ENV = process.env.NODE_ENV;
+global.IS_PRO = NODE_ENV === 'production';
 global.DESKTOP_PATH = '~/linux-remote/desktop';
 global.RECYCLE_BIN_PATH = '~/linux-remote/.recycle-bin';
+
 //初始化用户文件
 execSync('mkdir -m=755 -p ' + global.DESKTOP_PATH);
 execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
@@ -20,10 +24,6 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
-
-const NODE_ENV = process.env.NODE_ENV;
-global.IS_PRO = NODE_ENV === 'production';
-
 const desk = require('./api/desk');
 const fsApi = require('./api/fs');
 
@@ -33,19 +33,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-
 
 //================= 用户进程 TTL =================
 const MAX_AGE = 1000 * 60 * 10;
-// console.log('server start');
+
 var now = Date.now();
-console.log('TTL start: ' + now);
+console.log('TTL start: ' + new Date(), 'MAX_AGE: ' + MAX_AGE);
 const TTL = function(){
   setTimeout(() =>{
     if(Date.now() - now >= MAX_AGE){
-      console.log('TTL end: ' + Date.now());
+      console.log('TTL end: ' + new Date());
       return process.exit();
     }else{
       TTL();

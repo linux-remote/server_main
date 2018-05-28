@@ -13,9 +13,9 @@ module.exports = function(server){
         return done(false);
       }
       sessMiddleware(req, {}, () =>{
-        const loginedList = req.session.loginedList || [];
+        const loginedMap = req.session.loginedMap || Object.create(null);
         const location = url.parse(req.url, true);
-        if(loginedList.indexOf(location.query.user) === -1){
+        if(!loginedMap[location.query.user]){
           done(false);
         }else{
           done(true);
@@ -30,12 +30,12 @@ module.exports = function(server){
     })
   }
 
-  fs.watchFile('/etc/timezone',  function(){
-    broadcast({
-      type: 'timeZoneNameChange',
-      data: {timeZoneName: getTimeZoneName()}
-    });
-  });
+  // fs.watchFile('/etc/timezone',  function(){
+  //   broadcast({
+  //     type: 'timeZoneNameChange',
+  //     data: {timeZoneName: getTimeZoneName()}
+  //   });
+  // });
 
   webSocketServer.on('connection', function connection(ws) {
     ws.send(JSON.stringify({type:'start', data: {}}));

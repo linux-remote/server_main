@@ -20,10 +20,9 @@ exports.proxy = function(req, res){
 }
 // use
 exports.beforeProxy = function(req, res, next){
-  const loginedList = req.session.loginedList || [];
-  //console.log('req.session', req.session);
+  const loginedMap = req.session.loginedMap || Object.create(null);
   const username = req.params.username;
-  if(loginedList.indexOf(username) === -1){
+  if(!loginedMap[username]){
     return res.status(403).send('forbidden');
   }
   next();
