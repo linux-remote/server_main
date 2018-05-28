@@ -9,7 +9,7 @@ module.exports = function apiWarp(app){
       data
     })
   };
-
+  
   app.response.__proto__.apiError = function(code, msg){
     middleWare.errHandle(util.codeErrWrap(code, msg), this.req, this);
   }

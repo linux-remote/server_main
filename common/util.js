@@ -17,9 +17,7 @@ function getClientIp(req){
 
 const codeMap = {
   1: 'Parameter is incorrect',
-  2: 'Not logged in',
-  3: 'CACertFirstDownloadKey Incorrect',
-  4: 'CACertFirstDownloadKey already used once',
+  2: 'Not logged in'
   //5: 'session 失效了'
 }
 
@@ -44,37 +42,15 @@ exports.errLog = function(errMsg, req){
   );
 }
 
-// exports.timeFormat = (date, fmt) => {
-//   date = date ? new Date(date) : new Date();
-//   fmt = fmt || 'yyyy-MM-dd HH:mm:ss';
-//   var o = {
-//     'M+': date.getMonth() + 1,
-//     'd+': date.getDate(),
-//     'H+': date.getHours(),
-//     'm+': date.getMinutes(),
-//     's+': date.getSeconds(),
-//     'q+': Math.floor((date.getMonth() + 3) / 3),
-//     'S': date.getMilliseconds()
-//   };
-//   if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
-//   for (var k in o)
-//     if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
-//   return fmt;
-// }
+
 
 exports.getTmpName = function(sid, username){
   return `${global.SESSION_PATH}/${sid}+${username}`
 }
 
-// exports.emptyObject = function(){
-//   var o = new Object(null);
-//   o.__proto__ = null;
-//   return o;
-// }
-
-
 //*******************************************************************************/
-//The following is copy and modify from express-generator's bin/www file.
+//The following is copy and modify from 'express-generator' generated project's bin/www file.
+//https://github.com/expressjs/generator
 /**
  * Normalize a port into a number, string, or false.
  */

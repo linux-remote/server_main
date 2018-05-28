@@ -1,18 +1,15 @@
 var express = require('express');
 var router = express.Router();
-// const os = require('os');
 const {exec} = require('child_process');
-const {initDustBin} = require('./fs');
 const sas = require('sas');
 const path = require('path');
 const ls = require('./ls');
-// const express = require('express');
-// const router = express.Router();
-const ADDRESS = '/var/tmp/linux-remote/dustbin/' + global.APP.USER.username;
+
 router.get('/', function(req, res, next){
-  initDustBin(err =>{
     if(err) return next(err);
-    ls(ADDRESS, {noDir: true, other: '--reverse'}, (err, result) => {
+    ls(global.RECYCLE_BIN_PATH, 
+      {noDir: true, other: '--reverse'}, 
+      (err, result) => {
       if(err){
         return next(err);
       }
@@ -35,7 +32,6 @@ router.get('/', function(req, res, next){
       });
       res.apiOk(result2);
     })
-  })
 })
 
 router.post('/recycle', function(req, res, next){
@@ -43,8 +39,8 @@ router.post('/recycle', function(req, res, next){
   const name = item.delTime;
   const sourceDir = item.sourceDir;
   sas({
-    mv: cb => exec(`mv ${ADDRESS}/${name} ${sourceDir}/${item.name}`, cb),
-    delLnk: cb => exec(`rm -rf ${ADDRESS}/${name}.lnk`, cb)
+    mv: cb => exec(`mv ${global.RECYCLE_BIN_PATH}/${name} ${sourceDir}/${item.name}`, cb),
+    delLnk: cb => exec(`rm -rf ${global.RECYCLE_BIN_PATH}/${name}.lnk`, cb)
   }, (err) => {
     if(err) return next(err);
     res.apiOk();
@@ -54,8 +50,8 @@ router.post('/recycle', function(req, res, next){
 router.delete('/:name', function(req, res, next){
   const name = req.params.name;
   sas({
-    del: cb => exec(`rm -rf ${ADDRESS}/${name}`, cb),
-    delLnk: cb => exec(`rm -rf ${ADDRESS}/${name}.lnk`, cb)
+    del: cb => exec(`rm -rf ${global.RECYCLE_BIN_PATH}/${name}`, cb),
+    delLnk: cb => exec(`rm -rf ${global.RECYCLE_BIN_PATH}/${name}.lnk`, cb)
   }, (err) => {
     if(err) return next(err);
     res.apiOk();
@@ -63,11 +59,11 @@ router.delete('/:name', function(req, res, next){
 });
 
 router.delete('/', function(req, res, next){
-  exec(`rm -rf ${ADDRESS}/*`, err => {
+  exec(`rm -rf ${global.RECYCLE_BIN_PATH}/*`, err => {
     if(err) return next(err);
     res.apiOk();
   });
-  // fs.readdir(ADDRESS, (err, files){
+  // fs.readdir(global.RECYCLE_BIN_PATH, (err, files){
   //   if(err) return next(err);
   //   files.map()
   // })

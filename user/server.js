@@ -5,8 +5,11 @@ if(/\.sock$/.test(PORT) === true){
   execSync('rm -rf ' + PORT);
   //console.log(`删除${PORT}文件成功！`);
 }
-
-execSync('mkdir -m=755 -p ~/linux-remote');
+global.DESKTOP_PATH = '~/linux-remote/desktop';
+global.RECYCLE_BIN_PATH = '~/linux-remote/.recycle-bin';
+//初始化用户文件
+execSync('mkdir -m=755 -p ' + global.DESKTOP_PATH);
+execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
 
 const http = require('http');
 const express = require('express');
@@ -17,11 +20,6 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
-const os = require('os');
-
-global.APP = {
-  USER: os.userInfo()
-};
 
 const NODE_ENV = process.env.NODE_ENV;
 global.IS_PRO = NODE_ENV === 'production';
@@ -37,7 +35,9 @@ app.use(cookieParser());
 
 
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-// app.use(cookieParser());
+
+
+//================= 用户进程 TTL =================
 const MAX_AGE = 1000 * 60 * 10;
 // console.log('server start');
 var now = Date.now();
@@ -52,13 +52,15 @@ const TTL = function(){
     }
   }, MAX_AGE);
 }
-
 TTL();
 
 app.use(function(req, res, next){
   now = Date.now();
   next();
 });
+//================= 用户进程 TTL end =================
+
+
 app.get('/', function(req, res){
   var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
   msg += 'pid: ' + process.pid;

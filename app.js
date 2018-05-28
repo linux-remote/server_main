@@ -21,37 +21,33 @@ app.use(cookieParser());
 
 app.use(sessMiddleware);
 
+// ============================前端加载============================
+// 测试环境是分开的。正式是合起来的。
 if(CONF.client){
   mountClient(app, CONF.client);
 }else{
   app.use(middleWare.CORS);
 }
 
+//用户进程代理
 const apiUser = require('./api/user');
 app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// ============================前端加载============================
-// 测试环境是分开的。正式是合起来的。
-
-
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
-// index
+// index 欢迎页
 if(!global.IS_PRO){
+
+  app.use(logger('dev'));
+
   app.get('/', function(req, res){
     const session = req.session;
     res.send('Hello! This is linux-Remote-server! \nsession.id=' + session.id + '\nsession:' + JSON.stringify(req.session));
   });
 }
 
-app.use('/getSession', function(req, res){
-  // if(req.hostname !== '127.0.0.1'){
-  //   return next({status: 403})
-  // }
-  res.json(req.session);
-});
+// 主进程API
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler

@@ -36,10 +36,6 @@ function fsSys(req, res, next){
     return moveToDustbin(req, res, next);
   }
 
-  //fs.lstat(req.PATH, (err, stat) => {
-
-    // if(err) return next(err);
-    // req.STAT = stat;
   if(method === 'PUT'){
     return updateFile(req, res, next);
   }
@@ -75,42 +71,15 @@ function rename(req, res, next){
   })
 }
 
-let iDustPathChahe = false;
-function initDustBin(cb){
-  if(iDustPathChahe) return cb(null, iDustPathChahe);
-  const iDustPath = '/home/' + global.APP.USER.username + '/linux-remote/recycle-bin';
-  fs.stat(iDustPath, function(err){
-    if(err){
-      if(err.code !== 'ENOENT'){
-        return cb(err);
-      }
-      const mkdir = cb => exec('mkdir -m=755 ' + iDustPath, cb);
-
-      sas(mkdir, function(err){
-        if(err){
-          return cb(err);
-        }
-        iDustPathChahe = iDustPath;
-        cb(null, iDustPathChahe);
-      });
-    }else{
-      iDustPathChahe = iDustPath;
-      cb(null, iDustPathChahe);
-    }
-  })
-}
 
 function moveToDustbin(req, res, next){
   const _path = req.PATH;
 
-  // console.log('req.PATH', req.PATH, req.query, req.body);
-  // return res.apiOk();
-  initDustBin( function(err){
     if(err) {
       err.place = 'init dustbin';
       return next(err);
     }
-    if(path.dirname(_path) === iDustPathChahe){
+    if(path.dirname(_path) === global.RECYCLE_BIN_PATH){
       return deleteAll(req, res, next);
     }
     // let dustName = [
@@ -119,7 +88,7 @@ function moveToDustbin(req, res, next){
     //   Date.now(),
     // ]
     const INDEX = Date.now().toString();
-    const dustPath = path.join(iDustPathChahe, INDEX);
+    const dustPath = path.join(global.RECYCLE_BIN_PATH, INDEX);
     const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);
     const move = cb => exec(`mv ${_path} ${dustPath}`, cb);
     sas({
@@ -129,7 +98,6 @@ function moveToDustbin(req, res, next){
       if(err) return next(err);
       res.apiOk();
     })
-  })
 }
 
 function deleteAll(req, res, next){
@@ -178,7 +146,5 @@ function readDir(req, res, next){
     res.apiOk(result);
   })
 }
-
-fsSys.initDustBin = initDustBin;
 
 module.exports = fsSys;
