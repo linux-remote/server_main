@@ -16,7 +16,7 @@ global.RECYCLE_BIN_PATH = path.join(LR_PATH , '.recycle-bin');
 //初始化用户文件
 execSync('mkdir -m=755 -p ' + global.DESKTOP_PATH);
 execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
-execSync('mkdir -m=755 -p ' + global.DATA_PATH);
+
 const http = require('http');
 const express = require('express');
 const logger = require('morgan');
@@ -27,6 +27,7 @@ const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
 const desktop = require('./api/desktop');
+const quickBar = require('./api/quick-bar');
 const desktopBak = require('./api/desktop_old');
 const fsApi = require('./api/fs');
 
@@ -73,6 +74,7 @@ app.get('/live', function(req,res){
 });
 
 app.use('/desktop', desktop);
+app.use('/quickBar', quickBar);
 app.use( desktopBak);
 app.use('/fs', fsApi);
 //app.all('/exec', execApi);
