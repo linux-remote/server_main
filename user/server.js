@@ -26,10 +26,6 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
-const desktop = require('./api/desktop');
-const quickBar = require('./api/quick-bar');
-const desktopBak = require('./api/desktop_old');
-const fsApi = require('./api/fs');
 
 var app = express();
 apiWarp(app);
@@ -40,7 +36,7 @@ app.use(cookieParser());
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 
 //================= 用户进程 TTL =================
-const MAX_AGE = 1000 * 60 * 10;
+const MAX_AGE = 1000 * 60 * 100;
 
 var now = Date.now();
 console.log('TTL start: ' + new Date(), 'MAX_AGE: ' + MAX_AGE);
@@ -73,8 +69,15 @@ app.get('/live', function(req,res){
   res.send('Y');
 });
 
+const desktop = require('./api/desktop');
+const quickBar = require('./api/quick-bar');
+const desktopBak = require('./api/desktop_old');
+const recycle_bin = require('./api/dustbin');
+const fsApi = require('./api/fs');
+
 app.use('/desktop', desktop);
-app.use('/quickBar', quickBar);
+app.use('/quick_bar', quickBar);
+app.use('/recycle_bin', recycle_bin);
 app.use( desktopBak);
 app.use('/fs', fsApi);
 //app.all('/exec', execApi);

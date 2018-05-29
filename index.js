@@ -16,7 +16,7 @@ module.exports = function(userConf){
   Object.assign(conf, userConf);
 
   global.IS_PRO = NODE_ENV === 'production';
-  global.SESSION_PATH = '/opt/linux-remote/ttl';
+  global.SESSION_PATH = '/opt/linux-remote/session';
   global.CONF = conf;
 
   //定期删除过期的用户 session 和用户 log

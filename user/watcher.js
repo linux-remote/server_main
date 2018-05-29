@@ -6,12 +6,12 @@ const chalk = require('chalk');
 
 const isPro = process.env.NODE_ENV === 'production';
 
-var ls;
+var child;
 function _watch(dir){
   watch.watchTree(dir, {interval: 1}, function(f){
     if(typeof f !== 'object'){
       console.log('watch file reload');
-      ls.kill();
+      child.kill();
     }
   });
 }
@@ -22,18 +22,18 @@ if(!isPro){
 }
 
 function loop(){
-  ls = spawn(process.argv[0], ['server.js'], {
+  child = spawn(process.argv[0], ['server.js'], {
     detached: true,
     cwd:__dirname,
     stdio: 'inherit'
   });
 
-  ls.on('close', (code) => {
+  child.on('close', (code) => {
     if(code !== 0){
       loop();
       checkServerLive();
     }else{
-      console.log(`child exit success!`);
+      console.log(`child exit success! \t ${new Date()}`);
       process.exit();
     }
   });

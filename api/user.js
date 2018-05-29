@@ -23,7 +23,7 @@ exports.beforeProxy = function(req, res, next){
   const loginedMap = req.session.loginedMap || Object.create(null);
   const username = req.params.username;
   if(!loginedMap[username]){
-    return res.status(403).send('forbidden');
+    return res.status(403).send('forbidden! proxy fail!');
   }
   next();
 }

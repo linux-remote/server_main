@@ -46,17 +46,18 @@ exports.login = function(req, res, next){
 
 // post
 exports.logout = function(req, res){
+  const loginedMap = req.session.loginedMap || Object.create(null);
   var username = req.body.username;
+  if(!loginedMap[username]){
+    return res.apiOk(loginedMap);
+  }
   request.delete('http://unix:' +
   util.getTmpName(req.session.id, username) +
   '.sock:/exit', function(){
-    console.log('exit');
-    const loginedMap = req.session.loginedMap || Object.create(null);
-    
-    if(loginedMap[username]){
-      delete(loginedMap[username]);
-      req.session.loginedMap = loginedMap;
-    }
+    console.log(username, 'logout success', Date.now());
+
+    delete(loginedMap[username]);
+    req.session.loginedMap = loginedMap;
     //next();
     res.apiOk(loginedMap);
 
