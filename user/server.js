@@ -1,6 +1,6 @@
 const {execSync} = require('child_process');
 const PORT = process.env.PORT;
-
+const path = require('path');
 if(/\.sock$/.test(PORT) === true){ //删除旧的 sock 文件, 才能启动.
   execSync('rm -rf ' + PORT);
   //console.log(`删除${PORT}文件成功！`);
@@ -8,13 +8,15 @@ if(/\.sock$/.test(PORT) === true){ //删除旧的 sock 文件, 才能启动.
 
 const NODE_ENV = process.env.NODE_ENV;
 global.IS_PRO = NODE_ENV === 'production';
-global.DESKTOP_PATH = '~/linux-remote/desktop';
-global.RECYCLE_BIN_PATH = '~/linux-remote/.recycle-bin';
+const LR_PATH = path.join(process.env.HOME, 'linux-remote');
+global.LR_PATH = LR_PATH;
+global.DESKTOP_PATH = path.join(LR_PATH , 'desktop');
+global.RECYCLE_BIN_PATH = path.join(LR_PATH , '.recycle-bin');
 
 //初始化用户文件
 execSync('mkdir -m=755 -p ' + global.DESKTOP_PATH);
 execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
-
+execSync('mkdir -m=755 -p ' + global.DATA_PATH);
 const http = require('http');
 const express = require('express');
 const logger = require('morgan');
@@ -24,7 +26,8 @@ const cookieParser = require('cookie-parser');
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
-const desk = require('./api/desk');
+const desktop = require('./api/desktop');
+const desktopBak = require('./api/desktop_old');
 const fsApi = require('./api/fs');
 
 var app = express();
@@ -69,7 +72,8 @@ app.get('/live', function(req,res){
   res.send('Y');
 });
 
-app.use(desk);
+app.use('/desktop', desktop);
+app.use( desktopBak);
 app.use('/fs', fsApi);
 //app.all('/exec', execApi);
 
