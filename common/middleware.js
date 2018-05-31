@@ -15,14 +15,6 @@ exports.CORS = function(req, res, next) {
   }
 }
 
-// exports.needLogin = function(req, res, next) {
-//   if (!req.session || !req.session.user) {
-//     return res.status(403).send('<a href="/login">请先登录</a>');
-//   }
-//   next();
-// };
-//    //res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE', 'OPTIONS');
-
 //404
 exports.notFound = function(req, res, next) {
   var err = new Error('Not Found');

@@ -16,10 +16,10 @@ exports.login = function(req, res, next){
       util.getTmpName(req.session.id, req.body.username) +
       '.sock:/live', function(err){
         if(err){
-          delete(loginedMap[username]);
+          delete(loginedMap[username]); //如果用户进程挂了,下一步
           return callback();
         }else{
-          callback('$up');
+          callback('$up'); //返回
         }
       })
     }else{
@@ -39,7 +39,9 @@ exports.login = function(req, res, next){
   }
 
   sas([checkIsLogin, userLogin], function(err){
-    if(err) return next(err);
+    if(err){
+      return next(err);
+    }
     res.apiOk(loginedMap);
   });
 }
@@ -48,13 +50,16 @@ exports.login = function(req, res, next){
 exports.logout = function(req, res){
   const loginedMap = req.session.loginedMap || Object.create(null);
   var username = req.body.username;
+  
   if(!loginedMap[username]){
     return res.apiOk(loginedMap);
   }
+
   request.delete('http://unix:' +
   util.getTmpName(req.session.id, username) +
   '.sock:/exit', function(){
-    console.log(username, 'logout success', Date.now());
+
+    console.log(username, 'logout success' + new Date());
 
     delete(loginedMap[username]);
     req.session.loginedMap = loginedMap;

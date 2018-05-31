@@ -39,11 +39,11 @@ app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 const MAX_AGE = 1000 * 60 * 100;
 
 var now = Date.now();
-console.log('TTL start: ' + new Date(), 'MAX_AGE: ' + MAX_AGE);
+console.log('TTL start at: ' + new Date(), 'MAX_AGE: ' + MAX_AGE);
 const TTL = function(){
   setTimeout(() =>{
     if(Date.now() - now >= MAX_AGE){
-      console.log('TTL end: ' + new Date());
+      console.log('process.exit by TTL end.' + new Date());
       return process.exit();
     }else{
       TTL();
@@ -75,10 +75,11 @@ const desktopBak = require('./api/desktop_old');
 const recycle_bin = require('./api/dustbin');
 const fsApi = require('./api/fs');
 
+app.use(desktopBak);
 app.use('/desktop', desktop);
 app.use('/quick_bar', quickBar);
 app.use('/recycle_bin', recycle_bin);
-app.use( desktopBak);
+
 app.use('/fs', fsApi);
 //app.all('/exec', execApi);
 
