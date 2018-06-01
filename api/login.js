@@ -59,7 +59,7 @@ exports.logout = function(req, res){
   util.getTmpName(req.session.id, username) +
   '.sock:/exit', function(){
 
-    console.log(username, 'logout success' + new Date());
+    console.log(username, 'logout at ' + new Date());
 
     delete(loginedMap[username]);
     req.session.loginedMap = loginedMap;

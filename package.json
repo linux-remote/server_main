@@ -8,7 +8,8 @@
     "url": "git@github.com:linux-remote/server.git"
   },
   "scripts": {
-    "start": "NODE_ENV=development supervisor -i node_modules,user,public,.git,user-server.js dev_start.js",
+    "start": "NODE_ENV=development nodemon --ignore user/ --ignore public/ -e js -L dev_start.js",
+    "supervisor_start_bak": "NODE_ENV=development supervisor -i node_modules,user,public,.git dev_start.js",
     "_devInstall": "cnpm i --by=npm --no-bin-links"
   },
   "dependencies": {
