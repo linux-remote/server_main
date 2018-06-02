@@ -19,8 +19,6 @@ module.exports = function(userConf){
   global.SESSION_PATH = '/opt/linux-remote/session';
   global.CONF = conf;
 
-  //定期删除过期的用户 session 和用户 log
-  require('./lib/ttl');
   
   const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
