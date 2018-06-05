@@ -75,10 +75,7 @@ function rename(req, res, next){
 function moveToDustbin(req, res, next){
   const _path = req.PATH;
 
-    if(err) {
-      err.place = 'init dustbin';
-      return next(err);
-    }
+
     if(path.dirname(_path) === global.RECYCLE_BIN_PATH){
       return deleteAll(req, res, next);
     }

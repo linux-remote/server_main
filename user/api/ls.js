@@ -25,7 +25,7 @@ function ls(_path, opts, callback){
   exec(`ls -l --color=none -Q --time-style=long-iso -h ${a} ${d} ${other} ${_path}`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
-      if(err) return callback(err);
+      if(err && !result) return callback(err);
       if(!isDirectory){
         result = result.substr(result.indexOf('\n') + 1); //remove total.
       }

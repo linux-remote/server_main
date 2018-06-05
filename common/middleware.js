@@ -32,11 +32,11 @@ exports.errHandle = function(err, req, res, next) {
   //   console.log(chalk.green(i));
   // }
   //
-  if(err.cmd){
-    const index = err.message.lastIndexOf(':');
-    //err.message = err.message.split(err.cmd)[1];
-    err.message = err.message.substr(index + 1);
-  }
+  // if(err.cmd){
+  //   const index = err.message.lastIndexOf(':');
+  //   //err.message = err.message.split(err.cmd)[1];
+  //   err.message = err.message.substr(index + 1);
+  // }
   // console.log(chalk.red('**************'));
   let msg = `${err.name}: ${err.message}`;
   let data;
