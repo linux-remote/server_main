@@ -6,14 +6,12 @@ const path = require('path');
 // const express = require('express');
 // const router = express.Router();
 const ls = require('./ls');
-const uploadMultiple = require('./fs/upload-multiple');
 
 const bodyMap = {
   createSymbolicLink,
   rename,
   createFile,
-  createFolder,
-  uploadMultiple,
+  createFolder
 }
 
 function fsSys(req, res, next){
@@ -79,11 +77,6 @@ function moveToDustbin(req, res, next){
     if(path.dirname(_path) === global.RECYCLE_BIN_PATH){
       return deleteAll(req, res, next);
     }
-    // let dustName = [
-    //   _path.replace('/', PATH_SPLIT),
-    //
-    //   Date.now(),
-    // ]
     const INDEX = Date.now().toString();
     const dustPath = path.join(global.RECYCLE_BIN_PATH, INDEX);
     const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);

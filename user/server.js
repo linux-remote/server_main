@@ -23,17 +23,34 @@ const logger = require('morgan');
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+
+
+// var multer = require('multer');
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, decodeURIComponent(req.path));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   }
+// })
+// var upload = multer({storage});
+
 const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
+const upload = require('./api/upload');
 
 var app = express();
+app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 apiWarp(app);
+app.use('/upload', upload);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
+
 
 //================= 用户进程 TTL =================
 const MAX_AGE = 1000 * 60 * 100;
@@ -81,7 +98,6 @@ app.use('/quick_bar', quickBar);
 app.use('/recycle_bin', recycle_bin);
 
 app.use('/fs', fsApi);
-//app.all('/exec', execApi);
 
 app.delete('/exit', function(req, res){
   res.send('exit');

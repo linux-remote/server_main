@@ -39,3 +39,4 @@ jspm_packages
 /nohup.out
 /bak
 /.vscode
+/package-lock.json
