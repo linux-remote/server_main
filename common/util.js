@@ -15,11 +15,7 @@ function getClientIp(req){
   req.connection.socket.remoteAddress;
 }
 
-const codeMap = {
-  1: 'Parameter is incorrect',
-  2: 'Not logged in'
-  //5: 'session 失效了'
-}
+const codeMap = require('./code-map');
 
 exports.codeErrWrap = function(code, msg = ''){
   var err = new Error(codeMap[code] +  msg);
