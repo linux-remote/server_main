@@ -18,3 +18,4 @@ exports.fsGetOrInit = function (filePath, data, callback){
     }
   })
 }
+

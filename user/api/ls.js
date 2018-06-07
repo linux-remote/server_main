@@ -22,7 +22,7 @@ function ls(_path, opts, callback){
   const other = opts.other || '';
   //console.log('a', opts, a);
   // const cmd = `ls -l --color=none ${a}  -h ${d} ${sort}  -Q --time-style=long-iso ${_path}`
-  exec(`ls -l --color=none -Q --time-style=long-iso -h ${a} ${d} ${other} ${_path}`,
+  exec(`ls -l --color=none -Q --time-style=long-iso ${a} ${d} ${other} '${_path}'`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err && !result) return callback(err);
