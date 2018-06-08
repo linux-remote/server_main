@@ -40,11 +40,12 @@ const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
 const upload = require('./api/upload');
-
+const disk = require('./api/disk');
 var app = express();
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 apiWarp(app);
 app.use('/upload', upload);
+app.get('/disk', disk);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

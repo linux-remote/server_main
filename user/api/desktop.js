@@ -6,11 +6,10 @@ const fs = require('fs');
 
 const {fsGetOrInit} = require('./util');
 
-const firstDeskData = '[{"type":"app","id":"sys_recycle_bin","x": 0,"y":0}]';
 const deskTopConfigPath = path.join(global.LR_PATH, '.desktop.json');
 
 router.get('/', function(req, res, next){
-  fsGetOrInit(deskTopConfigPath, firstDeskData, function(err, result){
+  fsGetOrInit(deskTopConfigPath, '[]', function(err, result){
     if(err){
       return next(err);
     }
