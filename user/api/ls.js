@@ -34,12 +34,10 @@ function ls(_path, opts, callback){
 
       const lsSymbolicLinkTasks = {};
       result = result.map((v, i) => {
-        //const rawV = v;
         v = v.split('"');
         const name = isDirectory ? undefined : v[1];
 
         const _pre = v[0].split(/ +/g);
-
         const data = {
           name,
           permission: _pre[0],
@@ -51,8 +49,6 @@ function ls(_path, opts, callback){
         let linkString = v[3];
 
         if(!isDirectory && linkString){
-          //_pre.pop();
-          //const isOrphan = lastFlag.indexOf('OR') !== -1;
           linkString = linkString[0] === '/' ? linkString : './' + linkString;
           const linkPath = path.resolve(_path, linkString);
           data.symbolicLink = {
@@ -60,12 +56,6 @@ function ls(_path, opts, callback){
             linkTargetError: null
           }
           lsSymbolicLinkTasks[i] = data.symbolicLink;
-
-          // if(!isOrphan){
-          //   lsSymbolicLinkTasks[i] = data.symbolicLink;
-          // }else{
-          //   data.symbolicLink.linkTargetError = 'missing';
-          // }
         }
         return data;
       });
