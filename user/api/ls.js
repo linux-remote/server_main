@@ -22,7 +22,7 @@ function ls(_path, opts, callback){
   const other = opts.other || '';
   //console.log('a', opts, a);
   // const cmd = `ls -l --color=none ${a}  -h ${d} ${sort}  -Q --time-style=long-iso ${_path}`
-  exec(`ls -l --color=none -Q --time-style=long-iso ${a} ${d} ${other} '${_path}'`,
+  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} '${_path}'`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err && !result) return callback(err);
@@ -42,10 +42,23 @@ function ls(_path, opts, callback){
           name,
           permission: _pre[0],
           owner: _pre[2],
-          group: _pre[3],
-          size: _pre[4]
+          group: _pre[3]
         }
 
+        var size = _pre[4];
+        var nextIndex = 5;
+        if(size[size.length - 1] === ','){ //设备 主 副 号 https://unix.stackexchange.com/questions/367547/ls-l-output-in-dev-directory-of-unix-linux-system
+
+          data.device_type = _pre[4] + " " + _pre[5];
+
+          nextIndex = 6;
+          
+        }else {
+          data.size = size;
+        }
+
+        data.mtime =  _pre[nextIndex] + " " + _pre[nextIndex + 1];
+         
         let linkString = v[3];
 
         if(!isDirectory && linkString){
