@@ -29,11 +29,20 @@ if(CONF.client){
   app.use(middleWare.CORS);
 }
 
+const bodyParserMiddleWare = bodyParser.json();
+const login = require('./api/login');
+
+app.post('/api/login', bodyParserMiddleWare, login.login);
+app.post('/api/logout', bodyParserMiddleWare ,login.logout);
+
+const verifyLogined = require('./api/verify-logined');
+app.use(verifyLogined);
+
 //用户进程代理
 const apiUser = require('./api/user');
 app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy);
 
-app.use(bodyParser.json());
+app.use(bodyParserMiddleWare);
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // index 欢迎页

@@ -6,8 +6,8 @@ const path = require('path');
 const appList = [];
 const PREFIX = 'lr-app';
 
-const MAX_AGE = 1000 * 60 * 60 * 24 * 30 * 6;
-//
+const MAX_AGE = global.IS_PRO ? 1000 * 60 * 60 * 24 * 30 * 6 : 0;
+
 Object.keys(dependencies).forEach(k => {
   if(k.indexOf(PREFIX) === 0){
     const _path = require.resolve(k);
@@ -22,13 +22,12 @@ Object.keys(dependencies).forEach(k => {
     data.main = pkg.main;
     data.staticPath = staticPath;
     router.use(staticPath, eStatic(dir, {maxAge:MAX_AGE}));
-    
     appList.push(data);
   }
 })
-
+exports.appList = appList;
 router.get('/list', function(req, res){
   res.apiOk(appList);
 })
 
-module.exports = router;
+exports.router = router;

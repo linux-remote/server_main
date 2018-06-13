@@ -5,7 +5,7 @@ const util = require('../common/util');
 // post
 exports.login = function(req, res, next){
   var {username, password} = req.body;
-  var loginedMap = req.session.loginedMap || Object.create(null);
+  var loginedMap = req.session.loginedMap;
 
   function checkIsLogin(callback){
     if(loginedMap[username]){
@@ -48,7 +48,7 @@ exports.login = function(req, res, next){
 
 // post
 exports.logout = function(req, res){
-  const loginedMap = req.session.loginedMap || Object.create(null);
+  const loginedMap = req.session.loginedMap;
   var username = req.body.username;
   
   if(!loginedMap[username]){

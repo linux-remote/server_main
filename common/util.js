@@ -1,19 +1,19 @@
-const {execSync} = require('child_process');
+// const {execSync} = require('child_process');
 
-exports.getTimeZoneName = function(){
-  try{
-    execSync('cat /etc/timezone').toString().trim();
-  }catch(e){
-    return '---';
-  }
-}
+// exports.getTimeZoneName = function(){
+//   try{
+//     execSync('cat /etc/timezone').toString().trim();
+//   }catch(e){
+//     return '---';
+//   }
+// }
 
-function getClientIp(req){
-  return req.headers['x-forwarded-for'] ||
-  req.connection.remoteAddress ||
-  req.socket.remoteAddress ||
-  req.connection.socket.remoteAddress;
-}
+// function getClientIp(req){
+//   return req.headers['x-forwarded-for'] ||
+//   req.connection.remoteAddress ||
+//   req.socket.remoteAddress ||
+//   req.connection.socket.remoteAddress;
+// }
 
 const codeMap = require('./code-map');
 
@@ -37,7 +37,6 @@ exports.errLog = function(errMsg, req){
     + '\n </errorLog>'
   );
 }
-
 
 
 exports.getTmpName = function(sid, username){

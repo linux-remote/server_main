@@ -20,7 +20,7 @@ exports.proxy = function(req, res){
 }
 // use
 exports.beforeProxy = function(req, res, next){
-  const loginedMap = req.session.loginedMap || Object.create(null);
+  const loginedMap = req.session.loginedMap;
   const username = req.params.username;
   if(!loginedMap[username]){
     console.log(username + ':403 at ' + new Date());

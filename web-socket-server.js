@@ -1,6 +1,4 @@
 const WebSocket = require('ws');
-const fs = require('fs');
-const {getTimeZoneName} = require('./common/util');
 const url = require('url');
 const sessMiddleware = require('./lib/sess-middleware');
 
@@ -24,16 +22,14 @@ module.exports = function(server){
     },
     server });
 
-  function broadcast(data){
-    webSocketServer.clients.forEach((client) => {
-      client.send(JSON.stringify(data));
-    })
-  }
-
+  // function broadcast(data){
+  //   webSocketServer.clients.forEach((client) => {
+  //     client.send(JSON.stringify(data));
+  //   })
+  // }
   // fs.watchFile('/etc/timezone',  function(){
   //   broadcast({
-  //     type: 'timeZoneNameChange',
-  //     data: {timeZoneName: getTimeZoneName()}
+  //     type: 'timeZoneNameChange'
   //   });
   // });
 
