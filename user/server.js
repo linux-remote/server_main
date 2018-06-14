@@ -92,14 +92,14 @@ app.use('/desktop', desktop);
 
 // sys apps
 const serverInfo = require('./api/server-info');
-const recycle_bin = require('./api/dustbin');
+const recycleBin = require('./api/dustbin');
 const fsApi = require('./api/fs');
 const disk = require('./api/disk');
 
 app.use('/fs', fsApi);
 app.get('/disk', disk);
 app.use('/serverInfo', serverInfo);
-app.use('/recycle_bin', recycle_bin);
+app.use('/recycleBin', recycleBin);
 
 app.delete('/exit', function(req, res){
   res.send('exit');
