@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 var eStatic = express.static;
-const dependencies = require('../package.json').dependencies;
+const dependencies = require('../../package.json').dependencies;
 const path = require('path');
 const appList = [];
 const PREFIX = 'lr-app';
@@ -25,9 +25,9 @@ Object.keys(dependencies).forEach(k => {
     appList.push(data);
   }
 })
-exports.appList = appList;
+
 router.get('/list', function(req, res){
   res.apiOk(appList);
 })
 
-exports.router = router;
+module.exports = router;

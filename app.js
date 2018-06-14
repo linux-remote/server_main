@@ -8,7 +8,7 @@ const sessMiddleware = require('./lib/sess-middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
 const apiWarp = require('./common/api-warp');
-const apiRouter = require('./api/router');
+const apiRouter = require('./api/global/router');
 
 const app = express();
 const CONF = global.CONF;

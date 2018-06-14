@@ -1,7 +1,7 @@
 // get
 exports.touch = function(req, res){
   res.apiOk({
-    loginedMap : req.session.loginedMap || null
+    loginedMap : req.session.loginedMap || Object.create(null)
   });
 }
 
