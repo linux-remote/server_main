@@ -73,21 +73,20 @@ function rename(req, res, next){
 function moveToDustbin(req, res, next){
   const _path = req.PATH;
 
-
-    if(path.dirname(_path) === global.RECYCLE_BIN_PATH){
-      return deleteAll(req, res, next);
-    }
-    const INDEX = Date.now().toString();
-    const dustPath = path.join(global.RECYCLE_BIN_PATH, INDEX);
-    const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);
-    const move = cb => exec(`mv ${_path} ${dustPath}`, cb);
-    sas({
-      link,
-      move
-    }, function(err){
-      if(err) return next(err);
-      res.apiOk();
-    })
+  if(path.dirname(_path) === global.RECYCLE_BIN_PATH){
+    return deleteAll(req, res, next);
+  }
+  const INDEX = Date.now().toString();
+  const dustPath = path.join(global.RECYCLE_BIN_PATH, INDEX);
+  const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);
+  const move = cb => exec(`mv ${_path} ${dustPath}`, cb);
+  sas({
+    link,
+    move
+  }, function(err){
+    if(err) return next(err);
+    res.apiOk();
+  })
 }
 
 function deleteAll(req, res, next){
