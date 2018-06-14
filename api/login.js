@@ -5,7 +5,7 @@ const util = require('../common/util');
 // post
 exports.login = function(req, res, next){
   var {username, password} = req.body;
-  var loginedMap = req.session.loginedMap;
+  var loginedMap = req.session.loginedMap || Object.create(null);
 
   function checkIsLogin(callback){
     if(loginedMap[username]){
@@ -33,7 +33,7 @@ exports.login = function(req, res, next){
         return callback(err);
       }
       loginedMap[username] = true;
-      req.session.loginedMap = loginedMap;
+      req.session.loginedMap = loginedMap
       callback();
     });
   }
@@ -48,7 +48,7 @@ exports.login = function(req, res, next){
 
 // post
 exports.logout = function(req, res){
-  const loginedMap = req.session.loginedMap;
+  const loginedMap = req.session.loginedMap || Object.create(null);
   var username = req.body.username;
   
   if(!loginedMap[username]){

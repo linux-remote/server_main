@@ -25,7 +25,7 @@ exports.notFound = function(req, res, next) {
 
 //errHandle
 //const chalk = require('chalk');
-exports.errHandle = function(err, req, res, next) {
+exports.errHandle = function(err, req, res) {
 
   // console.log('err', chalk.green(err.cmd));
   // for(let i in err){
@@ -44,9 +44,9 @@ exports.errHandle = function(err, req, res, next) {
     var status = err.status || 500;
     res.status(status);
     data = msg;
-
+    console.error(err);
   }else{
-    var code = err.code || 1000;
+    var code = err.code;
     data = {
       code: code,
       msg
@@ -55,15 +55,3 @@ exports.errHandle = function(err, req, res, next) {
   res.send(data);
   util.errLog(msg, req);
 };
-// } else {
-//   exports.errHandle = function(err, req, res, next) {
-//     const status = err.status || 500;
-//     res.status(status);
-//     let msg = `${err.name}: ${err.message}`;
-//     if(status >= 500){
-//       msg += `<pre>\n${err.stack}</pre>`
-//     }
-//     res.send(msg);
-//     util.errLog(msg, req);
-//   };
-// }

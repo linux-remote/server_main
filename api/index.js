@@ -23,20 +23,22 @@ function getTimeZone(callback){
     });
   })
 }
-getTimeZone(function(){
-  console.log(arguments)
-})
+// getTimeZone(function(){
+//   console.log(arguments)
+// })
 // get
 exports.touch = function(req, res){
-  const d = new Date();
-  let data = {
-    thirdPartyApp: appList,
-    loginedMap: req.session.loginedMap,
-    timeZoneName: '',
-    timeZoneOffset: d.getTimezoneOffset(),
-    time: d.getTime()
-  };
-  res.apiOk(data);
+  // const d = new Date();
+  // let data = {
+  //   thirdPartyApp: appList,
+  //   loginedMap: req.session.loginedMap,
+  //   timeZoneName: '',
+  //   timeZoneOffset: d.getTimezoneOffset(),
+  //   time: d.getTime()
+  // };
+  res.apiOk({
+    loginedMap : req.session.loginedMap || null
+  });
 }
 
 
