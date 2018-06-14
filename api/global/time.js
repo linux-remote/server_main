@@ -1,9 +1,8 @@
 
 const {getTimeZone} = require('./util');
 
-
 // get
-exports.time = function(req, res, next){
+module.exports = function(req, res, next){
   getTimeZone(function(err, timeZone){
     if(err){
       return next(err);
@@ -18,3 +17,12 @@ exports.time = function(req, res, next){
     res.apiOk(data);
   })
 }
+
+// function isRecycEmpty(){
+
+// }
+// exports.bundle = function(req, res, next){
+//   res.apiOk({
+//     thirdPartyApp: list
+//   })
+// }

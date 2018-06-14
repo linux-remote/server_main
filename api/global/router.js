@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const index = require('./index');
-
+const time = require('./time');
 const thirdPartyApp = require('./third-party-app');
 
-router.use('/app', thirdPartyApp);
+router.use('/app', thirdPartyApp.router);
 
-router.get('/time', index.time);
+router.get('/time', time);
 
 
 module.exports = router;

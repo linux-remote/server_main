@@ -6,11 +6,10 @@ const fs = require('fs');
 
 const {fsGetOrInit} = require('./util');
 
-const firstData = '[]';
-const configPath = path.join(global.LR_PATH, '.quick-bar.json');
+const QUICK_BAR_CONFIG_PATH = path.join(global.LR_PATH, '.quick-bar.json');
 
 router.get('/', function(req, res, next){
-  fsGetOrInit(configPath, firstData, function(err, result){
+  fsGetOrInit(QUICK_BAR_CONFIG_PATH, '[]', function(err, result){
     if(err){
       return next(err);
     }
@@ -18,7 +17,7 @@ router.get('/', function(req, res, next){
   });
 });
 router.post('/', function(req, res, next){
-  fs.writeFile(configPath, req.body.data, function(err){
+  fs.writeFile(QUICK_BAR_CONFIG_PATH, req.body.data, function(err){
     if(err){
       return next(err);
     }

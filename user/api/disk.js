@@ -1,12 +1,12 @@
 // const os = require('os');
 const {exec} = require('child_process');
 const THEAD = ['source', 
-              'fstype', 
-              'size', 
-              'used', 
-              'itotal', 
-              'iused', 
-              'target']
+  'fstype', 
+  'size', 
+  'used', 
+  'itotal', 
+  'iused', 
+  'target']
 const FIXED_LEN = THEAD.length - 1;
 const CMD = 'df -k --output=' + THEAD.join(',');
 // + ' --exclude-type=tmpfs --exclude-type=devtmpfs';

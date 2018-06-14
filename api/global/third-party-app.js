@@ -30,4 +30,6 @@ router.get('/list', function(req, res){
   res.apiOk(appList);
 })
 
-module.exports = router;
+exports.list = appList;
+
+exports.router = router;

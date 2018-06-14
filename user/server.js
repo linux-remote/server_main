@@ -22,7 +22,7 @@ const express = require('express');
 const logger = require('morgan');
 
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
 
 
 // var multer = require('multer');
@@ -40,16 +40,16 @@ const apiWarp = require('../common/api-warp');
 const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
 const upload = require('./api/upload');
-const disk = require('./api/disk');
+
 var app = express();
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 apiWarp(app);
+
 app.use('/upload', upload);
-app.get('/disk', disk);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(cookieParser());
 
 
 
@@ -78,27 +78,28 @@ app.use(function(req, res, next){
 
 
 app.get('/', function(req, res){
-  var msg = 'Hello! this is linux-remote user server!\n listen on ' + PORT + '\n';
-  msg += 'pid: ' + process.pid;
+  var msg = 'Hello! this is linux-remote user server!';
   res.send(msg);
 });
 
-app.get('/live', function(req,res){
+app.get('/live', function(req, res){
   res.send('Y');
 });
 
 const desktop = require('./api/desktop');
-const quickBar = require('./api/quick-bar');
-const desktopBak = require('./api/desktop_old');
+
+app.use('/desktop', desktop);
+
+// sys apps
+const serverInfo = require('./api/server-info');
 const recycle_bin = require('./api/dustbin');
 const fsApi = require('./api/fs');
-
-app.use(desktopBak);
-app.use('/desktop', desktop);
-app.use('/quick_bar', quickBar);
-app.use('/recycle_bin', recycle_bin);
+const disk = require('./api/disk');
 
 app.use('/fs', fsApi);
+app.get('/disk', disk);
+app.use('/serverInfo', serverInfo);
+app.use('/recycle_bin', recycle_bin);
 
 app.delete('/exit', function(req, res){
   res.send('exit');
