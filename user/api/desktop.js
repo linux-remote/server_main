@@ -63,7 +63,7 @@ router.get('/bundle', function(req, res, next){
     }
     result.recycebinIsEmpty = result.recycebinFiles.length === 0;
     delete(result.recycebinFiles);
-    result.groups = result.groups.split(' ');
+    result.groups = result.groups.substr(0, result.groups.length - 1).split(/\s/); //substr 去除最后的 \n 
 
     res.apiOk({
       ...result,

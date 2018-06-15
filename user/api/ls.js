@@ -37,7 +37,7 @@ function ls(_path, opts, callback){
         v = v.split('"');
         const name = isDirectory ? undefined : v[1];
 
-        const _pre = v[0].split(/ +/g);
+        const _pre = v[0].split(/\s+/);
         const data = {
           name,
           permission: _pre[0],
