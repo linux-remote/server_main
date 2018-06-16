@@ -1,10 +1,17 @@
 const {execSync} = require('child_process');
-const PORT = process.env.PORT;
 const path = require('path');
-if(/\.sock$/.test(PORT) === true){ //删除旧的 sock 文件, 才能启动.
-  execSync('rm -rf ' + PORT);
-  //console.log(`删除${PORT}文件成功！`);
-}
+const http = require('http');
+const express = require('express');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+
+const {onListening, onError, timeFormat} = require('../common/util');
+
+const PORT = process.env.PORT;
+const BASE_PATH = PORT.substr(0, PORT.lastIndexOf('.'));
+const ERROR_LOG_PATH = BASE_PATH + '-err.log';
+execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
+
 
 const NODE_ENV = process.env.NODE_ENV;
 global.IS_PRO = NODE_ENV === 'production';
@@ -17,58 +24,42 @@ global.RECYCLE_BIN_PATH = path.join(LR_PATH , '.recycle-bin');
 execSync('mkdir -m=755 -p ' + global.DESKTOP_PATH);
 execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
 
-const http = require('http');
-const express = require('express');
-const logger = require('morgan');
-
-const bodyParser = require('body-parser');
-//const cookieParser = require('cookie-parser');
-
-
-// var multer = require('multer');
-// var storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, decodeURIComponent(req.path));
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname);
-//   }
-// })
-// var upload = multer({storage});
 
 const apiWarp = require('../common/api-warp');
-const {onListening, onError} = require('../common/util');
 const middleWare = require('../common/middleware');
 const upload = require('./api/upload');
 
 var app = express();
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 apiWarp(app);
+app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 
 app.use('/upload', upload);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(cookieParser());
-
 
 
 //================= 用户进程 TTL =================
-const MAX_AGE = 1000 * 60 * 100;
+const TTL_MAX_AGE = 1000 * 60 * 100;
 
 var now = Date.now();
-console.log('TTL start at: ' + new Date(), 'MAX_AGE: ' + MAX_AGE);
+
+console.log('[Process TTL] start at: ' + 
+            timeFormat() + 
+            '  maxAge: ' + 
+            ((TTL_MAX_AGE / 1000) / 60)  + 
+            ' minute.');
+
 const TTL = function(){
   setTimeout(() =>{
-    if(Date.now() - now >= MAX_AGE){
-      console.log('process.exit by TTL end.' + new Date());
-      return process.exit();
+    if(Date.now() - now >= TTL_MAX_AGE){
+      console.log('[Process TTL] process.exit by TTL end.' + timeFormat());
+      normalExit();
     }else{
       TTL();
     }
-  }, MAX_AGE);
+  }, TTL_MAX_AGE);
 }
-TTL();
 
 app.use(function(req, res, next){
   now = Date.now();
@@ -105,7 +96,7 @@ app.delete('/exit', function(req, res){
   res.send('exit');
   res.on('finish', function(){
     console.log('User server exit!');
-    process.exit();
+    normalExit();
   });
 });
 
@@ -119,7 +110,18 @@ server.listen(PORT);
 
 server.on('listening', onListening(server, function(){
   execSync('chmod 600 ' + PORT);
-  console.log('User server start!\n');
+  console.log('User server start!');
+  TTL();
 }));
 
 server.on('error', onError);
+
+function normalExit(){
+  execSync('rm -rf ' + PORT);
+  execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
+  process.exit();
+}
+// setTimeout(() => { 
+//   normalExit();
+//   console.log('normalExit2');
+// }, 3000)

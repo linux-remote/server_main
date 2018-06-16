@@ -1,3 +1,26 @@
+exports.timeFormat = function(date, fmt){
+  date = date ? new Date(date) : new Date();
+  fmt = fmt || 'yyyy-MM-dd HH:mm:ss';
+  var o = {
+    'M+': date.getMonth() + 1,
+    'd+': date.getDate(),
+    'H+': date.getHours(),
+    'm+': date.getMinutes(),
+    's+': date.getSeconds(),
+    'q+': Math.floor((date.getMonth() + 3) / 3),
+    'S': date.getMilliseconds()
+  };
+  if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+  for (var k in o)
+    if (new RegExp('(' + k + ')').test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
+  return fmt;
+}
+
+// "chalk" is can't work in `tail -f` on my computer. So..
+var _COLOR_MAP = {red: 31, green: 32, yellow: 33};
+exports._colorLog = function(style, str) {
+  console.log(style ? '\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m' : str);
+}
 // const {execSync} = require('child_process');
 
 // exports.getTimeZoneName = function(){
