@@ -4,7 +4,8 @@ const sas = require('sas');
 
 
 function ls(_path, opts, callback){
-  let isDirectory = false, d = '', a = '-a';
+  _path = _path.replace(/\"/g, '\\\"');
+  let isSelf = false, d = '', a = '-a';
 
   if(typeof opts === 'function'){
     callback = opts;
@@ -13,20 +14,20 @@ function ls(_path, opts, callback){
 
   if(opts.self){
     d = '-d'
-    isDirectory = true;
+    isSelf = true;
   }
 
-  if(opts.noDir){
+  if(opts.noDir){ //去掉 . 和 ..
     a = '-A'
   }
   const other = opts.other || '';
   //console.log('a', opts, a);
   // const cmd = `ls -l --color=none ${a}  -h ${d} ${sort}  -Q --time-style=long-iso ${_path}`
-  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} '${_path}'`,
+  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} "${_path}"`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err && !result) return callback(err);
-      if(!isDirectory){
+      if(!isSelf){
         result = result.substr(result.indexOf('\n') + 1); //remove total.
       }
       result = result.split('\n');
@@ -34,8 +35,10 @@ function ls(_path, opts, callback){
 
       const lsSymbolicLinkTasks = {};
       result = result.map((v, i) => {
-        v = v.split('"');
-        const name = isDirectory ? undefined : v[1];
+        v = v.replace(/\\\"/g, '/'); // 不是 
+        v = v.split('"'); 
+        console.log('v', v)
+        const name = isSelf ? undefined : v[1].replace(/\//g, '"');
 
         const _pre = v[0].split(/\s+/);
         const data = {
@@ -61,7 +64,7 @@ function ls(_path, opts, callback){
          
         let linkString = v[3];
 
-        if(!isDirectory && linkString){
+        if(!isSelf && linkString){
           linkString = linkString[0] === '/' ? linkString : './' + linkString;
           const linkPath = path.resolve(_path, linkString);
           data.symbolicLink = {
@@ -96,7 +99,7 @@ function ls(_path, opts, callback){
           callback(null, result);
         });
       }else{
-        callback(null, isDirectory ? result[0] : result);
+        callback(null, isSelf ? result[0] : result);
       }
     })
 }

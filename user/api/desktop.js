@@ -68,7 +68,8 @@ router.get('/bundle', function(req, res, next){
     res.apiOk({
       ...result,
       hostname: os.hostname(),
-      homedir: os.homedir()
+      homedir: os.homedir(),
+      mask: process.umask()
     })
   })
 });

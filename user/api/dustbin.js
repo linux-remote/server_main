@@ -6,9 +6,9 @@ const path = require('path');
 const ls = require('./ls');
 
 router.get('/', function(req, res, next){
-    ls(global.RECYCLE_BIN_PATH, 
-      {noDir: true, other: '--reverse'}, 
-        (err, result) => {
+  ls(global.RECYCLE_BIN_PATH, 
+    {noDir: true, other: '--reverse'}, 
+      (err, result) => {
         if(err){
           return next(err);
         }
@@ -30,8 +30,7 @@ router.get('/', function(req, res, next){
           }
         });
         res.apiOk(result2);
-        
-    })
+      })
 })
 
 router.post('/recycle', function(req, res, next){
