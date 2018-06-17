@@ -4,6 +4,7 @@ const {exec} = require('child_process');
 const sas = require('sas');
 const path = require('path');
 const ls = require('./ls');
+const {wrapPath} = require('./util');
 
 router.get('/', function(req, res, next){
   ls(global.RECYCLE_BIN_PATH, 
@@ -37,8 +38,9 @@ router.post('/recycle', function(req, res, next){
   const item = req.body;
   const name = item.delTime;
   const sourceDir = item.sourceDir;
+  const filePath = wrapPath(`${sourceDir}/${item.name}`);
   sas({
-    mv: cb => exec(`mv ${global.RECYCLE_BIN_PATH}/${name} ${sourceDir}/${item.name}`, cb),
+    mv: cb => exec(`mv ${global.RECYCLE_BIN_PATH}/${name} ${filePath}`, cb),
     delLnk: cb => exec(`rm -rf ${global.RECYCLE_BIN_PATH}/${name}.lnk`, cb)
   }, (err) => {
     if(err) return next(err);

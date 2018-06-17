@@ -1,10 +1,11 @@
 const {exec} = require('child_process');
 const path = require('path');
 const sas = require('sas');
+const INTERVAL = '/L/R/_/I/N/T/E/R/V/A/L/' // 文件名包含 双引号, 替换一下.
+const INTERVAL_REG = new RegExp(INTERVAL, 'g');
 
-
-function ls(_path, opts, callback){
-  _path = _path.replace(/\"/g, '\\\"');
+function ls(_raw_path, opts, callback){
+  var _path = _raw_path.replace(/\"/g, '\\\"'); //文件名是用双将双引号转义
   let isSelf = false, d = '', a = '-a';
 
   if(typeof opts === 'function'){
@@ -21,8 +22,7 @@ function ls(_path, opts, callback){
     a = '-A'
   }
   const other = opts.other || '';
-  //console.log('a', opts, a);
-  // const cmd = `ls -l --color=none ${a}  -h ${d} ${sort}  -Q --time-style=long-iso ${_path}`
+
   exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} "${_path}"`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
@@ -35,10 +35,10 @@ function ls(_path, opts, callback){
 
       const lsSymbolicLinkTasks = {};
       result = result.map((v, i) => {
-        v = v.replace(/\\\"/g, '/'); // 不是 
+        v = v.replace(/\\\"/g, INTERVAL); // 不是 
         v = v.split('"'); 
-        console.log('v', v)
-        const name = isSelf ? undefined : v[1].replace(/\//g, '"');
+
+        const name = isSelf ? undefined : v[1].replace(INTERVAL_REG, '"');
 
         const _pre = v[0].split(/\s+/);
         const data = {
@@ -66,7 +66,7 @@ function ls(_path, opts, callback){
 
         if(!isSelf && linkString){
           linkString = linkString[0] === '/' ? linkString : './' + linkString;
-          const linkPath = path.resolve(_path, linkString);
+          const linkPath = path.resolve(_raw_path, linkString);
           data.symbolicLink = {
             linkPath,
             linkTargetError: null

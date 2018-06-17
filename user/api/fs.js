@@ -3,8 +3,7 @@ const {exec} = require('child_process');
 const fs = require('fs');
 const sas = require('sas');
 const path = require('path');
-// const express = require('express');
-// const router = express.Router();
+const {wrapPath} = require('./util');
 const ls = require('./ls');
 
 const bodyMap = {
@@ -53,7 +52,7 @@ function createSymbolicLink(req, res, next){
   const {name} = req.body;
   let _newPath = path.dirname(req.PATH);
   _newPath = path.join(_newPath, name);
-  exec('ln -s ' + req.PATH + ' ' + _newPath, (err) => {
+  exec('ln -s ' + wrapPath(req.PATH) + ' ' + wrapPath(_newPath), (err) => {
     if(err) return next(err);
     res.apiOk();
   })
@@ -78,8 +77,9 @@ function moveToDustbin(req, res, next){
   }
   const INDEX = Date.now().toString();
   const dustPath = path.join(global.RECYCLE_BIN_PATH, INDEX);
-  const link = cb => exec(`ln -s ${_path} ${dustPath}.lnk`, cb);
-  const move = cb => exec(`mv ${_path} ${dustPath}`, cb);
+  const wrapedPath = wrapPath(_path);
+  const link = cb => exec(`ln -s ${wrapedPath} ${dustPath}.lnk`, cb);
+  const move = cb => exec(`mv ${wrapedPath} ${dustPath}`, cb);
   sas({
     link,
     move
@@ -90,10 +90,7 @@ function moveToDustbin(req, res, next){
 }
 
 function deleteAll(req, res, next){
-  //const _path = path.join(req.PATH, req.query.name);
-  // console.log('req.PATH', req.PATH, req.query, req.body);
-  // return res.apiOk();
-  exec('rm -rf ' + req.PATH, function(err){
+  exec('rm -rf ' + wrapPath(req.PATH), function(err){
     if(err) return next(err);
     res.apiOk();
   })

@@ -1,5 +1,10 @@
 const fs = require('fs');
 
+exports.wrapPath = function(str){
+  str = str.replace(/\"/g, '\\\"');
+  return `"${str}"`;
+}
+
 exports.fsGetOrInit = function (filePath, data, callback){
   fs.readFile(filePath, 'utf-8', function(err, result){
     if(err){
