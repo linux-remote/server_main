@@ -25,7 +25,7 @@ function fsSys(req, res, next){
       if(req.query.download){
         return res.download(req.PATH);
       }
-      return readFile(req, res, next);
+      return next();
     }
   }
 

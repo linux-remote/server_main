@@ -88,6 +88,8 @@ const fsApi = require('./api/fs');
 const disk = require('./api/disk');
 
 app.use('/fs', fsApi);
+const eStatic = require('express').static;
+app.use('/fs', eStatic('/', {dotfiles: 'allow', maxAge: 1000 * 10}));
 app.get('/disk', disk);
 app.use('/serverInfo', serverInfo);
 app.use('/recycleBin', recycleBin);

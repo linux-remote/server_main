@@ -11,7 +11,7 @@ var storage = multer.diskStorage({
 })
 var upload = multer({storage});
 
-router.put('*', upload.single('file'), function(req, res, next){
+router.put('*', upload.single('file'), function(req, res){
   res.apiOk('ok');
 });
 
