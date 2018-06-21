@@ -21,6 +21,25 @@ var _COLOR_MAP = {red: 31, green: 32, yellow: 33};
 exports._colorLog = function(style, str) {
   console.log(style ? '\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m' : str);
 }
+
+const uid = require('uid-safe');
+const fs = require('fs');
+const path = require('path');
+exports.ensureUniqueId = function(filePath){
+  return function generateId() {
+    var id = uid.sync(24);
+    try{ 
+      fs.statSync(path.join(filePath, id))
+    } catch(e) {
+      if(e.code === 'ENOENT'){
+        return id;
+      }
+      console.error('sess middleware generateId fail.')
+      throw e
+    }
+    return generateId()
+  }
+}
 // const {execSync} = require('child_process');
 
 // exports.getTimeZoneName = function(){

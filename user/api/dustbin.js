@@ -14,29 +14,46 @@ router.get('/', function(req, res, next){
           return next(err);
         }
         const result2 = [];
-
-        result.forEach((v, i) => {
-          if(i % 2 === 1){
-            let linkItem = result[i - 1].symbolicLink;
-            let linkPath = linkItem.linkPath;
-            let pathObj = path.parse(linkPath);
-            let obj = {
-              delTime: Number(v.name),
-              name: pathObj.base,
+        var map = Object.create(null);
+        result.forEach((v) => {
+          let key, isSource, lastIndex = v.name.lastIndexOf('.lnk');
+          if(lastIndex === -1){
+            key = v.name;
+            isSource = true;
+          }else{
+            key = v.name.substr(0, lastIndex);
+            let linkTarget = v.symbolicLink;
+            let pathObj = path.parse(linkTarget.linkPath);
+            v = {
+              delTime: v.mtime,
               sourceDir: pathObj.dir,
-              isCover: !linkItem.linkTargetError
-            };
-            Object.assign(v, obj);
-            result2.push(v);
+              name: pathObj.base,
+              isCover: !linkTarget.linkTargetError
+            }
           }
+
+          if(!map[key]){
+            map[key] = {
+              id: key
+            };
+            result2.push(map[key]);
+          }
+          if(isSource){
+            delete(v.name);
+            map[key].source = v;
+          }else {
+            Object.assign(map[key], v);
+          }
+          //map[key][subKey] = v;
         });
+        map = null;
         res.apiOk(result2);
       })
 })
 
 router.post('/recycle', function(req, res, next){
   const item = req.body;
-  const name = item.delTime;
+  const name = item.id;
   const sourceDir = item.sourceDir;
   const filePath = wrapPath(`${sourceDir}/${item.name}`);
   sas({

@@ -8,9 +8,10 @@ const bodyParser = require('body-parser');
 const {onListening, onError, timeFormat} = require('../common/util');
 
 const PORT = process.env.PORT;
+execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
+
 const BASE_PATH = PORT.substr(0, PORT.lastIndexOf('.'));
 const ERROR_LOG_PATH = BASE_PATH + '-err.log';
-execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
 
 
 const NODE_ENV = process.env.NODE_ENV;
@@ -89,7 +90,7 @@ const disk = require('./api/disk');
 
 app.use('/fs', fsApi);
 const eStatic = require('express').static;
-app.use('/fs', eStatic('/', {dotfiles: 'allow', maxAge: 1000 * 10}));
+app.use('/fs', eStatic('/', {dotfiles: 'allow', maxAge: 0}));
 app.get('/disk', disk);
 app.use('/serverInfo', serverInfo);
 app.use('/recycleBin', recycleBin);

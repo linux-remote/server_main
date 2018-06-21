@@ -37,7 +37,6 @@ function ls(_raw_path, opts, callback){
       result = result.map((v, i) => {
         v = v.replace(/\\\"/g, INTERVAL); // 不是 
         v = v.split('"'); 
-
         const name = isSelf ? undefined : v[1].replace(INTERVAL_REG, '"');
 
         const _pre = v[0].split(/\s+/);

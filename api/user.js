@@ -42,7 +42,7 @@ exports.proxy = function(req, res){
         errLog.shift();
       }
       res.apiError(code,
-        'User process is crash!\n\nError log is:\n=================\n' + 
+        '\n\nError log is:\n=================\n' + 
         errLog.join('\n') + 
         '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
     })
