@@ -8,9 +8,8 @@ request.DELETE = request.delete;
 
 // use
 exports.proxy = function(req, res){
-  var method = req.method;
   var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
-  var x = request[method](unixSocket + req.url);
+  var x = request[req.method](unixSocket + req.url);
   x.on('error', function(err){
 
     console.log('user proxy Error: ', err.code);

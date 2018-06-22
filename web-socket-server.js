@@ -27,14 +27,11 @@ module.exports = function(server){
   //     client.send(JSON.stringify(data));
   //   })
   // }
-  // fs.watchFile('/etc/timezone',  function(){
-  //   broadcast({
-  //     type: 'timeZoneNameChange'
-  //   });
-  // });
 
-  webSocketServer.on('connection', function connection(ws) {
-    ws.send(JSON.stringify({type:'start', data: {}}));
+  webSocketServer.on('connection', function connection(ws, req) {
+    const location = url.parse(req.url, true);
+    ws.id = req.session.id + '+' + location.query.user;
+    ws.send('Hello');
   });
-
+  return webSocketServer;
 };
