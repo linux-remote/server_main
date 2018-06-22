@@ -5,6 +5,7 @@ const sas = require('sas');
 const path = require('path');
 const {wrapPath} = require('./util');
 const {ensureUniqueId} = require('../../common/util');
+const {_reGetItem} = require('./common')
 const ls = require('./ls');
 // var uuid = require('uuid')
 // const uid = require('uid-safe');
@@ -102,7 +103,7 @@ function moveToDustbin(req, res, next){
     return deleteAll(req, res, next);
   }
 
-  const dustPath = generateRecycleId();
+  const dustPath = global.RECYCLE_BIN_PATH + '/' + generateRecycleId();
   const wrapedPath = wrapPath(_path);
   //const checkUnique = cb => fs.stat()
   const link = cb => exec(`ln -s ${wrapedPath} ${dustPath}.lnk`, cb);
@@ -117,15 +118,6 @@ function deleteAll(req, res, next){
   exec('rm -rf ' + wrapPath(req.PATH), function(err){
     if(err) return next(err);
     res.apiOk();
-  })
-}
-
-function _reGetItem (req, res, next){
-  ls(req._itemPath, {self: true}, (err, result) => {
-    if(err){
-      return next(err);
-    }
-    res.apiOk(result);
   })
 }
 
