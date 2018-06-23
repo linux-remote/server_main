@@ -29,64 +29,38 @@ function _watch(dir){
 
 var handleChildCrash;
 
-
-
-// NODE_ENV=development PORT=/opt/linux-remote/session/a9jt2OL63LVIev42wsvliqEWwWgSlcb1+dw.sock nodemon -L watcher.js
-
-function loop(){
-  child = spawn(process.argv[0], ['server.js'], {
-    detached: true,
-    cwd:__dirname,
-    stdio: 'inherit'
-  });
-
-  child.on('close', (code) => {
-    if(code !== 0){
-      execSync('cat ' + ERROR_LOG_PATH + ' > ' + ERROR_LOG_PATH + '.bak'); //error 备份.
-      execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
-      handleChildCrash();
-    }else{
-      _colorLog('green', `[Watcher] Child exit success! Watcher exit. \t ${timeFormat()}`);
-      execSync('rm -rf ' + PORT);
-      execSync('rm -rf  ' + ERROR_LOG_PATH); //清空 error log.
-      execSync('rm -rf  ' + ERROR_LOG_PATH + '.bak'); //清空 error log 备份.
-      process.exit(); // 正常退出
-    }
-  });
-}
-
-loop();
-
 if(IS_PRO){
 
   (function() {
     const liveUrl = 'http://unix:' + process.env.PORT + ':/live';
-    var isFirstStartUp = false;
-    var count = 0;
-
-    function _loop(){
-      count ++ ;
-      //_colorLog('yellow', '[Watcher] checkServerLive: ' + count);
-      setTimeout(() => {
-        request.get(liveUrl, err => {
-          if(!err){
-            isFirstStartUp = true;
-          }else if(count < 15){
-            _loop();
-          }
-        })
-      }, 500);
-    }
-    
-    _loop();
-
-    handleChildCrash = function(){
-      if(!isFirstStartUp){
-        process.exit();
-      }else{
-        loop();
+    var isCheckServerLive = false;
+    function checkServerLive(){
+      if(isCheckServerLive) return;
+      loop();
+      isCheckServerLive = true;
+      var count = 0;
+      function _loop(){
+        count ++ ;
+        _colorLog('yellow', '[Watcher] checkServerLive: ' + count);
+        setTimeout(() => {
+          request.get(liveUrl, err => {
+            if(!err){
+              isCheckServerLive = false;
+              _colorLog('green', '[Watcher] checkServerLive: OK');
+            }else if(count === 10){
+              _colorLog('red', '[Watcher] checkServerLive Timeout. Watcher exit.');
+              console.error('EXIT_BY_CHECK_SERVER_LIVE_TIMEOUT');
+              process.exit();
+            }else{
+              _loop();
+            }
+          })
+        }, 500);
       }
+      _loop();
     }
+
+    handleChildCrash = checkServerLive;
 
   })();
 
@@ -116,4 +90,31 @@ if(IS_PRO){
   })();
 
 }
+
+// NODE_ENV=development PORT=/opt/linux-remote/session/a9jt2OL63LVIev42wsvliqEWwWgSlcb1+dw.sock nodemon -L watcher.js
+
+function loop(){
+  child = spawn(process.argv[0], ['server.js'], {
+    detached: true,
+    cwd:__dirname,
+    stdio: 'inherit'
+  });
+
+  child.on('close', (code) => {
+    if(code !== 0){
+      execSync('cat ' + ERROR_LOG_PATH + ' > ' + ERROR_LOG_PATH + '.bak'); //error 备份.
+      execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
+      handleChildCrash();
+    }else{
+      _colorLog('green', `[Watcher] Child exit success! Watcher exit. \t ${timeFormat()}`);
+      execSync('rm -rf ' + PORT);
+      execSync('rm -rf  ' + ERROR_LOG_PATH); //清空 error log.
+      execSync('rm -rf  ' + ERROR_LOG_PATH + '.bak'); //清空 error log 备份.
+      process.exit(); // 正常退出
+    }
+  });
+}
+
+loop();
+
 
