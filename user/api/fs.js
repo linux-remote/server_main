@@ -78,10 +78,12 @@ function checkCover(req, res, next){
 function createSymbolicLink(req, res, next){
   const {name} = req.body;
   let _newPath = path.dirname(req.PATH);
-  _newPath = wrapPath(path.join(_newPath, name));
-  exec('ln -s ' + wrapPath(req.PATH) + ' ' + _newPath, (err) => {
+  _newPath = path.join(_newPath, name);
+  exec('ln -s ' + wrapPath(req.PATH) + ' ' + wrapPath(_newPath), (err) => {
     if(err) return next(err);
-    res.apiOk();
+
+    req._itemPath = _newPath;
+    _reGetItem(req, res, next);
   })
 }
 
