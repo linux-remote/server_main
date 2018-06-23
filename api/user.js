@@ -16,6 +16,8 @@ exports.proxy = function(req, res){
     console.log('user proxy Error: ', err.code);
 
     let errLogPath = util.getTmpName(req.session.id, req.params.username) + '-err.log';
+
+
     fs.stat(errLogPath, function(err){
       if(err){
         if(err.code === 'ENOENT'){ // 用户正常退出.
@@ -24,16 +26,38 @@ exports.proxy = function(req, res){
           return res.status(500).send('user proxy stat errlog Error: ' + err.code); 
         }
       } else {
-        fs.readFile(errLogPath + '.bak', 'utf-8', function(err2, errLog){
-          if(err2){
-            console.error('user proxy get errlog Error: ', err2);
-            return res.status(500).send('user proxy get errlog Error: ' + err2.code); 
-          }
-          res.status(500).send('User process is crash.' +
-            '\n\nError log is:\n=================\n' + 
-            errLog + 
-            '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
-        })
+        const getErrorLog = (status, message) => {
+          fs.readFile(errLogPath + '.bak', 'utf-8', function(err2, errLog){
+            if(err2){
+              console.error('user proxy get errlog Error: ', err2);
+              return res.status(500).send('user proxy get errlog Error: ' + err2.code); 
+            }
+            res.status(status).send(message +
+              '\n\nError log is:\n=================\n' + 
+              errLog + 
+              '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
+          })
+        }
+
+        var loopCount = 0;
+        const loop = () => {
+          loopCount ++;
+          setTimeout(function(){
+            request.get(unixSocket + '/live', function(err){
+              if(!err){
+                getErrorLog(500, 'User process is crash.');
+
+              }else if(loopCount > 5){
+                getErrorLog(403, 'User process is died.');
+              }else {
+                loop();
+              }
+            });
+          },500);
+        }
+
+
+        loop();
       }
     })
   });
