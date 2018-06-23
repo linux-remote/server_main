@@ -20,7 +20,7 @@ module.exports = function(userConf){
   global.CONF = conf;
 
   
-  //const createWebSocketServer = require('./web-socket-server');
+  const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
 
   const port = normalizePort(process.env.PORT || conf.port);
@@ -40,5 +40,5 @@ module.exports = function(userConf){
     console.log('linux remote server start!\n');
   }));
   // global.CALLBACK_SERVER = fork('./callback-server.js');
-  // global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }
