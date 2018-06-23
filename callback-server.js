@@ -9,13 +9,18 @@ execSync('rm -rf ' + PORT_PATH);
 
 
 const app = express();
-
+app.disable('x-powered-by');
 app.use(bodyParser.json());
-app.post(function(req, res, next){
+app.post('*', function(req, res, next){
   const data = req.body;
+  console.log('req.ip', req.hostname);
   res.send(data)
 });
 
-app.listen(PORT_PATH);
-console.log('callback server runing on ' + PORT_PATH);
+const server = app.listen(PORT_PATH);
+server.on('listening', () => {
+  console.log('callback server runing on ' + PORT_PATH);
+  execSync('chmod 777 ' + PORT_PATH)
+})
+
 module.exports = PORT_PATH;

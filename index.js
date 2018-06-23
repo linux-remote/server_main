@@ -1,7 +1,7 @@
 // Entry
 const http = require('http');
 const https = require('https');
-const {fork} = require('child_process');
+//const {fork} = require('child_process');
 const NODE_ENV = process.env.NODE_ENV;
 
 const { onListening, 
@@ -20,7 +20,7 @@ module.exports = function(userConf){
   global.CONF = conf;
 
   
-  const createWebSocketServer = require('./web-socket-server');
+  //const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
 
   const port = normalizePort(process.env.PORT || conf.port);
@@ -32,12 +32,13 @@ module.exports = function(userConf){
   }else{
     server = http.createServer(app);
   }
-  fork('./callback-server.js');
+  
+  
   server.listen(port);
   server.on('error', onError(port));
   server.on('listening', onListening(server, () => {
     console.log('linux remote server start!\n');
   }));
-
-  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+  // global.CALLBACK_SERVER = fork('./callback-server.js');
+  // global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }

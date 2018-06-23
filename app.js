@@ -11,6 +11,7 @@ const apiWarp = require('./common/api-warp');
 const apiRouter = require('./api/global/router');
 
 const app = express();
+app.disable('x-powered-by');
 const CONF = global.CONF;
 
 apiWarp(app);

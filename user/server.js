@@ -31,6 +31,7 @@ const middleWare = require('../common/middleware');
 const upload = require('./api/upload');
 
 var app = express();
+app.disable('x-powered-by');
 apiWarp(app);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 
