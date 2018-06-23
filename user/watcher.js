@@ -1,11 +1,14 @@
 // console style like nodemon.
 
-const {spawn} = require('child_process');
+const {spawn, execSync} = require('child_process');
 const watch = require('watch');
 const path = require('path');
 const {_colorLog, timeFormat} = require('../common/util');
 const request = require('request');
 
+const PORT = process.env.PORT;
+const BASE_PATH = PORT.substr(0, PORT.lastIndexOf('.'));
+const ERROR_LOG_PATH = BASE_PATH + '-err.log';
 
 const IS_PRO = process.env.NODE_ENV === 'production';
 
@@ -90,9 +93,6 @@ if(IS_PRO){
 
 // NODE_ENV=development PORT=/opt/linux-remote/session/a9jt2OL63LVIev42wsvliqEWwWgSlcb1+dw.sock nodemon -L watcher.js
 
-// var firstIsHandleStderr = false;
-// var childStdErred = false;
-// var loopCount = 0;
 function loop(){
   child = spawn(process.argv[0], ['server.js'], {
     detached: true,
@@ -102,13 +102,14 @@ function loop(){
 
   child.on('close', (code) => {
     if(code !== 0){
-      // if(loopCount === 0 && childStdErred){
-      //   _colorLog('red', `[Watcher] Child exit success! Watcher exit. \t ${timeFormat()}`);
-      //   process.exit();
-      // }
+      execSync('cat ' + ERROR_LOG_PATH + ' > ' + ERROR_LOG_PATH + '.bak'); //error 备份.
+      execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
       handleChildCrash();
     }else{
       _colorLog('green', `[Watcher] Child exit success! Watcher exit. \t ${timeFormat()}`);
+      execSync('rm -rf ' + PORT);
+      execSync('rm -rf  ' + ERROR_LOG_PATH); //清空 error log.
+      execSync('rm -rf  ' + ERROR_LOG_PATH + '.bak'); //清空 error log 备份.
       process.exit(); // 正常退出
     }
   });

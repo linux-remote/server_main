@@ -19,7 +19,7 @@ exports.timeFormat = function(date, fmt){
 // "chalk" is can't work in `tail -f` on my computer. So..
 var _COLOR_MAP = {red: 31, green: 32, yellow: 33};
 exports._colorLog = function(style, str) {
-  console.log(style ? '\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m' : str);
+  console.log('\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m');
 }
 
 const uid = require('uid-safe');
@@ -66,19 +66,19 @@ exports.codeErrWrap = function(code, msg = ''){
   return err;
 }
 
-exports.errLog = function(errMsg, req){
-  console.error(
-    '\n<errorLog>'
-    + '\n' + errMsg
-    + '\n method ' + req.method
-    + '\n host ' + req.headers.host
-    + '\n originalUrl ' + req.originalUrl
-    + '\n UA ' + req.headers['user-agent']
-    //+ '\n IP ' + getClientIp(req)
-    + '\n time ' + Date()
-    + '\n </errorLog>'
-  );
-}
+// exports.errLog = function(errMsg, req){
+//   console.error(
+//     '\n<errorLog>'
+//     + '\n' + errMsg
+//     + '\n method ' + req.method
+//     + '\n host ' + req.headers.host
+//     + '\n originalUrl ' + req.originalUrl
+//     + '\n UA ' + req.headers['user-agent']
+//     //+ '\n IP ' + getClientIp(req)
+//     + '\n time ' + Date()
+//     + '\n </errorLog>'
+//   );
+// }
 
 
 exports.getTmpName = function(sid, username){

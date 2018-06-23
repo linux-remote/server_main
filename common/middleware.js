@@ -31,9 +31,9 @@ exports.errHandle = function(err, req, res, next) {
     var status = err.status || 500;
     res.status(status);
     data = msg;
-    if(status === 500){
-      console.error(err);
-    }
+    // if(status === 500){
+    //   console.error(err);
+    // }
   }else{
     data = {
       code: err.code,
@@ -42,5 +42,5 @@ exports.errHandle = function(err, req, res, next) {
   }
 
   res.send(data);
-  util.errLog(msg, req);
+  //util.errLog(msg, req);
 };

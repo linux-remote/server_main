@@ -1,4 +1,5 @@
 const request = require('request');
+const fs = require('fs');
 const util = require('../common/util');
 const exec = require('child_process').exec;
 request.GET = request.get;
@@ -14,39 +15,27 @@ exports.proxy = function(req, res){
 
     console.log('user proxy Error: ', err.code);
 
-    // if(err.code === 'ENOENT'){ // .sock 文件被删除了. 用户正常退出.
-    //   console.log('.sock 文件被删除了.');
-    //   return res.apiError(3);
-    // }
-
     let errLogPath = util.getTmpName(req.session.id, req.params.username) + '-err.log';
-    
-    exec(`tail -n 16 ${errLogPath}`, function(err2, errLog){
-      if(err2){
-        console.error('user proxy get errlog Error: ', err2);
-        return res.apiError(4, err2.code);
+    fs.stat(errLogPath, function(err){
+      if(err){
+        if(err.code === 'ENOENT'){ // 用户正常退出.
+          return res.status(403).send('Forbidden'); 
+        } else {
+          return res.status(500).send('user proxy stat errlog Error: ' + err.code); 
+        }
+      } else {
+        fs.readFile(errLogPath + '.bak', 'utf-8', function(err2, errLog){
+          if(err2){
+            console.error('user proxy get errlog Error: ', err2);
+            return res.status(500).send('user proxy get errlog Error: ' + err2.code); 
+          }
+          res.status(500).send('User process is crash.' +
+            '\n\nError log is:\n=================\n' + 
+            errLog + 
+            '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
+        })
       }
-      if(!errLog){ //用户正常退出. 会清空log.
-        return res.apiError(3); 
-      }
-      errLog = errLog.split('\n');
-      errLog.pop();
-
-      var code;
-      if(errLog[errLog.length - 1] === 'EXIT_BY_CHECK_SERVER_LIVE_TIMEOUT'){
-        code = 5;
-
-      }else {
-        code = 6;
-        errLog.shift();
-      }
-      res.apiError(code,
-        '\n\nError log is:\n=================\n' + 
-        errLog.join('\n') + 
-        '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
     })
-
-    //return res.status(500).end('USER_SERVER_ERROR' + err.message);
   });
   req.pipe(x);
   x.pipe(res);

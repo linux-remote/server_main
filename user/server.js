@@ -10,9 +10,6 @@ const {onListening, onError, timeFormat} = require('../common/util');
 const PORT = process.env.PORT;
 execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
 
-const BASE_PATH = PORT.substr(0, PORT.lastIndexOf('.'));
-const ERROR_LOG_PATH = BASE_PATH + '-err.log';
-
 
 const NODE_ENV = process.env.NODE_ENV;
 global.IS_PRO = NODE_ENV === 'production';
@@ -121,8 +118,6 @@ server.on('listening', onListening(server, function(){
 server.on('error', onError);
 
 function normalExit(){
-  execSync('rm -rf ' + PORT);
-  execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
   process.exit();
 }
 // setTimeout(() => { 
