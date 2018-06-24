@@ -12,7 +12,9 @@ exports.proxy = function(req, res){
   var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
   var x = request[req.method](unixSocket + req.url);
   x.on('error', function(err){
-
+    if(err.code === 'ECONNRESET'){ // 用户取消
+      return res.end('ECONNRESET');
+    }
     console.log('user proxy Error: ', err.code);
 
     let errLogPath = util.getTmpName(req.session.id, req.params.username) + '-err.log';
