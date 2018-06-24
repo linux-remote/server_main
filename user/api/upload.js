@@ -11,15 +11,22 @@ var storage = multer.diskStorage({
   filename: function (req, file, cb) {
     req._originalname = file.originalname;
 
-    cb(null, file.originalname);
+    cb(null, req._originalname);
   }
 })
-var upload = multer({storage});
+var upload = multer({storage}).single('file');
 
-router.put('*', upload.single('file'), function(req, res, next){
-  //console.log('req.PATH', req.PATH)
-  req._itemPath = req.PATH + '/' + req._originalname;
-  next();
-}, _reGetItem);
+router.put('*',  function(req, res, next){
+  upload(req, res, function(err){
+    if(err){
+      console.log('upload error', err);
+      return next(err);
+    }
+    req._itemPath = req.PATH + '/' + req._originalname;
+    _reGetItem(req, res, next);
+
+  })
+
+});
 
 module.exports = router;

@@ -29,13 +29,15 @@ exports.proxy = function(req, res){
         const getErrorLog = (status, message) => {
           fs.readFile(errLogPath + '.bak', 'utf-8', function(err2, errLog){
             if(err2){
-              console.error('user proxy get errlog Error: ', err2);
+              // console.error('user proxy get errlog Error: ', err2);
               return res.status(500).send('user proxy get errlog Error: ' + err2.code); 
             }
-            res.status(status).send(message +
-              '\n\nError log is:\n=================\n' + 
-              errLog + 
-              '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues');
+            errLog = errLog ? message +
+            '\n\nError log is:\n=================\n' + 
+            errLog + 
+            '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues'
+            : message;
+            res.status(status).send(errLog);
           })
         }
 
