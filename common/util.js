@@ -16,12 +16,6 @@ exports.timeFormat = function(date, fmt){
   return fmt;
 }
 
-// "chalk" is can't work in `tail -f` on my computer. So..
-var _COLOR_MAP = {red: 31, green: 32, yellow: 33};
-exports._colorLog = function(style, str) {
-  console.log('\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m');
-}
-
 const uid = require('uid-safe');
 const fs = require('fs');
 const path = require('path');

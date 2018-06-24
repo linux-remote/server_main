@@ -3,7 +3,6 @@
 const {spawn, execSync} = require('child_process');
 const watch = require('watch');
 const path = require('path');
-const {_colorLog, timeFormat} = require('../common/util');
 const request = require('request');
 
 const PORT = process.env.PORT;
@@ -11,6 +10,13 @@ const BASE_PATH = PORT.substr(0, PORT.lastIndexOf('.'));
 const ERROR_LOG_PATH = BASE_PATH + '-err.log';
 
 const IS_PRO = process.env.NODE_ENV === 'production';
+
+
+// "chalk" is can't work in `tail -f` on my computer. So..
+var _COLOR_MAP = {red: 31, green: 32, yellow: 33};
+function _colorLog(style, str) {
+  console.log('\u001b[' + _COLOR_MAP[style] + 'm' + str + '\u001b[39m');
+}
 
 var child, fileIsChange = false;
 
@@ -106,7 +112,7 @@ function loop(){
       execSync('cat /dev/null > ' + ERROR_LOG_PATH); //清空 error log.
       handleChildCrash();
     }else{
-      _colorLog('green', `[Watcher] Child exit success! Watcher exit. \t ${timeFormat()}`);
+      _colorLog('green', `[Watcher] Child exit success! Watcher exit. \t ${new Date()}`);
       execSync('rm -rf ' + PORT);
       execSync('rm -rf  ' + ERROR_LOG_PATH); //清空 error log.
       execSync('rm -rf  ' + ERROR_LOG_PATH + '.bak'); //清空 error log 备份.
