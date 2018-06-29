@@ -9,7 +9,7 @@ const {fsGetOrInit} = require('./util');
 const QUICK_BAR_CONFIG_PATH = path.join(global.LR_PATH, '.quick-bar.json');
 
 router.get('/', function(req, res, next){
-  fsGetOrInit(QUICK_BAR_CONFIG_PATH, '[]', function(err, result){
+  fsGetOrInit(QUICK_BAR_CONFIG_PATH, '', function(err, result){
     if(err){
       return next(err);
     }
