@@ -31,7 +31,7 @@ router.post('/icons', function(req, res, next){
 });
 
 const QUICK_BAR_CONFIG_PATH = path.join(global.LR_PATH, '.quick-bar.json');
-const QUICK_BAR_INIT_DATA = '[]';
+const QUICK_BAR_INIT_DATA = '';
 
 router.get('/quickBar', function(req, res, next){
   fsGetOrInit(QUICK_BAR_CONFIG_PATH, QUICK_BAR_INIT_DATA, function(err, result){
