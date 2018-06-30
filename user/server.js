@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 //================= 用户进程 TTL =================
-const TTL_MAX_AGE = 1000 * 60 * 100;
+const TTL_MAX_AGE = 1000 * 60 * 15;
 
 var now = Date.now();
 
