@@ -4,7 +4,7 @@ const https = require('https');
 const {execSync} = require('child_process');
 const os = require('os');
 const path = require('path');
-
+const fs = require('fs');
 try{
   global.SESSION_PATH = '/dev/shm/linux-remote';
   execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
@@ -39,7 +39,10 @@ module.exports = function(userConf){
 
   var server;
   if(conf.ssl){
-    server = https.createServer(conf.ssl, app);
+    server = https.createServer({
+      key: fs.readFileSync(conf.ssl.key, 'utf-8'),
+      cert: fs.readFileSync(conf.ssl.cert, 'utf-8')
+    }, app);
   }else{
     server = http.createServer(app);
   }
