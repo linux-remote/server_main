@@ -1,16 +1,16 @@
 // Entry
 const http = require('http');
 const https = require('https');
-const exec = require('child_process').exec;
+const {execSync} = require('child_process');
 const os = require('os');
 const path = require('path');
 
 try{
   global.SESSION_PATH = '/dev/shm/linux-remote';
-  exec('mkdir -m=1777 -p ' + global.SESSION_PATH);
+  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
 }catch(e){
   global.SESSION_PATH = path.join(os.tmpdir(), 'linux-remote');
-  exec('mkdir -m=1777 -p ' + global.SESSION_PATH);
+  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
 }
 
 //const {fork} = require('child_process');
