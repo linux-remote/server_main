@@ -4,8 +4,8 @@ const fs = require('fs');
 const sas = require('sas');
 const path = require('path');
 const {wrapPath} = require('./util');
-const {ensureUniqueId} = require('../../common/util');
-const {_reGetItem} = require('./common')
+const {ensureUniqueId, preventUnxhr} = require('../../common/util');
+const {_reGetItem} = require('./common');
 const ls = require('./ls');
 // var uuid = require('uuid')
 // const uid = require('uid-safe');
@@ -23,7 +23,15 @@ function fsSys(req, res, next){
   const method = req.method;
   req.PATH = decodeURIComponent(req.path);
   if(method === 'GET'){
+
+    // if(preventUnxhr(req, res)){
+    //   return;
+    // }
+
     if(req.query.dir){
+      if(preventUnxhr(req, res)){
+        return;
+      }
       return readDir(req, res, next);
     }else{
       //console.log('req.path', req.PATH, path.basename(req.PATH))
@@ -35,6 +43,10 @@ function fsSys(req, res, next){
       
       return next();
     }
+  }
+
+  if(preventUnxhr(req, res)){
+    return;
   }
 
   if(method === 'DELETE'){

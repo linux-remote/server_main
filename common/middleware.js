@@ -1,4 +1,4 @@
-var util = require('./util');
+var {preventUnxhr} = require('./util');
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
 exports.CORS = function(req, res, next) {
@@ -8,9 +8,15 @@ exports.CORS = function(req, res, next) {
   if (req.method == "OPTIONS") {
     res.set('Access-Control-Max-Age', ONE_YEAR_SECOND);
     res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'content-type');
+    res.set('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
     res.send('ok');
   } else {
+    next();
+  }
+}
+
+exports.preventUnxhrMid = function(req, res, next){
+  if(!preventUnxhr(req, res)){
     next();
   }
 }

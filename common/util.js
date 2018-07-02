@@ -148,6 +148,14 @@ exports.onListening = function(server, callback) {
   }
 }
 
+exports.preventUnxhr = function(req, res){
+  if(!req.xhr){
+    return res.status(400).end("xhr only");
+  }else{
+    return false;
+  }
+}
+
 // //如果多的话查找上下同位置是否为空
 // function stdout2json(stdStr){
 //   let arr = stdStr.split(EOL);
