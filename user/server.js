@@ -32,7 +32,7 @@ app.disable('x-powered-by');
 apiWarp(app);
 app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
 
-app.use('/upload', upload);
+app.use('/upload', middleWare.preventUnxhrMid, upload);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -78,7 +78,7 @@ app.get('/live', function(req, res){
 
 const desktop = require('./api/desktop');
 
-app.use('/desktop', desktop);
+app.use('/desktop', middleWare.preventUnxhrMid, desktop);
 
 // sys apps
 const serverInfo = require('./api/server-info');
@@ -86,12 +86,12 @@ const recycleBin = require('./api/dustbin');
 const fsApi = require('./api/fs');
 const disk = require('./api/disk');
 
-app.use('/fs', fsApi);
+app.use('/fs', fsApi); // preventUnxhr inner.
 const eStatic = require('express').static;
 app.use('/fs', eStatic('/', {dotfiles: 'allow', maxAge: 0}));
-app.get('/disk', disk);
-app.use('/serverInfo', serverInfo);
-app.use('/recycleBin', recycleBin);
+app.get('/disk',middleWare.preventUnxhrMid, disk);
+app.use('/serverInfo', middleWare.preventUnxhrMid, serverInfo);
+app.use('/recycleBin', middleWare.preventUnxhrMid, recycleBin);
 
 app.delete('/exit', function(req, res){
   res.send('exit');

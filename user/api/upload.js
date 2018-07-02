@@ -40,7 +40,7 @@ router.put('*',  function(req, res, next){
       if(err){
         return next(err);
       }
-      console.log('_itemPath', req.tmpPath)
+      // console.log('_itemPath', req.tmpPath)
       _reGetItem(req, res, next);
     })
   })

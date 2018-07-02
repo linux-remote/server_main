@@ -47,20 +47,20 @@ if(!global.IS_PRO){
 
 const sess = require('./api/sess');
 
-app.get('/api/touch', sess.touch);
+app.get('/api/touch', middleWare.preventUnxhrMid, sess.touch);
 
 const login = require('./api/login');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/api/login',  login.login);
-app.post('/api/logout', login.logout);
+app.post('/api/login', middleWare.preventUnxhrMid, login.login);
+app.post('/api/logout', middleWare.preventUnxhrMid, login.logout);
 
 app.use(sess.verifyLogined);
 
 // 主进程API
-app.use('/api', apiRouter);
+app.use('/api', middleWare.preventUnxhrMid, apiRouter);
 
 // catch 404 and forward to error handler
 app.use(middleWare.notFound);
