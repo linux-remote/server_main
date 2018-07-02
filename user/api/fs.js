@@ -24,11 +24,14 @@ function fsSys(req, res, next){
   req.PATH = decodeURIComponent(req.path);
   if(method === 'GET'){
 
-    if(preventUnxhr(req, res)){
-      return;
-    }
+    // if(preventUnxhr(req, res)){
+    //   return;
+    // }
 
     if(req.query.dir){
+      if(preventUnxhr(req, res)){
+        return;
+      }
       return readDir(req, res, next);
     }else{
       //console.log('req.path', req.PATH, path.basename(req.PATH))
