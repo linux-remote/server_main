@@ -3,9 +3,9 @@ const path = require('path');
 const sas = require('sas');
 const INTERVAL = '/L/R/_/I/N/T/E/R/V/A/L/' // 文件名包含 双引号, 替换一下.
 const INTERVAL_REG = new RegExp(INTERVAL, 'g');
-
+const {wrapPath} = require('./util');
 function ls(_raw_path, opts, callback){
-  var _path = _raw_path.replace(/\"/g, '\\\"'); //文件名是用双将双引号转义
+
   let isSelf = false, d = '', a = '-a';
 
   if(typeof opts === 'function'){
@@ -23,7 +23,7 @@ function ls(_raw_path, opts, callback){
   }
   const other = opts.other || '';
 
-  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} "${_path}"`,
+  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} ${wrapPath(_raw_path)}`,
       //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err && !result) return callback(err);
@@ -37,7 +37,34 @@ function ls(_raw_path, opts, callback){
       result = result.map((v, i) => {
         v = v.replace(/\\\"/g, INTERVAL); // 不是 
         v = v.split('"'); 
-        const name = isSelf ? undefined : v[1].replace(INTERVAL_REG, '"');
+        var name;
+        if(!isSelf){
+          name = v[1];
+          name = name.replace(INTERVAL_REG, '"');
+          name = name.replace(/\\\\|\\n|\\t|\\r|\\f|\\v/g, function(mstr){
+            console.log(mstr)
+            switch(mstr){
+              case '\\\\':
+                return '\\';
+              // case '\\\"':
+              //   return '"';
+              case '\\n':
+                return '\n';
+              case '\\t':
+                return '\t';
+              case '\\r':
+                return '\r';
+              case '\\f':
+                return '\f';
+              case '\\v':
+                return '\v';
+              default:
+                return mstr;
+            }
+          });
+          // name = name.replace(/\\\\/g, '\\');
+          // name = name.replace(INTERVAL_REG, '"');
+        }
 
         const _pre = v[0].split(/\s+/);
         const data = {

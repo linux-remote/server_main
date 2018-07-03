@@ -30,7 +30,13 @@ const upload = require('./api/upload');
 var app = express();
 app.disable('x-powered-by');
 apiWarp(app);
-app.use(logger(global.IS_PRO ? 'tiny' : 'dev'));
+
+var _ttpMin = 15;
+if(!global.IS_PRO){
+  app.use(logger('dev'));
+  _ttpMin = 1000;
+}
+
 
 app.use('/upload', middleWare.preventUnxhrMid, upload);
 
@@ -39,7 +45,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 //================= 用户进程 TTL =================
-const TTL_MAX_AGE = 1000 * 60 * 15;
+
+const TTL_MAX_AGE = 1000 * 60 * _ttpMin;
 
 var now = Date.now();
 
