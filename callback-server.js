@@ -2,10 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {execSync} = require('child_process');
 
-const PORT_PATH = '/dev/shm/linux-remote-callback.sock'
-const PORT = 'http://unix:' + PORT_PATH
+const PORT = process.env.PORT;
+//const PORT = 'http://unix:' + PORT;
 
-execSync('rm -rf ' + PORT_PATH);
+execSync('rm -rf ' + PORT);
 
 
 const app = express();
@@ -17,10 +17,10 @@ app.post('*', function(req, res, next){
   res.send(data)
 });
 
-const server = app.listen(PORT_PATH);
+const server = app.listen(PORT);
 server.on('listening', () => {
-  console.log('callback server runing on ' + PORT_PATH);
-  execSync('chmod 777 ' + PORT_PATH)
+  console.log('callback server runing on ' + PORT);
+  //execSync('chmod 777 ' + PORT)
 })
 
-module.exports = PORT_PATH;
+module.exports = PORT;

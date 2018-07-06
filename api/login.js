@@ -34,6 +34,7 @@ exports.login = function(req, res, next){
       }
       loginedMap[username] = true;
       req.session.loginedMap = loginedMap
+      req.session.isSet = true;
       callback();
     });
   }
@@ -46,7 +47,7 @@ exports.login = function(req, res, next){
   });
 }
 
-// post
+// post2
 exports.logout = function(req, res){
   const loginedMap = req.session.loginedMap || Object.create(null);
   var username = req.body.username;
@@ -59,11 +60,11 @@ exports.logout = function(req, res){
   util.getTmpName(req.session.id, username) +
   '.sock:/exit', function(){
 
-    //console.log(username, 'logout at ' + new Date());
+    //console.log(username, 'logout at2 ' + new Date());
 
     delete(loginedMap[username]);
     req.session.loginedMap = loginedMap;
-
+    req.session.isSet = true;
     res.apiOk(loginedMap);
 
   })

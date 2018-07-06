@@ -31,7 +31,7 @@ module.exports = function(userConf){
   global.CONF = conf;
 
   
-  //const createWebSocketServer = require('./web-socket-server');
+  const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
 
   const port = normalizePort(process.env.PORT || conf.port);
@@ -53,6 +53,10 @@ module.exports = function(userConf){
   server.on('listening', onListening(server, () => {
     console.log('linux remote server start!\n');
   }));
-  // global.CALLBACK_SERVER = fork('./callback-server.js');
-  // global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+  // global.CALLBACK_SERVER = fork('./callback-server.js', {
+  //   env: {
+  //     PORT: path.join(path.dirname(global.SESSION_PATH), 'linux-remote-callback.sock')
+  //   }
+  // });
+  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }
