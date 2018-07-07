@@ -3,7 +3,7 @@ const url = require('url');
 const sessMiddleware = require('./lib/sess-middleware');
 //const {getClientIp} = require('./common/util');
 
-const MAX_AGE = 1000 * 60 * 15;
+// const MAX_AGE = 1000 * 60 * 15;
 
 module.exports = function(server){
   const webSocketServer = new WebSocket.Server({
@@ -25,13 +25,46 @@ module.exports = function(server){
     },
     server });
 
+  // https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
+  function noop() {}
+
+  function heartbeat() {
+    this.isAlive = true;
+  }
+
+  var isChecked = false;
+  
+  function checkLive(){
+
+    if(isChecked) {
+      return;
+    }
+    isChecked = true;
+
+    function loop(){
+      setTimeout(function(){
+        webSocketServer.clients.forEach(function each(ws) {
+          if (ws.isAlive === false){
+            return ws.terminate();
+          }
+          ws.isAlive = false;
+          ws.ping(noop);
+        });
+        if(webSocketServer.clients.size){
+          loop();
+        }else{
+          isChecked = false;
+        }
+      }, 30000); // 30 秒 执行一次
+    }
+    loop();
+  }
+
+
   function send(ws, data){
-    var isOpen = (ws.readyState === WebSocket.OPEN);
-    if(isOpen){
-      ws._now = Date.now();
+    if(ws.readyState === WebSocket.OPEN){
       ws.send(JSON.stringify(data));
     }
-    return isOpen;
   }
   function broadcast(data){
     webSocketServer.clients.forEach((client) => {
@@ -54,13 +87,8 @@ module.exports = function(server){
   
   function getList(){
     const list = [];
-
     webSocketServer.clients.forEach(client => {
-      if(client.readyState !== WebSocket.OPEN && (client._now + MAX_AGE) < Date.now()){
-        client.close();
-        console.log('ws 客户端过期了。');
-      }else{
-
+      if(client.readyState === WebSocket.OPEN ){
         list.push({
           name: client.username,
           id: client.id
@@ -69,8 +97,16 @@ module.exports = function(server){
     });
     return list;
   }
+
   var index = 0;
+
   webSocketServer.on('connection', function connection(ws, req) {
+    ws.isAlive = true;
+    ws.on('pong', heartbeat);
+    checkLive();
+
+
+
     const location = url.parse(req.url, true);
     ws.id = index;
     index = index + 1;
