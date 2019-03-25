@@ -56,7 +56,7 @@ module.exports = function(userConf){
   // global.CALLBACK_SERVER = fork('./callback-server.js', {
   //   env: {
   //     PORT: path.join(path.dirname(global.SESSION_PATH), 'linux-remote-callback.sock')
-  //   }
+  //   } 2797 2820
   // });
-  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+  // global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }

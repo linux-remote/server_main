@@ -149,9 +149,9 @@ module.exports = function(server){
     });
 
     ws.on('close', function(){
-      broadcast({
-        list: getList()
-      });
+      // broadcast({
+      //   list: getList()
+      // });
     })
     ws.on('error', function(e){	
       ws.close();
