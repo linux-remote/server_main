@@ -22,9 +22,10 @@ function ls(_raw_path, opts, callback){
     a = '-A'
   }
   const other = opts.other || '';
-
-  exec(`ls -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} ${wrapPath(_raw_path)}`,
-      //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
+  const cmd = `ls -f -l --color=none -Q --time-style='+%Y-%m-%d %H:%M:%S' ${a} ${d} ${other} ${wrapPath(_raw_path)}`;
+  console.log('cmd', cmd);
+  exec(cmd,
+  //{env: {LS_COLORS: 'no=:or=OR'}, encoding: 'utf8'},
     function(err, result){
       if(err && !result) return callback(err);
       if(!isSelf){
@@ -35,7 +36,7 @@ function ls(_raw_path, opts, callback){
 
       const lsSymbolicLinkTasks = {};
       result = result.map((v, i) => {
-        v = v.replace(/\\\"/g, INTERVAL); // 不是 
+        v = v.replace(/\\"/g, INTERVAL); // 不是 
         v = v.split('"'); 
         var name;
         if(!isSelf){

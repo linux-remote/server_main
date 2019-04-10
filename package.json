@@ -1,7 +1,7 @@
 {
   "name": "linux-remote-server",
   "version": "1.6.2",
-  "author": "Du Wei <hezedu@hotmail.com>",
+  "author": "dw <hezedu@hotmail.com>",
   "main": "index.js",
   "repository": {
     "type": "git",

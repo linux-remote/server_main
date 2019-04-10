@@ -42,3 +42,4 @@ jspm_packages
 /package-lock.json
 /.npmrc
 /.npmrc2
+/desktop.ini

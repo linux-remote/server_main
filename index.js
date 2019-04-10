@@ -17,8 +17,8 @@ try{
 const NODE_ENV = process.env.NODE_ENV;
 
 const { onListening, 
-      onError, 
-      normalizePort } = require('./common/util');
+  onError, 
+  normalizePort } = require('./common/util');
 
 const conf = require('./conf/dev.js');
 
@@ -31,7 +31,7 @@ module.exports = function(userConf){
   global.CONF = conf;
 
   
-  const createWebSocketServer = require('./web-socket-server');
+  // const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
 
   const port = normalizePort(process.env.PORT || conf.port);
