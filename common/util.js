@@ -151,7 +151,8 @@ exports.onListening = function(server, callback) {
 
 exports.preventUnxhr = function(req, res){
   if(!req.xhr){
-    return res.status(400).end("xhr only");
+    res.status(400).end("xhr only");
+    return true;
   }else{
     return false;
   }

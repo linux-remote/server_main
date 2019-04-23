@@ -5,6 +5,8 @@ const {execSync} = require('child_process');
 const os = require('os');
 const path = require('path');
 const fs = require('fs');
+
+
 try{
   global.SESSION_PATH = '/dev/shm/linux-remote';
   execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
@@ -58,5 +60,6 @@ module.exports = function(userConf){
   //     PORT: path.join(path.dirname(global.SESSION_PATH), 'linux-remote-callback.sock')
   //   } 2797 2820
   // });
-  // global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+  const createWebSocketServer = require('./web-socket-server');
+  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }

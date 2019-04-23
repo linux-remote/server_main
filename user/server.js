@@ -4,7 +4,7 @@ const http = require('http');
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-
+const expressWs = require('express-ws');
 const {onListening, onError, timeFormat} = require('../common/util');
 
 const PORT = process.env.PORT;
@@ -26,17 +26,22 @@ execSync('mkdir -m=755 -p ' + global.RECYCLE_BIN_PATH);
 const apiWarp = require('../common/api-warp');
 const middleWare = require('../common/middleware');
 const upload = require('./api/upload');
+const pty = require('./pty');
 
 var app = express();
 app.disable('x-powered-by');
 apiWarp(app);
+expressWs(app);
+
+
+
 
 var _ttpMin = 15;
 if(!global.IS_PRO){
   app.use(logger('dev'));
   _ttpMin = 1000;
 }
-
+pty(app);
 
 app.use('/upload', middleWare.preventUnxhrMid, upload);
 
@@ -131,3 +136,13 @@ function normalExit(){
 //   normalExit();
 //   console.log('normalExit2');
 // }, 3000)
+
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ server });
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+  });
+
+  ws.send('user ws ok');
+});

@@ -7,16 +7,15 @@ const {wrapPath} = require('./util');
 const {ensureUniqueId, preventUnxhr} = require('../../common/util');
 const {_reGetItem} = require('./common');
 const ls = require('./ls');
-// var uuid = require('uuid')
-// const uid = require('uid-safe');
-// console.log('uuid()', uuid().length)
-// console.log('uid', uid.sync(24).length)
+const cmd = require('./cmd');
+
 const bodyMap = {
   createSymbolicLink,
   rename,
   createFile,
   createFolder,
-  checkCover
+  checkCover,
+  cmd
 }
 
 function fsSys(req, res, next){
@@ -40,8 +39,8 @@ function fsSys(req, res, next){
           'Content-Disposition': 'attachment; filename="' + path.basename(req.PATH) + '"'
         })
       }
-      
-      return next();
+      next();
+      return;
     }
   }
 

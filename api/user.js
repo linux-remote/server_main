@@ -1,12 +1,13 @@
 const request = require('request');
 const fs = require('fs');
 const util = require('../common/util');
-const exec = require('child_process').exec;
 request.GET = request.get;
 request.POST = request.post;
 request.PUT = request.put;
 request.DELETE = request.delete;
-
+exports.proxyWebSocket = function(ws, res){
+  
+}
 // use
 exports.proxy = function(req, res){
   var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
