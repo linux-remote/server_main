@@ -54,6 +54,7 @@ exports.createPtyServer = function( server ){
       term.write(msg);
     });
     ws.on('close', function () {
+      console.log('pty close');
       term.kill();
       console.log('Closed terminal ' + term.pid);
       // Clean things up

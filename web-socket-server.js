@@ -40,6 +40,9 @@ module.exports = function(server) {
             client.on('message', function(data) {
               ws.send(data);
             });
+            ws.on('close', function(code, reason){
+              client.close(code, reason);
+            });
           });
 
           proxyServer.handleUpgrade(req, socket, head, function done(ws) {
