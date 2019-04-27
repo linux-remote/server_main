@@ -68,7 +68,7 @@ function simplePipe(serverWs, clientWs){
 
   serverWs.once('close', function(code, reason){
     // console.log('serverWs close', code, typeof code);
-    clientWs.close(code, reason);
+    clientWs.close(1000, reason);
   });
 
   clientWs.once('close', function(code, reason){
