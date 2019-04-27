@@ -31,22 +31,14 @@ module.exports = function(server) {
 
           const proxyServer = new WebSocket.Server({ noServer: true });
 
-          proxyServer.on('connection', function connection(ws, req) {
+          proxyServer.on('connection', function connection(ws) {
             console.log('connection');
             const client = new WebSocket(unixSocket);
-            ws.on('message', function(data) {
-              client.send(data);
-            });
-            client.on('message', function(data) {
-              ws.send(data);
-            });
-            ws.on('close', function(code, reason){
-              client.close(code, reason);
-            });
+            simplePipe(ws, client);
           });
 
           proxyServer.handleUpgrade(req, socket, head, function done(ws) {
-            proxyServer.emit('connection', ws, req);
+            proxyServer.emit('connection', ws);
           });
 
         } else {
@@ -56,4 +48,38 @@ module.exports = function(server) {
     });
   });
 
+}
+
+function simplePipe(serverWs, clientWs){
+  serverWs.on('message', function(data) {
+    clientWs.send(data);
+  });
+  clientWs.on('message', function(data){
+    serverWs.send(data);
+  });
+
+  serverWs.on('ping', function(){
+    clientWs.ping.apply(clientWs, arguments);
+  });
+
+  clientWs.on('pong', function() {
+    serverWs.pong.apply(serverWs, arguments);
+  })
+
+  serverWs.once('close', function(code, reason){
+    // console.log('serverWs close', code, typeof code);
+    clientWs.close(code, reason);
+  });
+
+  clientWs.once('close', function(code, reason){
+    // console.log('clientWs close', code, typeof code);
+    serverWs.close(1000, reason); // error 1006 
+  });
+
+  // serverWs.on('error', function(err) {
+  //   console.error('serverWs error', err);
+  // })
+  // clientWs.on('error', function(err) {
+  //   console.error('clientWs error', err);
+  // })
 }

@@ -52,7 +52,7 @@ exports.proxy = function(req, res){
               if(!err){
                 getErrorLog(500, 'User process is crash.');
 
-              }else if(loopCount > 5){
+              }else if(loopCount > 5){ 
                 getErrorLog(403, 'User process is died.');
               }else {
                 loop();
