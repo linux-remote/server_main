@@ -1,5 +1,4 @@
 
-const pty = require('node-pty');
 const url = require('url');
 const WebSocket = require('ws');
 
