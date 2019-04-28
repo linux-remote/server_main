@@ -22,9 +22,10 @@ module.exports = function(app) {
   
   // 创建
   app.post('/terminals', function (req, res) {
+    // process.platform === 'win32' ? 'cmd.exe' : 
     var cols = parseInt(req.query.cols),
       rows = parseInt(req.query.rows),
-      term = pty.spawn(process.platform === 'win32' ? 'cmd.exe' : 'bash', [], {
+      term = pty.spawn('bash', [], {
         name: 'xterm-color',
         cols: cols || 80,
         rows: rows || 24,
