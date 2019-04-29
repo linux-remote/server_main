@@ -6,6 +6,10 @@ const os = require('os');
 const path = require('path');
 const fs = require('fs');
 
+if(process.getuid() !== 0){
+  console.error('linux-remote server must start-up by root user');
+  process.exit();
+}
 
 try{
   global.SESSION_PATH = '/dev/shm/linux-remote';
