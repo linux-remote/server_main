@@ -53,14 +53,17 @@ exports.createPtyServer = function( server ){
       term.write(msg);
     });
     ws.on('close', function () {
-
-      console.log('pty close', arguments);
-
       term.kill('SIGHUP'); // 'SIGHUP'
       console.log('Closed terminal ' + term.pid);
       // Clean things up
       delete terminals[term.pid];
       delete logs[term.pid];
+    });
+
+    term.on('exit', function() {
+      console.log('term.on exit', arguments);
+      term.kill();
+      ws.close();
     });
   });
 

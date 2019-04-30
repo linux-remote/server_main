@@ -5,9 +5,9 @@ request.GET = request.get;
 request.POST = request.post;
 request.PUT = request.put;
 request.DELETE = request.delete;
-exports.proxyWebSocket = function(ws, res){
+// exports.proxyWebSocket = function(ws, res){
   
-}
+// }
 // use
 exports.proxy = function(req, res){
   var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
@@ -39,7 +39,7 @@ exports.proxy = function(req, res){
             '\n\nError log is:\n=================\n' + 
             errLog + 
             '\n=================\nYou can report it at: https://github.com/linux-remote/linux-remote/issues'
-            : message;
+              : message;
             res.status(status).send(errLog);
           })
         }

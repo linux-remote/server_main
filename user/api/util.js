@@ -1,7 +1,7 @@
 const fs = require('fs');
 function escapePath(str){
   str = str.replace(/\\/g, '\\\\');
-  return str.replace(/\"/g, '\\\"'); 
+  return str.replace(/"/g, '\\"'); 
 }
 // exports.escapePath = escapePath;
 

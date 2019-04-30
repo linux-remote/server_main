@@ -3,8 +3,7 @@ const url = require('url');
 const sessMiddleware = require('./lib/sess-middleware');
 const { getTmpName } = require('./common/util');
 
-//const {getClientIp} = require('./common/util');
-// let unixSocket = 'ws+unix:///dev/shm/linux-remote/PfC6loeqZk20Syd5S4nhTm99vPXnpDzb+dw.sock:/terminal/123';
+
 
 // const MAX_AGE = 1000 * 60 * 15;
 module.exports = function(server) {

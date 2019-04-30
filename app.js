@@ -12,6 +12,7 @@ const apiRouter = require('./api/global/router');
 const app = express();
 
 app.disable('x-powered-by');
+app.disable('trust proxy');
 const CONF = global.CONF;
 
 apiWarp(app);

@@ -44,13 +44,17 @@ exports.ensureUniqueId = function(filePath){
 //   }
 // }
 
-function getClientIp(req){
-  return req.headers['x-forwarded-for'] ||
-  req.connection.remoteAddress ||
-  req.socket.remoteAddress ||
-  req.connection.socket.remoteAddress;
-}
-exports.getClientIp = getClientIp;
+// use express req.ip 
+// https://expressjs.com/en/api.html#req.ip
+// function getClientIp(req){ 
+
+
+//   return req.headers['x-forwarded-for'] ||
+//   req.connection.remoteAddress ||
+//   req.socket.remoteAddress ||
+//   req.connection.socket.remoteAddress;
+// }
+// exports.getClientIp = getClientIp;
 
 const codeMap = require('./code-map');
 
