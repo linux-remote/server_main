@@ -5,7 +5,7 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const {onListening, onError, timeFormat} = require('../common/util');
-
+const { FLAG } = require('../lib/util');
 const PORT = process.env.PORT;
 execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
 
@@ -121,7 +121,7 @@ server.listen(PORT);
 
 server.on('listening', onListening(server, function(){
   execSync('chmod 600 ' + PORT);
-  console.log('User server start!');
+  console.log(FLAG);
   TTL();
 }));
 
