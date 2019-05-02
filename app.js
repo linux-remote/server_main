@@ -4,7 +4,7 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const sessMiddleware = require('./lib/sess-middleware');
+const sessMiddleware = require('./lib/session/middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
 const apiWarp = require('./common/api-warp');
@@ -51,7 +51,7 @@ const sess = require('./api/sess');
 
 app.get('/api/touch', middleWare.preventUnxhrMid, sess.touch);
 
-const login = require('./api/login');
+const login = require('./api/new-login');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

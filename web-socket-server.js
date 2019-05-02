@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 const url = require('url');
-const sessMiddleware = require('./lib/sess-middleware');
+const sessMiddleware = require('./lib/session/middleware');
 const { getTmpName } = require('./common/util');
 
 

@@ -1,6 +1,6 @@
 const login = require('../lib/new-login');
 const startUserServer = require('../lib/start-user-server');
-global.SESSION_PATH = '/dev/shm/linux-remote';
+require('../lib/init-session-path');
 const term = login({
   username: 'remote',
   password: '2',
@@ -11,7 +11,9 @@ const term = login({
     } else {
 
       console.log('登录成功'); // removeListener
-      startUserServer(term, 'test-sid', 'remote')
+      startUserServer(term, 'test-sid', 'remote', function() {
+        console.log('用户服务启动成功。');
+      })
     }
   }
 });

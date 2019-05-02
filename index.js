@@ -11,13 +11,7 @@ if(process.getuid() !== 0){
   process.exit();
 }
 
-try{
-  global.SESSION_PATH = '/dev/shm/linux-remote';
-  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
-}catch(e){
-  global.SESSION_PATH = path.join(os.tmpdir(), 'linux-remote');
-  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
-}
+require('./lib/init-session-path');
 
 //const {fork} = require('child_process');
 const NODE_ENV = process.env.NODE_ENV;
