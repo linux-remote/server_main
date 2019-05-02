@@ -6,6 +6,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const {onListening, onError, timeFormat} = require('../common/util');
 const { FLAG } = require('../lib/util');
+const ps = require('./api/ps');
 const PORT = process.env.PORT;
 execSync('rm -rf ' + PORT); //删除旧的 sock 文件, 才能启动.
 
@@ -102,7 +103,7 @@ app.use('/fs', eStatic('/', {dotfiles: 'allow', maxAge: 0}));
 app.get('/disk',middleWare.preventUnxhrMid, disk);
 app.use('/serverInfo', middleWare.preventUnxhrMid, serverInfo);
 app.use('/recycleBin', middleWare.preventUnxhrMid, recycleBin);
-
+app.get('/ps', middleWare.preventUnxhrMid, ps);
 app.delete('/exit', function(req, res){
   res.send('exit');
   res.on('finish', function(){
