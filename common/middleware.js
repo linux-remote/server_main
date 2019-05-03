@@ -1,4 +1,4 @@
-var {preventUnxhr} = require('./util');
+
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
 exports.CORS = function(req, res, next) {
@@ -15,8 +15,11 @@ exports.CORS = function(req, res, next) {
   }
 }
 
-exports.preventUnxhrMid = function(req, res, next){
-  if(!preventUnxhr(req, res)){
+
+exports.preventUnxhr = function(req, res, next){
+  if(!req.xhr) {
+    res.status(400).end("xhr only");
+  } else {
     next();
   }
 }

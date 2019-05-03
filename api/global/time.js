@@ -14,15 +14,6 @@ module.exports = function(req, res, next){
       timeZoneOffset: d.getTimezoneOffset(),
       time: d.getTime()
     }
-    res.apiOk(data);
+    res.json(data);
   })
 }
-
-// function isRecycEmpty(){
-
-// }
-// exports.bundle = function(req, res, next){
-//   res.apiOk({
-//     thirdPartyApp: list
-//   })
-// }

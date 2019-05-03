@@ -9,7 +9,7 @@ exports.login = function(req, res, next){
   var loginedMap = req.session.loginedMap || Object.create(null);
 
   if(loginedMap[username]) {
-    return res.apiOk(loginedMap);
+    return res.json(loginedMap);
   }
   const term = login({
     username,
@@ -25,7 +25,7 @@ exports.login = function(req, res, next){
           loginedMap[username] = true;
           req.session.loginedMap = loginedMap;
           userTerms.add(req.session.id, username, term);
-          res.apiOk(loginedMap);
+          res.json(loginedMap);
         });
       }
     }
@@ -41,10 +41,10 @@ exports.logout = function(req, res){
   var username = req.body.username;
   
   if(!loginedMap[username]){
-    return res.apiOk(loginedMap);
+    return res.json(loginedMap);
   }
   userTerms.kill(req.session.id, username);
   delete(loginedMap[username]);
   req.session.loginedMap = loginedMap;
-  res.apiOk(loginedMap);
+  res.json(loginedMap);
 }

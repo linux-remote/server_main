@@ -9,7 +9,7 @@ exports.login = function(req, res, next){
 
   function checkIsLogin(callback){
     if(loginedMap[username]){
-      // return res.apiOk({
+      // return res.json({
       //   alreadyLogined: true
       // });
       request.get('http://unix:' +
@@ -43,7 +43,7 @@ exports.login = function(req, res, next){
     if(err){
       return next(err);
     }
-    res.apiOk(loginedMap);
+    res.json(loginedMap);
   });
 }
 
@@ -53,7 +53,7 @@ exports.logout = function(req, res){
   var username = req.body.username;
   
   if(!loginedMap[username]){
-    return res.apiOk(loginedMap);
+    return res.json(loginedMap);
   }
 
   request.delete('http://unix:' +
@@ -65,7 +65,7 @@ exports.logout = function(req, res){
     delete(loginedMap[username]);
     req.session.loginedMap = loginedMap;
     req.session.isSet = true;
-    res.apiOk(loginedMap);
+    res.json(loginedMap);
 
   })
 

@@ -28,7 +28,7 @@ const appList = [];
 // })
 
 router.get('/list', function(req, res){
-  res.apiOk([]);
+  res.json([]);
 })
 
 exports.list = appList;

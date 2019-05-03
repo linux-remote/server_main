@@ -1,6 +1,6 @@
 // get
 exports.touch = function(req, res){
-  res.apiOk({
+  res.json({
     loginedMap : req.session.loginedMap || Object.create(null)
   });
 }

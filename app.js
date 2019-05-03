@@ -7,15 +7,12 @@ const bodyParser = require('body-parser');
 const sessMiddleware = require('./lib/session/middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
-const apiWarp = require('./common/api-warp');
 const apiRouter = require('./api/global/router');
 const app = express();
 
 app.disable('x-powered-by');
 app.disable('trust proxy');
 const CONF = global.CONF;
-
-apiWarp(app);
 
 // uncomment after placing your favicon in /public
 
@@ -49,20 +46,20 @@ if(!global.IS_PRO){
 
 const sess = require('./api/sess');
 
-app.get('/api/touch', middleWare.preventUnxhrMid, sess.touch);
+app.get('/api/touch', middleWare.preventUnxhr, sess.touch);
 
 const login = require('./api/new-login');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/api/login', middleWare.preventUnxhrMid, login.login);
-app.post('/api/logout', middleWare.preventUnxhrMid, login.logout);
+app.post('/api/login', middleWare.preventUnxhr, login.login);
+app.post('/api/logout', middleWare.preventUnxhr, login.logout);
 
 app.use(sess.verifyLogined);
 
 // 主进程API
-app.use('/api', middleWare.preventUnxhrMid, apiRouter);
+app.use('/api', middleWare.preventUnxhr, apiRouter);
 
 // catch 404 and forward to error handler
 app.use(middleWare.notFound);
