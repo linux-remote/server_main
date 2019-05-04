@@ -3,7 +3,13 @@ const url = require('url');
 const sessMiddleware = require('./lib/session/middleware');
 const { getTmpName } = require('./common/util');
 
+const proxyServer = new WebSocket.Server({ noServer: true });
 
+proxyServer.on('connection', function connection(ws, unixSocket) {
+  console.log('connection');
+  const client = new WebSocket(unixSocket);
+  simplePipe(ws, client);
+});
 
 // const MAX_AGE = 1000 * 60 * 15;
 module.exports = function(server) {
@@ -28,16 +34,10 @@ module.exports = function(server) {
 
           unixSocket = unixSocket + '/terminal?pid=' + pid;
 
-          const proxyServer = new WebSocket.Server({ noServer: true });
 
-          proxyServer.on('connection', function connection(ws) {
-            console.log('connection');
-            const client = new WebSocket(unixSocket);
-            simplePipe(ws, client);
-          });
 
           proxyServer.handleUpgrade(req, socket, head, function done(ws) {
-            proxyServer.emit('connection', ws);
+            proxyServer.emit('connection', ws, unixSocket);
           });
 
         } else {

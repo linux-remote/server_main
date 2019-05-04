@@ -1,9 +1,6 @@
 // Entry
 const http = require('http');
 const https = require('https');
-const {execSync} = require('child_process');
-const os = require('os');
-const path = require('path');
 const fs = require('fs');
 
 if(process.getuid() !== 0){
@@ -53,11 +50,7 @@ module.exports = function(userConf){
   server.on('listening', onListening(server, () => {
     console.log('linux remote server start!\n');
   }));
-  // global.CALLBACK_SERVER = fork('./callback-server.js', {
-  //   env: {
-  //     PORT: path.join(path.dirname(global.SESSION_PATH), 'linux-remote-callback.sock')
-  //   } 2797 2820
-  // });
+
   const createWebSocketServer = require('./web-socket-server');
   global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }

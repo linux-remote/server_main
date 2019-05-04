@@ -30,8 +30,8 @@ app.use(sessMiddleware);
 
 
 //用户进程代理
-const apiUser = require('./api/user');
-app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy);
+const httpRequestProxy = require('./lib/http-request-proxy');
+app.use('/api/user/:username', httpRequestProxy.beforeProxy, httpRequestProxy.proxy);
 
 
 if(!global.IS_PRO){
