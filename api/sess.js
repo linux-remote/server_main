@@ -1,7 +1,8 @@
 // get
 exports.touch = function(req, res){
+  const loginedMap = req.session.loginedMap || Object.create(null);
   res.json({
-    loginedMap : req.session.loginedMap || Object.create(null)
+    loginedList : Object.keys(loginedMap)
   });
 }
 

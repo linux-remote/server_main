@@ -51,6 +51,6 @@ module.exports = function(userConf){
     console.log('linux remote server start!\n');
   }));
 
-  const createWebSocketServer = require('./web-socket-server');
+  const createWebSocketServer = require('./ws-server');
   global.WEB_SOCKET_SERVER = createWebSocketServer(server);
 }

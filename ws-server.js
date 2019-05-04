@@ -23,26 +23,23 @@ module.exports = function(server) {
       if(!loginedMap[user]){
         socket.destroy();
       }else{
-        if(location.pathname === '/terminal') {
-          const pid = location.query.pid;
-          let unixSocket = getTmpName(req.session.id, user);
-          unixSocket = unixSocket + '.sock:';
+        //if(location.pathname === '/terminal') {
+        let unixSocket = getTmpName(req.session.id, user);
+        unixSocket = unixSocket + '.sock:';
 
-          // https://stackoverflow.com/questions/23930293
-          // ws+unix:///tmp/server.sock
-          unixSocket = 'ws+unix://' + unixSocket;
+        // https://stackoverflow.com/questions/23930293
+        // ws+unix:///tmp/server.sock
+        unixSocket = 'ws+unix://' + unixSocket;
 
-          unixSocket = unixSocket + '/terminal?pid=' + pid;
+        unixSocket = unixSocket + req.url;
 
+        proxyServer.handleUpgrade(req, socket, head, function done(ws) {
+          proxyServer.emit('connection', ws, unixSocket);
+        });
 
-
-          proxyServer.handleUpgrade(req, socket, head, function done(ws) {
-            proxyServer.emit('connection', ws, unixSocket);
-          });
-
-        } else {
-          socket.destroy();
-        }
+        // } else {
+        //   socket.destroy();
+        // }
       }
     });
   });
