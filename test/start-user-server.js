@@ -1,4 +1,4 @@
-const login = require('../lib/new-login');
+const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 require('../lib/init-session-path');
 const term = login({

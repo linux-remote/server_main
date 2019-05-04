@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const sessMiddleware = require('./lib/session/middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
-const apiRouter = require('./api/global/router');
 const app = express();
 
 app.disable('x-powered-by');
@@ -48,7 +47,7 @@ const sess = require('./api/sess');
 
 app.get('/api/touch', middleWare.preventUnxhr, sess.touch);
 
-const login = require('./api/new-login');
+const login = require('./api/login');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -57,9 +56,6 @@ app.post('/api/login', middleWare.preventUnxhr, login.login);
 app.post('/api/logout', middleWare.preventUnxhr, login.logout);
 
 app.use(sess.verifyLogined);
-
-// 主进程API
-app.use('/api', middleWare.preventUnxhr, apiRouter);
 
 // catch 404 and forward to error handler
 app.use(middleWare.notFound);

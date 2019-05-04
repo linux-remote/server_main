@@ -1,4 +1,4 @@
-const login = require('../lib/new-login');
+const login = require('../lib/login');
 
 login({
   username: 'remote',
