@@ -31,12 +31,11 @@ app.use(sessMiddleware);
 
 //用户进程代理
 const httpRequestProxy = require('./lib/http-request-proxy');
-app.use('/api/user/:username', httpRequestProxy.beforeProxy, httpRequestProxy.proxy);
+app.use('/api/user/:username', httpRequestProxy.beforeProxy,httpRequestProxy.proxy);
 
 
 if(!global.IS_PRO){
   app.use(logger('dev'));
-
   // index 欢迎页
   app.get('/', function(req, res){
     res.send('Hello! This is Linux Remote Server!');
@@ -44,18 +43,18 @@ if(!global.IS_PRO){
 }
 
 const sess = require('./api/sess');
-
-app.get('/api/touch', middleWare.preventUnxhr, sess.touch);
-
 const login = require('./api/login');
+
+app.use(middleWare.preventUnxhr);
+app.get('/api/touch',  sess.touch);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/api/login', middleWare.preventUnxhr, login.login);
-app.post('/api/logout', middleWare.preventUnxhr, login.logout);
+app.post('/api/login',  login.login);
+app.post('/api/logout',  login.logout);
 
-app.use(sess.verifyLogined);
+// app.use(sess.verifyLogined);
 
 // catch 404 and forward to error handler
 app.use(middleWare.notFound);

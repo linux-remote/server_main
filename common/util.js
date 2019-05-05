@@ -98,3 +98,8 @@ exports.onListening = function(server, callback) {
 //   const result = stdout2json(reslut2);
 //   console.log('result', result);
 // })
+exports.safeSend = function(ws, msg) {
+  if(ws.readyState === 1) {
+    ws.send(msg);
+  }
+}

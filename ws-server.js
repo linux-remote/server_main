@@ -1,8 +1,7 @@
 const WebSocket = require('ws');
-const url = require('url');
 const sessMiddleware = require('./lib/session/middleware');
-const { getTmpName } = require('./common/util');
-
+const { getTmpName, safeSend } = require('./common/util');
+const USER_PREFIX = '/user/';
 const proxyServer = new WebSocket.Server({ noServer: true });
 
 proxyServer.on('connection', function connection(ws, unixSocket) {
@@ -18,20 +17,28 @@ module.exports = function(server) {
 
     sessMiddleware(req, {}, () =>{
       const loginedMap = req.session.loginedMap || Object.create(null);
-      const location = url.parse(req.url, true);
-      const user = location.query.user;
-      if(!loginedMap[user]){
+      // const pathname = url.parse(req.url, true).pathname;
+      let href = req.url;
+      if(href.indexOf(USER_PREFIX) !== 0){
+        return socket.destroy();
+      }
+      //
+      href = href.substr(USER_PREFIX.length);
+      const _index = href.indexOf('/');
+      const username = href.substr(0, _index);
+      href = href.substr(_index);
+      if(!loginedMap[username]){
         socket.destroy();
       }else{
-        //if(location.pathname === '/terminal') {
-        let unixSocket = getTmpName(req.session.id, user);
+        //if(parsed.pathname === '/terminal') {
+        let unixSocket = getTmpName(req.session.id, username);
         unixSocket = unixSocket + '.sock:';
 
         // https://stackoverflow.com/questions/23930293
         // ws+unix:///tmp/server.sock
         unixSocket = 'ws+unix://' + unixSocket;
 
-        unixSocket = unixSocket + req.url;
+        unixSocket = unixSocket + href;
 
         proxyServer.handleUpgrade(req, socket, head, function done(ws) {
           proxyServer.emit('connection', ws, unixSocket);
@@ -48,10 +55,11 @@ module.exports = function(server) {
 
 function simplePipe(serverWs, clientWs){
   serverWs.on('message', function(data) {
+    safeSend(clientWs, data);
     clientWs.send(data);
   });
   clientWs.on('message', function(data){
-    serverWs.send(data);
+    safeSend(serverWs, data);
   });
 
   serverWs.on('ping', function(){
@@ -72,10 +80,12 @@ function simplePipe(serverWs, clientWs){
     serverWs.close(1000, reason); // error 1006 
   });
 
-  // serverWs.on('error', function(err) {
-  //   console.error('serverWs error', err);
-  // })
-  // clientWs.on('error', function(err) {
-  //   console.error('clientWs error', err);
-  // })
+  serverWs.on('error', function(err) {
+    clientWs.terminate();
+    console.error('serverWs error', err);
+  })
+  clientWs.on('error', function(err) {
+    serverWs.terminate();
+    console.error('clientWs error', err);
+  })
 }
