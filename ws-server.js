@@ -26,11 +26,11 @@ module.exports = function(server) {
       href = href.substr(USER_PREFIX.length);
       const _index = href.indexOf('/');
       const username = href.substr(0, _index);
-      href = href.substr(_index);
+      
       if(!loginedMap[username]){
         socket.destroy();
       }else{
-        //if(parsed.pathname === '/terminal') {
+        href = href.substr(_index);
         let unixSocket = getTmpName(req.session.id, username);
         unixSocket = unixSocket + '.sock:';
 
@@ -43,10 +43,6 @@ module.exports = function(server) {
         proxyServer.handleUpgrade(req, socket, head, function done(ws) {
           proxyServer.emit('connection', ws, unixSocket);
         });
-
-        // } else {
-        //   socket.destroy();
-        // }
       }
     });
   });
@@ -56,7 +52,6 @@ module.exports = function(server) {
 function simplePipe(serverWs, clientWs){
   serverWs.on('message', function(data) {
     safeSend(clientWs, data);
-    clientWs.send(data);
   });
   clientWs.on('message', function(data){
     safeSend(serverWs, data);
