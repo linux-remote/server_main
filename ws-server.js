@@ -1,13 +1,12 @@
 const WebSocket = require('ws');
 const sessMiddleware = require('./lib/session/middleware');
-const { getTmpName, safeSend } = require('./common/util');
+const { getTmpName } = require('./common/util');
 const USER_PREFIX = '/user/';
+const wsProxy = require('./lib/ws-proxy');
 const proxyServer = new WebSocket.Server({ noServer: true });
 
 proxyServer.on('connection', function connection(ws, unixSocket) {
-  console.log('connection');
-  const client = new WebSocket(unixSocket);
-  simplePipe(ws, client);
+  wsProxy(ws, unixSocket);
 });
 
 // const MAX_AGE = 1000 * 60 * 15;
@@ -47,40 +46,4 @@ module.exports = function(server) {
     });
   });
 
-}
-
-function simplePipe(serverWs, clientWs){
-  serverWs.on('message', function(data) {
-    safeSend(clientWs, data);
-  });
-  clientWs.on('message', function(data){
-    safeSend(serverWs, data);
-  });
-
-  serverWs.on('ping', function(){
-    clientWs.ping.apply(clientWs, arguments);
-  });
-
-  clientWs.on('pong', function() {
-    serverWs.pong.apply(serverWs, arguments);
-  })
-
-  serverWs.once('close', function(code, reason){
-    // console.log('serverWs close', code, typeof code);
-    clientWs.close(1000, reason);
-  });
-
-  clientWs.once('close', function(code, reason){
-    // console.log('clientWs close', code, typeof code);
-    serverWs.close(1000, reason); // error 1006 
-  });
-
-  serverWs.on('error', function(err) {
-    clientWs.terminate();
-    console.error('serverWs error', err);
-  })
-  clientWs.on('error', function(err) {
-    serverWs.terminate();
-    console.error('clientWs error', err);
-  })
 }
