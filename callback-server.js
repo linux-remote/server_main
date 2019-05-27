@@ -5,7 +5,7 @@ const {execSync} = require('child_process');
 const PORT = process.env.PORT;
 //const PORT = 'http://unix:' + PORT;
 
-execSync('rm -rf ' + PORT);
+execSync('rm -rf -- ' + PORT);
 
 
 const app = express();
@@ -20,7 +20,6 @@ app.post('*', function(req, res, next){
 const server = app.listen(PORT);
 server.on('listening', () => {
   console.log('callback server runing on ' + PORT);
-  //execSync('chmod 777 ' + PORT)
 })
 
 module.exports = PORT;

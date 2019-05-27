@@ -77,27 +77,6 @@ exports.onListening = function(server, callback) {
 }
 
 
-// //如果多的话查找上下同位置是否为空
-// function stdout2json(stdStr){
-//   let arr = stdStr.split(EOL);
-//   arr.shift(); //去除头部 TH
-//   arr.pop(); //去除尾部空字符
-//   console.log(arr.length);
-//   return arr.map(line => {
-//     line = line.split(/\s+/);
-//     return line;
-//   })
-// }
-
-// const {EOL} = require('os');
-// const exec = require('child_process').exec;
-// exec('df -T', function(err, reslut2){
-//   if(err){
-//     return console.error(err);
-//   }
-//   const result = stdout2json(reslut2);
-//   console.log('result', result);
-// })
 exports.safeSend = function(ws, msg) {
   if(ws.readyState === 1) {
     ws.send(msg);
