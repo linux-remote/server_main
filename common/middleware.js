@@ -32,24 +32,18 @@ exports.notFound = function(req, res, next) {
 }
 
 //errHandle
+
 exports.errHandle = function(err, req, res, next) {
 
-  let msg = `${err.name}: ${err.message}`;
-  let data;
-  if(!err.isCodeError){
-    var status = err.status || 500;
-    res.status(status);
-    data = msg;
-    // if(status === 500){
-    //   console.error(err);
-    // }
-  }else{
-    data = {
-      code: err.code,
-      msg
+  setTimeout(() => {
+    if(req.complete){
+      res.status(err.status || 500);
+      res.end(`${err.name}: ${err.message}`);
+    } else {
+      // eg: upload , stop immediately
+      // console.log('errHandle stop immediately');
+      req.destroy();
     }
-  }
-
-  res.send(data);
+  });
   //util.errLog(msg, req);
 };
