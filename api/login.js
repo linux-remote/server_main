@@ -1,18 +1,18 @@
 const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 
-const userTerms = require('../lib/session/user-terms');
-
 // post
 exports.login = function(req, res, next){
-  var {username, password} = req.body;
-  var loginedMap = req.session.loginedMap || Object.create(null);
+  
+  let userMap = req.session.userMap;
+  const {username, password} = req.body;
 
-  if(loginedMap[username]) {
+  if(userMap && userMap.has(username)){
     return res.json({
-      loginedList: Object.keys(loginedMap)
+      loginedList: [userMap.keys()]
     });
   }
+
   const term = login({
     username,
     password,
@@ -28,14 +28,17 @@ exports.login = function(req, res, next){
             term.kill();
             res.status(500).end('[linux-remote]: user server start-up fail.')
           } else {
-            loginedMap[username] = true;
-            req.session.loginedMap = loginedMap;
-            userTerms.add(req.session.id, username, term);
+            if(!userMap){
+              userMap = new Map;
+              userMap.set(username, {term});
+              req.session.userMap = userMap;
+            }
             res.json({
-              loginedList: Object.keys(loginedMap)
+              loginedList: [userMap.keys()]
             });
           }
         });
+
       }
     }
   });
@@ -46,18 +49,24 @@ exports.login = function(req, res, next){
 
 // post2
 exports.logout = function(req, res){
-  const loginedMap = req.session.loginedMap || Object.create(null);
-  var username = req.body.username;
   
-  if(!loginedMap[username]){
-    return res.json({
-      loginedList: Object.keys(loginedMap)
-    });
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.json([]);
   }
-  userTerms.kill(req.session.id, username);
-  delete(loginedMap[username]);
-  req.session.loginedMap = loginedMap;
+  
+  const username = req.body.username;
+  const user = userMap.get(username);
+  if(user){
+    user.term.kill();
+    userMap.delete(username);
+    if(!userMap.size){
+      req.session.destory();
+    }
+  }
+  
   res.json({
-    loginedList: Object.keys(loginedMap)
+    loginedList: [userMap.keys()]
   });
+
 }

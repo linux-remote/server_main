@@ -1,16 +1,11 @@
+
 // get
 exports.touch = function(req, res){
-  const loginedMap = req.session.loginedMap || Object.create(null);
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.json([]);
+  }
   res.json({
-    loginedList : Object.keys(loginedMap)
+    loginedList : [userMap.keys()]
   });
 }
-
-// // get
-// exports.verifyLogined = function(req, res, next){
-//   if(!req.session.loginedMap || Object.keys(req.session.loginedMap).length === 0){
-//     res.status(403).send('forbidden!');
-//   } else {
-//     next();
-//   }
-// }

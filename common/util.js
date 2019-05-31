@@ -1,7 +1,6 @@
 function _getSessKey(sid, username) {
   return `${sid}+${username}`;
 }
-exports._getSessKey = _getSessKey;
 
 exports.getTmpName = function(sid, username){
   return `${global.SESSION_PATH}/${_getSessKey(sid, username)}`
