@@ -8,7 +8,7 @@ if(process.getuid() !== 0){
   process.exit();
 }
 
-require('./lib/init-session-path');
+
 
 //const {fork} = require('child_process');
 const NODE_ENV = process.env.NODE_ENV;
@@ -17,11 +17,19 @@ const { onListening,
   onError, 
   normalizePort } = require('./common/util');
 
-const conf = require('./conf/dev.js');
+
 
 
 module.exports = function(userConf){
+  
+  require('./lib/init-session-path');
 
+  const conf = {
+    port: 3000,
+    sessionSecret: 'devSessionSecret',
+    sshPort: 22
+  };
+  
   Object.assign(conf, userConf);
 
   global.IS_PRO = NODE_ENV === 'production';
