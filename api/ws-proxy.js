@@ -3,7 +3,7 @@ const { getTmpName } = require('../common/util');
 
 const wsServer = new WebSocket.Server({ noServer: true });
 const wsProxy = require('../lib/ws-proxy');
-const URL_PREFIX = '/user/';
+const URL_PREFIX = '/api/user/';
 wsServer.on('connection', function connection(ws, unixSocket) {
   wsProxy(ws, unixSocket);
 });

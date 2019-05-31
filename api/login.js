@@ -9,7 +9,7 @@ exports.login = function(req, res, next){
 
   if(userMap && userMap.has(username)){
     return res.json({
-      loginedList: [userMap.keys()]
+      loginedList: Array.from(userMap.keys())
     });
   }
 
@@ -34,7 +34,7 @@ exports.login = function(req, res, next){
               req.session.userMap = userMap;
             }
             res.json({
-              loginedList: [userMap.keys()]
+              loginedList: Array.from(userMap.keys())
             });
           }
         });
@@ -61,12 +61,12 @@ exports.logout = function(req, res){
     user.term.kill();
     userMap.delete(username);
     if(!userMap.size){
-      req.session.destory();
+      req.session.destroy();
     }
   }
   
   res.json({
-    loginedList: [userMap.keys()]
+    loginedList: Array.from(userMap.keys())
   });
 
 }

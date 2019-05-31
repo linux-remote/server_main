@@ -6,6 +6,6 @@ exports.touch = function(req, res){
     return res.json([]);
   }
   res.json({
-    loginedList : [userMap.keys()]
+    loginedList : Array.from(userMap.keys())
   });
 }
