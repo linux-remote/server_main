@@ -61,5 +61,4 @@ module.exports = function(userConf){
 
   const createWebSocketServer = require('./ws-server');
   createWebSocketServer(server);
-  // require('./lib/ttl');
 }
