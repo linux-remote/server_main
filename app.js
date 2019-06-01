@@ -46,6 +46,7 @@ const login = require('./api/login');
 
 app.use(middleWare.preventUnxhr);
 app.get('/api/touch',  sess.touch);
+app.get('/api/loginedList', login.loginedList);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

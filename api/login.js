@@ -1,6 +1,6 @@
 const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
-
+const { getUser } = require('../lib/user');
 // post
 exports.login = function(req, res, next){
   
@@ -8,9 +8,7 @@ exports.login = function(req, res, next){
   const {username, password} = req.body;
 
   if(userMap && userMap.has(username)){
-    return res.json({
-      loginedList: Array.from(userMap.keys())
-    });
+    return res.end('AlreadyLogined');
   }
 
   const term = login({
@@ -30,12 +28,12 @@ exports.login = function(req, res, next){
           } else {
             if(!userMap){
               userMap = new Map;
-              userMap.set(username, {term});
+              userMap.set(username, getUser(term));
               req.session.userMap = userMap;
             }
-            res.json({
-              loginedList: Array.from(userMap.keys())
-            });
+
+            res.end('ok');
+
           }
         });
 
@@ -52,7 +50,7 @@ exports.logout = function(req, res){
   
   const userMap = req.session.userMap;
   if(!userMap){
-    return res.json([]);
+    return res.end('ok');
   }
   
   const username = req.body.username;
@@ -65,8 +63,15 @@ exports.logout = function(req, res){
     }
   }
   
-  res.json({
-    loginedList: Array.from(userMap.keys())
-  });
+  res.end('ok');
 
+}
+
+// get
+exports.loginedList = function(req, res){
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.json([]);
+  }
+  res.json(Array.from(userMap.keys()));
 }

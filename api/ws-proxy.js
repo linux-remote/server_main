@@ -1,26 +1,32 @@
 const WebSocket = require('ws');
 const { getTmpName } = require('../common/util');
-
+const { upUserConn } = require('../lib/user');
 const wsServer = new WebSocket.Server({ noServer: true });
 const wsProxy = require('../lib/ws-proxy');
 const URL_PREFIX = '/api/user/';
 wsServer.on('connection', function connection(ws, unixSocket) {
   wsProxy(ws, unixSocket);
+
+  ws.isAlive = true;
+  ws.on('pong', heartbeat);
+  
+  ttlIfNotStart();
 });
 
 
 
 function handleUpgrade(req, socket, head) {
-
   let href = req.url;
   href = href.substr(URL_PREFIX.length);
   const _index = href.indexOf('/');
   const username = href.substr(0, _index);
-
-  if(!req.session.userMap.has(username)){
+  const user = req.session.userMap.get(username);
+  if(!user){
     socket.destroy();
     return;
   }
+
+  upUserConn(user, socket);
 
   href = href.substr(_index);
   let unixSocket = getTmpName(req.session.id, username);
@@ -40,5 +46,39 @@ function handleUpgrade(req, socket, head) {
 
 module.exports = {
   URL_PREFIX,
-  handleUpgrade
+  handleUpgrade,
+  wsServer
+}
+
+// TTL
+// https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
+function noop() {}
+
+function heartbeat() {
+  this.isAlive = true;
+}
+
+let ttlTimer;
+let isStartTTL = false;
+const delay = 30000;
+function ttlIfNotStart(){
+  if(isStartTTL){
+    return;
+  }
+  isStartTTL = true;
+  ttlTimer = setInterval(function ping() {
+
+    wsServer.clients.forEach(function each(ws) {
+      if (ws.isAlive === false) {
+        return ws.terminate();
+      } 
+  
+      ws.isAlive = false;
+      ws.ping(noop);
+    });
+    if(!wsServer.clients.size){
+      clearInterval(ttlTimer);
+      isStartTTL = false;
+    }
+  }, delay);
 }
