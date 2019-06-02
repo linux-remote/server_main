@@ -29,9 +29,7 @@ app.use(sessMiddleware);
 
 
 //用户进程代理
-const alive = require('./api/alive');
-const httpRequestProxy = require('./lib/http-request-proxy');
-app.use('/api/alive/:username', alive);
+const httpRequestProxy = require('./api/http-request-proxy');
 app.use('/api/user/:username', httpRequestProxy.verifyUser,httpRequestProxy.proxy);
 
 

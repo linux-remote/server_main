@@ -1,6 +1,7 @@
 const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 const { getUser } = require('../lib/user');
+const sockClear = require('../lib/session/sock-clear');
 // post
 exports.login = function(req, res, next){
   
@@ -61,6 +62,7 @@ exports.logout = function(req, res){
     if(!userMap.size){
       req.session.destroy();
     }
+    sockClear(req.session.id, username);
   }
   
   res.end('ok');

@@ -1,5 +1,6 @@
 const request = require('request');
 const util = require('../common/util');
+const { upUserNow } = require('../lib/user');
 request.GET = request.get;
 request.POST = request.post;
 request.PUT = request.put;
@@ -62,7 +63,9 @@ exports.verifyUser = function(req, res, next){
 
   const userMap = req.session.userMap;
   if(userMap){
-    if(userMap.has(req.params.username)){
+    const user = userMap.get(req.params.username);
+    if(user){
+      upUserNow(user);
       next();
       return;
     }

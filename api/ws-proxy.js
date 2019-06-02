@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const { getTmpName } = require('../common/util');
+const { upUserNow } = require('../lib/user');
 const wsServer = new WebSocket.Server({ noServer: true });
 const wsProxy = require('../lib/ws-proxy');
 const URL_PREFIX = '/api/user/';
@@ -19,12 +20,13 @@ function handleUpgrade(req, socket, head) {
   href = href.substr(URL_PREFIX.length);
   const _index = href.indexOf('/');
   const username = href.substr(0, _index);
-  
-  if(!req.session.userMap.has(username)){
+  const user = req.session.userMap.get(username);
+  if(!user){
     socket.destroy();
     return;
   }
-
+  upUserNow(user);
+  
   href = href.substr(_index);
   let unixSocket = getTmpName(req.session.id, username);
   unixSocket = unixSocket + '.sock:';
