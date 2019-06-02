@@ -4,8 +4,9 @@ const { getUser } = require('../lib/user');
 const sockClear = require('../lib/session/sock-clear');
 // post
 exports.login = function(req, res, next){
-  
-  let userMap = req.session.userMap;
+  const sess = req.session;
+  const sid = sess.id;
+  let userMap = sess.userMap;
   const {username, password} = req.body;
 
   if(userMap && userMap.has(username)){
@@ -18,32 +19,39 @@ exports.login = function(req, res, next){
     ip: req.ip,
     end(err) {
       if(err){
-        console.log('登录失败', err.message);
+        // _console.log('登录失败', err.message);
         return next(err);
       } else {
-        console.log('登录成功');
-        startUserServer(term, req.session.id, username, function(err) {
+        // _console.log('登录成功');
+        startUserServer(term, sid, username, function(err) {
           if(err) {
             term.kill();
             res.status(500).end('[linux-remote]: user server start-up fail.')
           } else {
             if(!userMap){
               userMap = new Map;
-              userMap.set(username, getUser(term));
-              req.session.userMap = userMap;
+              sess.userMap = userMap;
             }
+            
+            const user = getUser(term);
+            userMap.set(username, user);
 
             res.end('ok');
 
+            term.once('exit', function() {  // handle kill by other
+              if(user._kill_term_by_self){
+                return;
+              }
+              userMap.delete(username);
+              sockClear(sid, username);
+            });
           }
         });
 
       }
     }
   });
-  term.on('exit', function() {
-    console.log('term exit');
-  });
+
 }
 
 // post2
@@ -57,12 +65,14 @@ exports.logout = function(req, res){
   const username = req.body.username;
   const user = userMap.get(username);
   if(user){
+    user._kill_term_by_self = true; // term exit 是异步的, 这里不等了.
     user.term.kill();
     userMap.delete(username);
+    sockClear(req.session.id, username);
     if(!userMap.size){
       req.session.destroy();
     }
-    sockClear(req.session.id, username);
+    // _console.log('logout user.term kill');
   }
   
   res.end('ok');

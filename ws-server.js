@@ -6,7 +6,6 @@ module.exports = function(server) {
   server.on('upgrade', function upgrade(req, socket, head) {
     sessMiddleware(req, {}, () => {
       if(!req.session){
-        console.log('req.headers.cookie', req.headers.cookie);
         socket.destroy();
         return;
       }
