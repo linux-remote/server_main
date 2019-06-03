@@ -3,7 +3,10 @@ const { getTmpName } = require('../common/util');
 const { upUserNow } = require('../lib/user');
 const wsServer = new WebSocket.Server({ noServer: true });
 const wsProxy = require('../lib/ws-proxy');
+const { WS_HEART_BEAT_DELAY } = require('../constant');
+
 const URL_PREFIX = '/api/user/';
+
 wsServer.on('connection', function connection(ws, unixSocket) {
   wsProxy(ws, unixSocket);
 
@@ -59,7 +62,6 @@ function heartbeat() {
 
 let ttlTimer;
 let isStartTTL = false;
-const delay = 30000;
 function ttlIfNotStart(){
   if(isStartTTL){
     return;
@@ -79,5 +81,5 @@ function ttlIfNotStart(){
       clearInterval(ttlTimer);
       isStartTTL = false;
     }
-  }, delay);
+  }, WS_HEART_BEAT_DELAY);
 }
