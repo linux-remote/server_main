@@ -59,6 +59,10 @@ module.exports = function(userConf){
     console.log('linux remote server start!\n');
   }));
 
-  const createWebSocketServer = require('./ws-server');
-  createWebSocketServer(server);
+  const handleServerUpgrade = require('./ws-server');
+  handleServerUpgrade(server);
+  return {
+    app,
+    handleServerUpgrade
+  }
 }
