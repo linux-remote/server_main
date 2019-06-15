@@ -61,7 +61,4 @@ module.exports = function(userConf){
 
   const handleServerUpgrade = require('./ws-server');
   handleServerUpgrade(server);
-  
-  return app;
-
 }
