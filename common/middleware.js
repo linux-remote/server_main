@@ -1,4 +1,4 @@
-var {preventUnxhr} = require('./util');
+
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
 exports.CORS = function(req, res, next) {
@@ -15,8 +15,11 @@ exports.CORS = function(req, res, next) {
   }
 }
 
-exports.preventUnxhrMid = function(req, res, next){
-  if(!preventUnxhr(req, res)){
+
+exports.preventUnxhr = function(req, res, next){
+  if(!req.xhr) {
+    res.status(400).end("xhr only");
+  } else {
     next();
   }
 }
@@ -29,24 +32,18 @@ exports.notFound = function(req, res, next) {
 }
 
 //errHandle
+
 exports.errHandle = function(err, req, res, next) {
 
-  let msg = `${err.name}: ${err.message}`;
-  let data;
-  if(!err.isCodeError){
-    var status = err.status || 500;
-    res.status(status);
-    data = msg;
-    // if(status === 500){
-    //   console.error(err);
-    // }
-  }else{
-    data = {
-      code: err.code,
-      msg
+  setTimeout(() => {
+    if(req.complete){
+      res.status(err.status || 500);
+      res.end(`${err.name}: ${err.message}`);
+    } else {
+      // eg: upload , stop immediately
+      // _console.log('errHandle stop immediately');
+      req.destroy();
     }
-  }
-
-  res.send(data);
+  });
   //util.errLog(msg, req);
 };

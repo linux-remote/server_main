@@ -4,17 +4,14 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const sessMiddleware = require('./lib/sess-middleware');
+const sessMiddleware = require('./lib/session/middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
-const apiWarp = require('./common/api-warp');
-const apiRouter = require('./api/global/router');
 const app = express();
 
 app.disable('x-powered-by');
+app.disable('trust proxy');
 const CONF = global.CONF;
-
-apiWarp(app);
 
 // uncomment after placing your favicon in /public
 
@@ -31,15 +28,13 @@ app.use(cookieParser());
 app.use(sessMiddleware);
 
 
-
 //用户进程代理
-const apiUser = require('./api/user');
-app.use('/api/user/:username', apiUser.beforeProxy, apiUser.proxy);
+const httpRequestProxy = require('./api/http-request-proxy');
+app.use('/api/user/:username', httpRequestProxy.verifyUser,httpRequestProxy.proxy);
 
 
 if(!global.IS_PRO){
   app.use(logger('dev'));
-
   // index 欢迎页
   app.get('/', function(req, res){
     res.send('Hello! This is Linux Remote Server!');
@@ -47,21 +42,19 @@ if(!global.IS_PRO){
 }
 
 const sess = require('./api/sess');
-
-app.get('/api/touch', middleWare.preventUnxhrMid, sess.touch);
-
 const login = require('./api/login');
+
+app.use(middleWare.preventUnxhr);
+app.get('/api/touch',  sess.touch);
+app.get('/api/loginedList', login.loginedList);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post('/api/login', middleWare.preventUnxhrMid, login.login);
-app.post('/api/logout', middleWare.preventUnxhrMid, login.logout);
+app.post('/api/login',  login.login);
+app.post('/api/logout',  login.logout);
 
-app.use(sess.verifyLogined);
-
-// 主进程API
-app.use('/api', middleWare.preventUnxhrMid, apiRouter);
+// app.use(sess.verifyLogined);
 
 // catch 404 and forward to error handler
 app.use(middleWare.notFound);

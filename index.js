@@ -1,19 +1,14 @@
 // Entry
 const http = require('http');
 const https = require('https');
-const {execSync} = require('child_process');
-const os = require('os');
-const path = require('path');
 const fs = require('fs');
 
-
-try{
-  global.SESSION_PATH = '/dev/shm/linux-remote';
-  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
-}catch(e){
-  global.SESSION_PATH = path.join(os.tmpdir(), 'linux-remote');
-  execSync('mkdir -m=1777 -p ' + global.SESSION_PATH);
+if(process.getuid() !== 0){
+  console.error('linux-remote server must start-up by root user');
+  process.exit();
 }
+
+
 
 //const {fork} = require('child_process');
 const NODE_ENV = process.env.NODE_ENV;
@@ -22,11 +17,19 @@ const { onListening,
   onError, 
   normalizePort } = require('./common/util');
 
-const conf = require('./conf/dev.js');
+
 
 
 module.exports = function(userConf){
+  
+  require('./lib/init-session-path');
 
+  const conf = {
+    port: 3000,
+    sessionSecret: 'devSessionSecret',
+    sshPort: 22
+  };
+  
   Object.assign(conf, userConf);
 
   global.IS_PRO = NODE_ENV === 'production';
@@ -55,11 +58,7 @@ module.exports = function(userConf){
   server.on('listening', onListening(server, () => {
     console.log('linux remote server start!\n');
   }));
-  // global.CALLBACK_SERVER = fork('./callback-server.js', {
-  //   env: {
-  //     PORT: path.join(path.dirname(global.SESSION_PATH), 'linux-remote-callback.sock')
-  //   } 2797 2820
-  // });
-  const createWebSocketServer = require('./web-socket-server');
-  global.WEB_SOCKET_SERVER = createWebSocketServer(server);
+
+  const createWebSocketServer = require('./ws-server');
+  createWebSocketServer(server);
 }

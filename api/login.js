@@ -1,72 +1,89 @@
 const login = require('../lib/login');
-const sas = require('sas');
-const request = require('request');
-const util = require('../common/util');
+const startUserServer = require('../lib/start-user-server');
+const { getUser } = require('../lib/user');
+const sockClear = require('../lib/session/sock-clear');
 // post
 exports.login = function(req, res, next){
-  var {username, password} = req.body;
-  var loginedMap = req.session.loginedMap || Object.create(null);
+  const sess = req.session;
+  const sid = sess.id;
+  let userMap = sess.userMap;
+  const {username, password} = req.body;
 
-  function checkIsLogin(callback){
-    if(loginedMap[username]){
-      // return res.apiOk({
-      //   alreadyLogined: true
-      // });
-      request.get('http://unix:' +
-      util.getTmpName(req.session.id, req.body.username) +
-      '.sock:/live', function(err){
-        if(err){
-          delete(loginedMap[username]); //如果用户进程挂了,下一步
-          return callback();
-        }else{
-          callback('$up'); //返回
-        }
-      })
-    }else{
-      callback();
-    }
+  if(userMap && userMap.has(username)){
+    return res.end('AlreadyLogined');
   }
 
-  function userLogin(callback){
-    login(username, password, req.session.id, function(err){
+  const term = login({
+    username,
+    password,
+    ip: req.ip,
+    end(err) {
       if(err){
-        return callback(err);
-      }
-      loginedMap[username] = true;
-      req.session.loginedMap = loginedMap
-      req.session.isSet = true;
-      callback();
-    });
-  }
+        // _console.log('登录失败', err.message);
+        return next(err);
+      } else {
+        // _console.log('登录成功');
+        startUserServer(term, sid, username, function(err) {
+          if(err) {
+            term.kill();
+            res.status(500).end('[linux-remote]: user server start-up fail.')
+          } else {
+            if(!userMap){
+              userMap = new Map;
+              sess.userMap = userMap;
+            }
+            
+            const user = getUser(term);
+            userMap.set(username, user);
 
-  sas([checkIsLogin, userLogin], function(err){
-    if(err){
-      return next(err);
+            res.end('ok');
+
+            term.once('exit', function() {  // handle kill by other
+              if(user._kill_term_by_self){
+                return;
+              }
+              userMap.delete(username);
+              sockClear(sid, username);
+            });
+          }
+        });
+
+      }
     }
-    res.apiOk(loginedMap);
   });
+
 }
 
 // post2
 exports.logout = function(req, res){
-  const loginedMap = req.session.loginedMap || Object.create(null);
-  var username = req.body.username;
   
-  if(!loginedMap[username]){
-    return res.apiOk(loginedMap);
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.end('ok');
   }
+  
+  const username = req.body.username;
+  const user = userMap.get(username);
+  if(user){
+    user._kill_term_by_self = true; // term exit 是异步的, 这里不等了.
+    user.term.kill();
+    userMap.delete(username);
+    sockClear(req.session.id, username);
+    if(!userMap.size){
+      req.session.destroy();
+    }
+    // _console.log('logout user.term kill');
+  }
+  
+  res.end('ok');
 
-  request.delete('http://unix:' +
-  util.getTmpName(req.session.id, username) +
-  '.sock:/exit', function(){
+}
 
-    //console.log(username, 'logout at2 ' + new Date());
-
-    delete(loginedMap[username]);
-    req.session.loginedMap = loginedMap;
-    req.session.isSet = true;
-    res.apiOk(loginedMap);
-
-  })
-
+// get
+exports.loginedList = function(req, res){
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.json([]);
+  }
+  res.json(Array.from(userMap.keys()));
 }
