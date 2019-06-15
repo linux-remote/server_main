@@ -10,9 +10,10 @@ const mountClient = require('./lib/mount-client');
 const app = express();
 
 app.disable('x-powered-by');
-app.disable('trust proxy');
 const CONF = global.CONF;
-
+if(CONF.appTrustProxy){
+  app.set('trust proxy', CONF.appTrustProxy);
+}
 // uncomment after placing your favicon in /public
 
 // ============================前端加载============================
