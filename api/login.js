@@ -26,7 +26,7 @@ exports.login = function(req, res, next){
         startUserServer(term, sid, username, function(err) {
           if(err) {
             term.kill();
-            res.status(500).end('[linux-remote]: user server start-up fail.')
+            res.status(500).end('[linux-remote]: user server start-up fail. ' + err.message);
           } else {
             if(!userMap){
               userMap = new Map;
