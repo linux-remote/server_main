@@ -3,8 +3,8 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-if(process.getuid() === 0){
-  console.error('Error: The server must be started by a non-root user.');
+if(process.getuid() !== 0){
+  console.error('linux-remote server must start-up by root user');
   process.exit();
 }
 
