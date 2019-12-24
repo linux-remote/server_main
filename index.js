@@ -3,14 +3,11 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-if(process.getuid() !== 0){
-  console.error('linux-remote server must start-up by root user');
-  process.exit();
+if(process.getuid() === 0){
+  console.warn('warn: linux-remote server start by root user.');
 }
 
 
-
-//const {fork} = require('child_process');
 const NODE_ENV = process.env.NODE_ENV;
 
 const { onListening, 
@@ -20,23 +17,14 @@ const { onListening,
 
 
 
-module.exports = function(userConf){
+module.exports = function(conf){
   
   require('./lib/init-session-path');
 
-  const conf = {
-    port: 3000,
-    sessionSecret: 'devSessionSecret',
-    sshPort: 22
-  };
-  
-  Object.assign(conf, userConf);
 
   global.IS_PRO = NODE_ENV === 'production';
   global.CONF = conf;
 
-  
-  // const createWebSocketServer = require('./web-socket-server');
   const app = require('./app');
 
   const port = normalizePort(process.env.PORT || conf.port);

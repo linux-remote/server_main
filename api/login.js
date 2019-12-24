@@ -2,6 +2,15 @@ const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 const { getUser } = require('../lib/user');
 const sockClear = require('../lib/session/sock-clear');
+
+// http://www.voidcn.com/article/p-crckexby-bst.html
+//https://stackoverflow.com/questions/29411551
+function getIP(str){
+  if(/::ffff:\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/.test(str)){
+    return str.substr(7);
+  }
+  return str;
+}
 // post
 exports.login = function(req, res, next){
   const sess = req.session;
@@ -16,7 +25,7 @@ exports.login = function(req, res, next){
   const term = login({
     username,
     password,
-    ip: req.ip,
+    ip: getIP(req.ip),
     end(err) {
       if(err){
         // _console.log('登录失败', err.message);
