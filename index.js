@@ -4,7 +4,7 @@ const https = require('https');
 const fs = require('fs');
 
 if(process.getuid() === 0){
-  console.warn('warn: linux-remote server start by root user.');
+  console.warn('Warning: linux-remote server start by root user.');
 }
 
 
