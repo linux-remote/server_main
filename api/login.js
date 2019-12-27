@@ -3,14 +3,16 @@ const startUserServer = require('../lib/start-user-server');
 const { getUser } = require('../lib/user');
 const sockClear = require('../lib/session/sock-clear');
 
+// remove IPv4's ::ffff:
 // http://www.voidcn.com/article/p-crckexby-bst.html
-//https://stackoverflow.com/questions/29411551
+// https://stackoverflow.com/questions/29411551
 function getIP(str){
   if(/::ffff:\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}/.test(str)){
     return str.substr(7);
   }
   return str;
 }
+
 // post
 exports.login = function(req, res, next){
   const sess = req.session;
@@ -51,6 +53,7 @@ exports.login = function(req, res, next){
               if(user._kill_term_by_self){
                 return;
               }
+              console.log(' handle term kill by other');
               userMap.delete(username);
               sockClear(sid, username);
             });
