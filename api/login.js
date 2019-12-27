@@ -2,7 +2,7 @@ const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 const { getUser } = require('../lib/user');
 const sockClear = require('../lib/session/sock-clear');
-
+const newLogin = require('../lib/new-login');
 // remove IPv4's ::ffff:
 // http://www.voidcn.com/article/p-crckexby-bst.html
 // https://stackoverflow.com/questions/29411551
@@ -23,7 +23,7 @@ exports.login = function(req, res, next){
   if(userMap && userMap.has(username)){
     return res.end('AlreadyLogined');
   }
-
+  
   const term = login({
     username,
     password,

@@ -1,5 +1,5 @@
 const request = require('request');
-const util = require('../common/util');
+const {getTmpName} = require('../lib/new-session');
 const { upUserNow } = require('../lib/user');
 request.GET = request.get;
 request.POST = request.post;
@@ -14,7 +14,7 @@ exports.proxy = function(req, res, next){
   //   return res.status(403).send('Forbidden'); 
   // }
 
-  var unixSocket = 'http://unix:' + util.getTmpName(req.session.id, req.params.username) + '.sock:';
+  var unixSocket = 'http://unix:' + getTmpName(req.session.id, req.params.username) + ':';
   var x = request[req.method](unixSocket + req.url);
 
   x.on('error', function(err){

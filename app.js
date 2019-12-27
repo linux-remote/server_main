@@ -7,6 +7,11 @@ const bodyParser = require('body-parser');
 const sessMiddleware = require('./lib/session/middleware');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
+
+const httpRequestProxy = require('./api/http-request-proxy');
+const sess = require('./api/sess');
+const login = require('./api/login');
+
 const app = express();
 
 
@@ -30,7 +35,7 @@ app.use(sessMiddleware);
 
 
 //用户进程代理
-const httpRequestProxy = require('./api/http-request-proxy');
+
 app.use('/api/user/:username', httpRequestProxy.verifyUser,httpRequestProxy.proxy);
 
 
@@ -42,8 +47,7 @@ if(!global.IS_PRO){
   });
 }
 
-const sess = require('./api/sess');
-const login = require('./api/login');
+
 
 app.use(middleWare.preventUnxhr);
 app.get('/api/touch',  sess.touch);

@@ -19,8 +19,8 @@ const { onListening,
 
 module.exports = function(conf){
   
-  require('./lib/init-session-path');
   require('./lib/new-session');
+
   conf.xPoweredBy = conf.xPoweredBy === undefined ? false : conf.xPoweredBy;
   conf.appTrustProxy = conf.appTrustProxy === undefined ? false : conf.appTrustProxy;
 

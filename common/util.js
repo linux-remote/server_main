@@ -1,8 +1,4 @@
 
-exports.getTmpName = function(sid, username){
-  return `${global.SESSION_PATH}/${sid}.${username}`
-}
-
 //*******************************************************************************/
 //The following is copy and modify from 'express-generator' generated project's bin/www file.
 //https://github.com/expressjs/generator
