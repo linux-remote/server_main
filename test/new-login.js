@@ -10,13 +10,27 @@ function separateLogin(opts, callback){
   });
   
   ls.send(opts);
-  
-  ls.once('message', function(obj){
-    callback(obj);
+
+  let isDone = false;
+  function done(data){
+    if(isDone){
+      return;
+    }
+    isDone = true;
+    
+    callback(data);
     ls.disconnect();
     ls.unref();
-  });
+  }
   
+  ls.once('message', done);
+
+  ls.on('error', function(err){
+    done({error: true, message: err.message})
+  })
+  // ls.on('close', function(code){ // Will be executed before error.
+  //   done({error: true, message: `Login child process exited with code ${code}`})
+  // })
 }
 
 module.exports = separateLogin;
