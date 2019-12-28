@@ -1,5 +1,5 @@
 const request = require('request');
-const {getTmpName} = require('../lib/new-session');
+const {getTmpName} = require('../lib/session');
 const { upUserNow } = require('../lib/user');
 request.GET = request.get;
 request.POST = request.post;

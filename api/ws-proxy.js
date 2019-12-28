@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const {getTmpName} = require('../lib/new-session');
+const {getTmpName} = require('../lib/session');
 const { upUserNow } = require('../lib/user');
 const wsServer = new WebSocket.Server({ noServer: true });
 const wsProxy = require('../lib/ws-proxy');

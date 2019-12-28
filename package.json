@@ -15,6 +15,7 @@
     "_devInstall": "cnpm i --by=npm --no-bin-links",
     "linuxIpty": "npm install node-pty --save --no-bin-links"
   },
+  "files": ["api", "common", "lib", "public", "utils", "app.js", "constant.js", "index.js", "ws-server.js"],
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",

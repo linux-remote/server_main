@@ -1,8 +1,7 @@
 const login = require('../lib/login');
 const startUserServer = require('../lib/start-user-server');
 const { getUser } = require('../lib/user');
-const sockClear = require('../lib/session/sock-clear');
-const newLogin = require('../lib/new-login');
+const newLogin = require('../lib/separate-login');
 // remove IPv4's ::ffff:
 // http://www.voidcn.com/article/p-crckexby-bst.html
 // https://stackoverflow.com/questions/29411551
@@ -55,7 +54,6 @@ exports.login = function(req, res, next){
               }
               console.log(' handle term kill by other');
               userMap.delete(username);
-              sockClear(sid, username);
             });
           }
         });
@@ -80,7 +78,6 @@ exports.logout = function(req, res){
     user._kill_term_by_self = true; // term exit 是异步的, 这里不等了.
     user.term.kill();
     userMap.delete(username);
-    sockClear(req.session.id, username);
     if(!userMap.size){
       req.session.destroy();
     }
