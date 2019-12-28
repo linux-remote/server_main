@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
-const sesss = require('./lib/session');
+const session = require('./lib/session');
 const httpRequestProxy = require('./api/http-request-proxy');
 const sess = require('./api/sess');
 const login = require('./api/login');
@@ -30,9 +30,9 @@ if(CONF.client){
 // ============================ 前端加载结束 ============================
 
 app.use(cookieParser());
-
+app.use(session.middleware);
 //用户进程代理
-app.use('/api/user/:username', httpRequestProxy.verifyUser,httpRequestProxy.proxy);
+app.use('/api/user/:username', httpRequestProxy.verifyUser, httpRequestProxy.proxy);
 
 if(!global.IS_PRO){
   app.use(logger('dev'));
