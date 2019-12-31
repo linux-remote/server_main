@@ -2,16 +2,14 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-const os = require('os');
 const { onListening, 
   onError, 
   normalizePort } = require('./common/util');
 
 const NODE_ENV = process.env.NODE_ENV;
 
-if(os.userInfo() !== 'linux-remote'){
-  console.error('Error: linux-remote server Must be started as linux-remote user.');
-  process.exit();
+if(process.getuid() === 0){
+  console.warn('Warning: linux-remote server start by root user.');
 }
 
 function def(obj, key, value){
