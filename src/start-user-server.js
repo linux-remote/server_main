@@ -3,7 +3,9 @@
 const { getTmpName } = require('./session');
 const { FLAG, ERROR_FLAG } = require('./util');
 // const start = new EventEmitter();
-const APP_PATH = global.CONF.userServerMain;
+const APP_PATH = global.CONF.userServerPath;
+
+// term server;
 
 function startUserServer(term, newSidHash, username, callback) {
   const tmpName = getTmpName(newSidHash, username);

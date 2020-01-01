@@ -8,6 +8,11 @@ const path = require('path');
 const uidSafe = require('uid-safe');
 
 
+const SID_LENGTH = 40; // crypto.randomBytes(30).length
+const sidMap = new Map();
+let sidHashMap;
+let socketTmpPath;
+
 // ------------------------------ init ------------------------------
 function initTmpPath(){
   let tmpPath;
@@ -40,17 +45,21 @@ function initSidHashMap(tmpPath){
   return map;
 }
 
-const TMP_PATH = initTmpPath();
-const sidHashMap = initSidHashMap(TMP_PATH);
+
+function init(){
+  socketTmpPath = initTmpPath();
+  execSync('rm -rf ' + socketTmpPath + '/*');
+  sidHashMap = initSidHashMap(socketTmpPath);
+}
 
 // ------------------------------ init end ------------------------------
 
-
-const SID_LENGTH = 40; // crypto.randomBytes(30).length
-const sidMap = new Map();
+function clearUp(){
+  execSync('rm -rf ' + socketTmpPath);
+}
 
 function getTmpName(sidHash, username){
-  return `${TMP_PATH}/${sidHash}.${username}`;
+  return `${socketTmpPath}/${sidHash}.${username}`;
 }
 
 function hashSid(sid){
@@ -138,6 +147,8 @@ function upUserNow(userMap, username){
   userMap.set(username, Date.now());
 }
 module.exports = {
+  init,
+  clearUp,
   genSid,
   setSid,
   hashSid,

@@ -1,11 +1,9 @@
 
 const pty = require('node-pty');
-// const { DebounceTime } = require('../utils/debounce-time');
 const { getFirstLine, escapeInjection } = require('./util');
 const os = require('os');
 function login(opts) {
   const username = escapeInjection(opts.username);
-  // global.CONF.loginBinPath
   // username can't see in `top -c -b`
   const term = pty.spawn(global.CONF.loginBinPath, ['-h', opts.ip, username], {
     cols: 1, rows: 1

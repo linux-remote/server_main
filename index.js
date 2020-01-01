@@ -1,64 +1,35 @@
-// Entry
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
-const { onListening, 
-  onError, 
-  normalizePort } = require('./common/util');
 
-const NODE_ENV = process.env.NODE_ENV;
+const { spawn } = require('child_process');
+const sessions = require('./src/session');
 
-if(process.getuid() === 0){
-  console.warn('Warning: linux-remote server start by root user.');
-}
-
-function def(obj, key, value){
-  if(obj[key] === undefined){
-    obj[key] = value;
+module.exports = function({entranceServerPath, userServerPath, loginBinPath, confPath}){
+  global.CONF = {
+    userServerPath,
+    loginBinPath
   }
-}
+  sessions.init();
 
-module.exports = function(conf){
-  
-  require('./lib/session');
+  const ep = spawn(process.argv[0], [entranceServerPath], {
+    stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+  });
 
-  def(conf, 'xPoweredBy', false);
-  def(conf, 'appTrustProxy', false);
-
-  global.IS_PRO = NODE_ENV === 'production';
-  global.CONF = conf;
-
-  const app = require('./app');
-
-  const port = normalizePort(process.env.PORT || conf.port);
-  app.set('port', port);
-
-  let server;
-  const secure = conf.secure;
-  if(conf.secure){
-    if(!secure.key){
-      secure.key = fs.readFileSync(secure.keyPath, 'utf-8');
-      delete(secure.keyPath);
+  ep.on('message', function(msgObj) {
+    let data;
+    switch(msgObj.method){
+      case 'getConfPath':
+        data = confPath;
+        break;
+      case 'getSessions':
+      case 'login':
+      case 'startUserServer':
+      case 'logout':
+        data = sessions[msgObj.method](msgObj);
+        break;
     }
-    if(!secure.cert){
-      secure.cert = fs.readFileSync(secure.certPath, 'utf-8');
-      delete(secure.certPath);
-    }
-    if(!secure.ca && secure.caPath){
-      secure.ca = fs.readFileSync(secure.caPath, 'utf-8');
-      delete(secure.caPath);
-    }
-    server = https.createServer(secure, app);
-  }else{
-    server = http.createServer(app);
-  }
-  
-  server.listen(port);
-  server.on('error', onError(port));
-  server.on('listening', onListening(server, () => {
-    console.log('linux-remote server start!\n');
-  }));
+    ep.send(data);
+  });
 
-  const handleServerUpgrade = require('./ws-server');
-  handleServerUpgrade(server);
+  process.on('exit', function(){
+    sessions.clearUp();
+  });
 }
