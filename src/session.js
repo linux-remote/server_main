@@ -13,6 +13,7 @@ const sidMap = new Map();
 let sidHashMap;
 let socketTmpPath;
 
+// https://developpaper.com/question/will-building-unix-sockets-in-dev-shm-improve-performance/
 // ------------------------------ init ------------------------------
 function initTmpPath(){
   let tmpPath;
