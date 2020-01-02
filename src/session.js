@@ -11,22 +11,12 @@ const uidSafe = require('uid-safe');
 const SID_LENGTH = 40; // crypto.randomBytes(30).length
 const sidMap = new Map();
 let sidHashMap;
-let socketTmpPath;
 
 // https://developpaper.com/question/will-building-unix-sockets-in-dev-shm-improve-performance/
+let socketTmpPath = path.join(os.tmpdir(), 'linux-remote');
+
+
 // ------------------------------ init ------------------------------
-function initTmpPath(){
-  let tmpPath;
-  try{
-    // -- See https://github.com/linux-remote/linux-remote/wiki/Linux-WTF#--
-    tmpPath = '/dev/shm/linux-remote';
-    execSync('mkdir -m=1773 -p -- ' + tmpPath);
-  }catch(e) {
-    tmpPath = path.join(os.tmpdir(), 'linux-remote');
-    execSync('mkdir -m=1773 -p -- ' + tmpPath);
-  }
-  return tmpPath;
-}
 
 function initSidHashMap(tmpPath){
   let filenames = fs.readdirSync(tmpPath);
@@ -48,8 +38,8 @@ function initSidHashMap(tmpPath){
 
 
 function init(){
-  socketTmpPath = initTmpPath();
-  execSync('rm -rf ' + socketTmpPath + '/*');
+  execSync('rm -rf ' + socketTmpPath);
+  execSync('mkdir -m=1773 -- ' + socketTmpPath);
   sidHashMap = initSidHashMap(socketTmpPath);
 }
 
