@@ -5,15 +5,20 @@ const os = require('os');
 function login(opts) {
   const username = escapeInjection(opts.username);
   // username can't see in `top -c -b`
-  const term = pty.spawn(global.CONF.loginBinPath, ['-h', opts.ip, username], {
-    cols: 1, rows: 1
-  });
+  const term = pty.spawn(global.CONF.loginBinPath, ['-h', opts.ip, username]);
+
+  console.log('term.once,', term.once);
+
   const callback = opts.end;
 
   console.log('\nterm.process', term.process);
   console.log('term.pid', term.pid, '\n');
   let isEnd = false;
+  let timer;
   function end(err, output) {
+    if(timer){
+      clearTimeout(timer);
+    }
     if(isEnd) { // term on Error: may have read EIO bug.
       return;
     }
@@ -23,7 +28,7 @@ function login(opts) {
       term.kill();
       callback(err);
     } else {
-      callback(err, output);
+      callback(null, output);
     }
   }
 
@@ -47,31 +52,20 @@ function login(opts) {
   //   }
   //   term.removeListener('data', handleData);
   // }, 200);
-  let timer;
+  
   function handleData(data) {
     output = output + data;
     if(BEFORE_PROCESS !== term.process){
-      console.log('term process2', term.process);
-      if(timer){
-        clearTimeout(timer);
-      }
+      // console.log('term process2', term.process);
       end(null);
       term.removeListener('data', handleData);
     } else {
       if(data.indexOf('Login incorrect') !== -1) {
-        if(timer){
-          clearTimeout(timer);
-        }
-        term.kill();
         end({
           name: 'loginError',
           message: 'Login incorrect'
         })
       } else if(data.indexOf(os.hostname() + ' login:') !== -1){
-        if(timer){
-          clearTimeout(timer);
-        }
-        term.kill();
         end({
           name: getFirstLine(output),
           message: 'Login incorrect'
@@ -90,7 +84,6 @@ function login(opts) {
     term.write(password + '\n');
     term.addListener('data', handleData);
     timer = setTimeout(() => {
-      term.kill();
       end({
         name: 'loginError',
         message: 'Login timeout'

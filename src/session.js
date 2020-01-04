@@ -15,7 +15,10 @@ let sidHashMap;
 // https://developpaper.com/question/will-building-unix-sockets-in-dev-shm-improve-performance/
 let socketTmpPath = path.join(os.tmpdir(), 'linux-remote');
 
-
+// user
+// group
+// homedir
+// tmpdir
 // ------------------------------ init ------------------------------
 
 function initSidHashMap(tmpPath){
@@ -83,10 +86,10 @@ function genSid(){
 }
 
 
-function setSid(sid, sidHash, username){
-  const userMap = new Map([[username, Date.now()]]);
-  _setSidMap(sid, sidHash, userMap);
-  sidHashMap.set(sidHash, userMap);
+function _setNewSession(sid, _hashedSid, username, term){
+  const userMap = new Map([[username, {term}]]);
+  _setSidMap(sid, _hashedSid, userMap);
+  sidHashMap.set(_hashedSid, userMap);
 }
 
 function _setSidMap(sid, hash, userMap){
@@ -137,13 +140,29 @@ function middleware(req, res, next){
 function upUserNow(userMap, username){
   userMap.set(username, Date.now());
 }
+function delSession(sid, username){
+  const session = getSession(sid);
+  if(session){
+    const userMap = session.userMap;
+    const user = userMap.get(username);
+    if(user){
+      user.term.kill();
+      userMap.delete(username);
+      // if(userMap.size === 0){
+
+      // }
+    }
+  }
+}
+
 module.exports = {
   init,
   clearUp,
   genSid,
-  setSid,
+  _setNewSession,
   hashSid,
   getSession,
+  delSession,
   setCookie,
   middleware,
   getTmpName,

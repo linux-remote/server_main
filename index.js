@@ -1,35 +1,25 @@
 
 const { spawn } = require('child_process');
 const sessions = require('./src/session');
+const ipc = require('./src/ipc');
 
-module.exports = function({entranceServerPath, userServerPath, loginBinPath, confPath}){
+module.exports = function({entranceServerPath, userServerPath, loginBinPath}){
+
   global.CONF = {
     userServerPath,
     loginBinPath
   }
+  
   sessions.init();
 
-  const ep = spawn(process.argv[0], [entranceServerPath], {
-    stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+  const entranceProcess = spawn(process.argv[0], [entranceServerPath], {
+    stdio: ['inherit', 'inherit', 'inherit', 'ipc']
   });
 
-  ep.on('message', function(msgObj) {
-    let data;
-    switch(msgObj.method){
-      case 'getConfPath':
-        data = confPath;
-        break;
-      case 'getSessions':
-      case 'login':
-      case 'startUserServer':
-      case 'logout':
-        data = sessions[msgObj.method](msgObj);
-        break;
-    }
-    ep.send(data);
-  });
+  ipc(entranceProcess);
 
   process.on('exit', function(){
     sessions.clearUp();
   });
+
 }
