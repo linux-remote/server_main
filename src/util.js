@@ -42,14 +42,28 @@ function safeWrap(disinfectedInput){
 //   });
 // }
 
+
+// $$common$$ 
+// server user-server 各有一份相同的。
+// 2020/04/01
+function genUserServerFlag(){
+  let wrap = '***';
+  let serverName = 'LR-USER-SERVER';
+  let START_FLAG = `${wrap}${serverName}-START${wrap}`;
+  let ERR_FLAG_START = `${wrap}${serverName}-ERR-START${wrap}`;
+  let ERR_FLAG_END = `${wrap}${serverName}-ERR-END${wrap}`;
+  return {
+    START_FLAG,
+    ERR_FLAG_START,
+    ERR_FLAG_END
+  }
+}
+
 module.exports = {
   getFirstLine,
   escapeInjection,
   safeWrap,
-  // $$common$$
-  FLAG: '*********** LINUX-REMOTE-USER-SERVER-START ***********',
-  // $$common$$
-  ERROR_FLAG: '*********** LINUX-REMOTE-USER-SERVER-ERROR ***********'
+  genUserServerFlag
 }
 
 
