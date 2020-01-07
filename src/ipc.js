@@ -31,14 +31,14 @@ function _handleMsgLogin(data, send){
   loginAndStartUserServer(data, function(err, result){
     if(err){
       send({
-        type: 'error',
+        status: 'error',
         message: err.message
       });
       return;
     }
 
     send({
-      type: 'success',
+      status: 'success',
       data: result
     });
   })
@@ -47,14 +47,14 @@ function _handleMsgLogin(data, send){
 function _handleMsgLogout({sid, username}, send){
   delSession(sid, username);
   send({
-    type: 'success'
+    status: 'success'
   })
 }
 
 function _handleMsgGetSession(sid, send){
   const session = getSession(sid);
   let sendData = {
-    type: 'success',
+    status: 'success',
   }
   if(session){
     sendData.data = {
