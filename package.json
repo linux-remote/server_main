@@ -11,15 +11,15 @@
     "url": "git@github.com:linux-remote/server.git"
   },
   "scripts": {
-    "start": "NODE_ENV=development nodemon --ignore test/ -e js -L dev_start.js",
+    "sulr": "sudo su linux-remote --shell=/bin/bash",
+    "start": "node dev.js",
     "_devInstall": "cnpm i --by=npm --no-bin-links",
     "linuxIpty": "npm install node-pty --save --no-bin-links"
   },
   "files": ["src", "index.js"],
   "dependencies": {
     "node-pty": "^0.8.1",
-    "uid-safe": "^2.1.5",
-    "lr-server-entrance": "lac"
+    "uid-safe": "^2.1.5"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
