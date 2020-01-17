@@ -42,7 +42,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(sessionMid);
+app.use('/api', sessionMid);
 app.get('/api/loggedInList', login.loggedInList);
 app.post('/api/login',  login.login);
 app.post('/api/logout',  login.logout);

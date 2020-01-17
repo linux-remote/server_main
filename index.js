@@ -2,6 +2,8 @@
 // Entry
 const http = require('http');
 const https = require('https');
+const os = require('os');
+const path = require('path');
 
 const { initSecure } = require('./src/lib/secure');
 
@@ -12,6 +14,7 @@ function def(obj, key, value){
 }
 
 function createServer(confPath){
+  confPath = confPath || path.join(os.userInfo().homedir, 'config.js');
   const conf = require(confPath);
   global.CONF = conf;
   global.IS_PRO = process.env.NODE_ENV === 'production';
@@ -40,7 +43,7 @@ function createServer(confPath){
   server.listen(conf.port);
   
   server.on('listening', function(){
-    console.log('[lr-entrance]: Server start!');
+    console.log('[server]: Server start!');
     console.log('Listening on ' + conf.port);
     console.log('NODE_ENV ' + process.env.NODE_ENV);
   });

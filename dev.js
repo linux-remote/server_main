@@ -6,7 +6,7 @@ const watchHere = require('../../watch-here/index');
 
 watchHere({
   dir: path.join(__dirname, 'src'),
-  name: 'lr-entrance',
+  name: 'server',
   run(){
     createServer(path.join(__dirname, './dev.config.js'));
   }
