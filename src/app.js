@@ -1,12 +1,11 @@
 const path = require('path');
-const fs = require('fs');
 
 const express = require('express');
 const logger = require('morgan');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-
+const {indexMid} = require('../../client-index/index');
 const middleWare = require('./common/middleware');
 const mountClient = require('./lib/mount-client');
 const { sessionMid } = require('./lib/session');
@@ -19,12 +18,13 @@ app.set('trust proxy', global.CONF.appTrustProxy);
 
 if(!global.IS_PRO){
   app.use(logger('dev'));
-  // index 欢迎页
-  app.get('/', function(req, res){
-    res.send('Hello! This is Linux Remote Server!');
-  });
 }
 
+if(!global.CONF.CORS){
+  // index 欢迎页
+
+}
+app.get('/', indexMid({}, global.CONF.CORS));
 // ============================ 前端加载 ============================
 // 测试环境是分开的。正式是合起来的。
 if(global.CONF.client){

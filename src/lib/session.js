@@ -42,16 +42,16 @@ function initSessUser(req, username){
   req.sessUser = req.session.userMap[username];
 }
 
-function wsInitSessUser(req, username, callback){
-  initSession(req, function(){
-    initSessUser(req, username);
-    callback();
-  })
-}
+// function wsInitSessUser(req, username, callback){
+//   initSession(req, function(){
+//     initSessUser(req, username);
+//     callback();
+//   })
+// }
 
 module.exports = {
   initSession,
   sessionMid,
-  wsInitSessUser,
+  // wsInitSessUser,
   initSessUser
 };

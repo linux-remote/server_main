@@ -59,4 +59,8 @@ function createServer(confPath){
   const wsNoServer = require('./src/ws-server');
   wsNoServer(server);
 }
+process.on('disconnect', function(){
+  console.info('server disconnect');
+  process.exit();
+})
 module.exports = createServer;
