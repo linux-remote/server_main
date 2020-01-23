@@ -5,9 +5,7 @@ const logger = require('morgan');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const {indexMid} = require('../../client-index/index');
 const middleWare = require('./common/middleware');
-const mountClient = require('./lib/mount-client');
 const { sessionMid } = require('./lib/session');
 const login = require('./api/login');
 
@@ -20,19 +18,19 @@ if(!global.IS_PRO){
   app.use(logger('dev'));
 }
 
-if(!global.CONF.CORS){
-  // index 欢迎页
+// if(global.CONF.client){
+//   require('linux-remote-client')(app, global.CONF.client);
+// }
 
-}
-app.get('/', indexMid({}, global.CONF.CORS));
 // ============================ 前端加载 ============================
 // 测试环境是分开的。正式是合起来的。
-if(global.CONF.client){
-  mountClient(app, global.CONF.client);
-}else{
-  app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
-  app.use(middleWare.CORS);
-}
+// if(global.CONF.client){
+//   mountClient(app, global.CONF.client);
+// }else{
+//   app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
+//   app.use(middleWare.CORS);
+// }
+app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 // ============================ 前端加载结束 ============================
 if(global.IS_PRO){
   app.use(middleWare.preventUnxhr);

@@ -62,5 +62,5 @@ function createServer(confPath){
 process.on('disconnect', function(){
   console.info('server disconnect');
   process.exit();
-})
+});
 module.exports = createServer;
