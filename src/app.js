@@ -34,6 +34,10 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 // ============================ 前端加载结束 ============================
 if(global.IS_PRO){
   app.use(middleWare.preventUnxhr);
+} else {
+  app.get('/', function(req, res){
+    res.end('This is linux-remote server.');
+  });
 }
 
 app.use(cookieParser());
