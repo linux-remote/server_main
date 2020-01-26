@@ -66,7 +66,7 @@ function loop(){
     env: {
       LR_SERVER_PATH: path.join(__dirname, './index.js'),
       LR_USER_SERVER_PATH: path.join(__dirname, '../user-server/dev.js'),
-      LR_LOGIN_BIN_PATH: '/home/dw/c-out/lr-login'
+      LR_LOGIN_BIN_PATH: '/opt/linux-remote/bin/lr-login'
     },
     stdio: 'inherit'
   });

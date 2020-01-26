@@ -25,7 +25,7 @@ exports.login = function(req, res, next){
       return;
     }
   }
-  ipcSay({type: 'getSession', data: {
+  ipcSay({type: 'login', data: {
     username,
     password,
     ip: getIP(req.ip)
