@@ -2,10 +2,11 @@
 
 const { spawn } = require('child_process');
 const path = require('path');
-
-const watch = require('watch');
 const net = require('net');
 const os = require('os');
+
+const watch = require('watch');
+
 // _console style like nodemon.
 // "chalk" is can't work in `tail -f` on my computer. So..
 let _COLOR_MAP = {red: 31, 
