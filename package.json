@@ -29,5 +29,7 @@
     "serve-favicon": "^2.5.0",
     "ws": "^7.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "watch": "^1.0.2"
+  }
 }

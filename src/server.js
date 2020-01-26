@@ -59,4 +59,4 @@ server.on('error', function(err){
 
 const wsServer = require('./ws-server');
 wsServer(server);
-require('./net-server');
+
