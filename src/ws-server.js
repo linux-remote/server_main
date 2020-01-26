@@ -48,6 +48,6 @@ function handleServerUpgrade(req, socket, head) {
 
 wsServer.on('connection', ws2ns);
 
-module.exports = function wsNoServer(server){
+module.exports = function wsServer(server){
   server.on('upgrade', handleServerUpgrade);
 };

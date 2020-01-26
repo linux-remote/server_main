@@ -35,7 +35,7 @@ exports.notFound = function(req, res, next) {
 //errHandle
 
 exports.errHandle = function(err, req, res, next) {
-
+  console.error('errHandle', err);
   setTimeout(() => {
     if(req.complete){
       res.status(err.status || 400);

@@ -51,7 +51,7 @@ function ws2ns(ws, connectedNs){
         主server 和 term 进程意外退出，应关闭 net 服务器。
         主server：
           process.on('exit'), 会触发 ws 断开。
-          execSync('kill ' + process.pid) 会触发 ws 断开。
+          'kill ' + process.pid 会触发 ws 断开。
           终端 kill:  会触发 ws 断开。
         term：
           term.on('close') 没有问题。
@@ -69,7 +69,7 @@ function ws2ns(ws, connectedNs){
       // 其它由ns 判定
     },
 
-    error: function(errEvent){
+    error: function(){
       // https://stackoverflow.com/questions/18803971/websocket-onerror-how-to-read-error-description
       wsError = new Error('Websocket Error.');
     },
@@ -116,7 +116,5 @@ function ws2ns(ws, connectedNs){
     })
   }
 }
-
-
 
 module.exports = ws2ns;
