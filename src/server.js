@@ -57,6 +57,4 @@ server.on('error', function(err){
   throw err;
 });
 
-const wsServer = require('./ws-server');
-wsServer(server);
-
+module.exports = server;

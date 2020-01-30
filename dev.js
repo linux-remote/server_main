@@ -84,13 +84,13 @@ function loop(){
 _watch(path.join(__dirname, '../session-store/src'));
 loop();
 
-const PORT = os.tmpdir + '/linux-remote-session-store.sock';
+const PORT = os.tmpdir + '/linux-remote-inner-net-server.sock';
 _watchTree(path.join(__dirname, './src'), function(f){
   console.info('[lr-server] file changed', f);
 
   const client = net.createConnection(PORT, function(){
     client.end(JSON.stringify({
-      type: 'reloadServer'
+      type: 'reload'
     }));
   });
   client.on('error', function(e){
