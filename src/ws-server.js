@@ -1,10 +1,16 @@
 const net = require('net');
 const os = require('os');
-
 const WebSocket = require('ws');
 
-const { initSessUser } = require('./lib/session');
+const { initSession, initSessUser } = require('./lib/session');
 // const ws2ns = require('./lib/ws2ns');
+
+function wsInitSessUser(req, username, callback){
+
+  initSession(req, function(){
+    callback(initSessUser(req, username));
+  });
+}
 
 const wsServer = new WebSocket.Server({ noServer: true });
 const URL_PREFIX = '/api/user/';
@@ -73,15 +79,20 @@ function handleServerUpgrade(req, socket, head) {
   if(!username){
     socket.destroy();
   }
-  initSessUser(req, username, function(){
-    const user = req.sessUser;
+  wsInitSessUser(req, username, function(user){
     if(!user){
       socket.destroy();
+      return;
     }
-    console.log('initSessUser', user);
     initConnectedNs(user, req.session, username, function(err, connectedNs){
       if(err){
-        socket.close(1011, err.message);
+        socket.destroy();
+        if(err.message === '403'){
+          console.error('user-server verify sid fail.');
+        } else {
+          console.error('userServerConnectError', err);
+        }
+        
         return;
       }
       wsServer.handleUpgrade(req, socket, head, function done(ws) {

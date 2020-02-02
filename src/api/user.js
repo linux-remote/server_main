@@ -1,21 +1,24 @@
-var express = require('express');
-var router = express.Router();
+
+
+const { initSessUser } = require('../lib/session');
 // const ipcSay = require('../lib/ipc-say');
 
-router.use(function(req, res, next){
-  const users = req.session.users;
-  if(users){
-    const username = req.params.username;
-    if(users.indexOf(username) !== -1){
-      next();
-      return;
-    }
+function verifyUser(req, res, next){
+  const user = initSessUser(req, req.params.username);
+  console.log('user', user, req.params.username);
+  if(user){
+    next();
+    return;
   }
   next({status: 403});
-})
+}
 
-router.post('/upload', function(req, res, next){
-  res.end('ok2');
-})
+// router.post('/upload', function(req, res){
+//   res.end('ok');
+// });
 
-module.exports = router;
+// ws...
+
+module.exports = {
+  verifyUser
+};

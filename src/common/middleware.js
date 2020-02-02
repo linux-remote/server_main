@@ -8,10 +8,10 @@ let isNotCORSVisit = function(){
 };
 if(global.IS_PRO){
   isNotCORSVisit = function(req){
-    if(req.origin !== global.CONF.CORS){
-      return true;
+    if(req.origin === global.CONF.CORS){
+      return false;
     }
-    return false;
+    return true;
   }
 }
 exports.CORS = function(req, res, next) {
@@ -57,7 +57,11 @@ exports.notFound = function(req, res, next) {
 //errHandle
 
 exports.errHandle = function(err, req, res, next) {
-  console.error('errHandle', err);
+  // if(!err.status){
+  //   console.error('errHandle', err);
+  // } else {
+  //   console.error('errHandle', err.status, err.name, err.message);
+  // }
   setTimeout(() => {
     if(req.complete){
       res.status(err.status || 400);

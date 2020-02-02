@@ -1,31 +1,48 @@
 
 const ipcSay = require('./ipc-say');
-const map = Object.create(null);
+const SID_MARK = 'sid=';
 
-function genSess(sess){
-  const users = sess.users;
-  const userMap = Object.create(null);
-  for(let i = 0, len = users.length; i < len; i++){
-    userMap[users[i]] = Object.create(null)
+function genSessUserMap(users){
+  if(!users.length){
+    return;
   }
-  delete(sess.users);
+  const userMap = new Map();
+  for(let i = 0, len = users.length; i < len; i++){
+    userMap.set(users[i], Object.create(null));
+  }
   return userMap;
 }
 
+
+function _getSidCookie(cookie = ''){
+  let i = cookie.indexOf(SID_MARK);
+  if(i === -1){
+    return '';
+  }
+  let str = cookie.substr(i + SID_MARK.length);
+  i = str.indexOf(';');
+  if(i !== -1){
+    str = str.substr(0, i);
+  }
+  return str;
+}
+
 function initSession(req, callback){
-  const sid = req.cookies.sid;
+  const sid = _getSidCookie(req.headers['cookie']);
+  console.log('get sid', sid);
   if(!sid){
     callback();
     return;
   }
-  if(map[sid]){
-    req.session = map[sid];
-    callback();
-  }
+
   ipcSay({type: 'getSession', data: sid}, (result) => {
     if(result.data){
-      req.session = genSess(result.data);
-      map[sid] = req.session;
+      req.session = {
+        id: sid,
+        hash: result.data.hash,
+        userMap: genSessUserMap(result.data.users)
+      }
+      console.log('get req.session', req.session);
     }
     callback();
   })
@@ -39,19 +56,17 @@ function initSessUser(req, username){
   if(!req.session){
     return;
   }
-  req.sessUser = req.session.userMap[username];
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return;
+  }
+  return userMap.get(username);
 }
 
-// function wsInitSessUser(req, username, callback){
-//   initSession(req, function(){
-//     initSessUser(req, username);
-//     callback();
-//   })
-// }
+
 
 module.exports = {
   initSession,
   sessionMid,
-  // wsInitSessUser,
   initSessUser
 };
