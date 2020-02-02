@@ -7,7 +7,7 @@
   https://nodejs.org/api/net.html#net_class_net_socket
 */
 
-
+// var pako = require('pako');
 // server.handleUpgrade(request, socket, head, callback)
 // server.shouldHandle(request) X 无用
 
@@ -23,7 +23,7 @@ function ws2ns(ws, connectedNs){
     },
 
     close: function(closeEvent){
-      connectedNs.removeEventListener('close', nsHandles.close);
+      connectedNs.off('close', nsHandles.close);
 
       // https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const code = closeEvent.code;
@@ -58,7 +58,7 @@ function ws2ns(ws, connectedNs){
       */
       delete(nsHandles.close);
       Object.keys(nsHandles).forEach(key => {
-        connectedNs.removeEventListener(key, nsHandles[key]);
+        connectedNs.off(key, nsHandles[key]);
       });
 
       // connectedNs.write(JSON.stringify({
@@ -84,6 +84,12 @@ function ws2ns(ws, connectedNs){
   const nsHandles = {
     data: function(data){
 
+      // Blob Always save to disk?
+      // https://books.google.com/books?id=hYGOBQAAQBAJ&lpg=PT413&ots=4_yRc_ZxPC&dq=browser%20websocket%20small%20blob%20save%20disk%3F&pg=PT413#v=onepage&q=browser%20websocket%20small%20blob%20save%20disk?&f=false
+      // console.log('ns on data', data);
+      // var binary = pako.deflate(data, {gzip: true});
+      // console.log(binary.length, data.length);
+
       ws.send(data);
     },
     close: function(hadError){ // boolean
@@ -106,14 +112,15 @@ function ws2ns(ws, connectedNs){
       nsError = err;
     }
   }
-
+  connectedNs.setEncoding('utf-8');
+  Object.keys(wsHandles).forEach(key => {
+    ws.addEventListener(key, wsHandles[key]);
+  })
+  Object.keys(nsHandles).forEach(key => {
+    connectedNs.on(key, nsHandles[key]);
+  })
   ws.onopen = function(){
-    Object.keys(wsHandles).forEach(key => {
-      ws.addEventListener(key, wsHandles[key]);
-    })
-    Object.keys(nsHandles).forEach(key => {
-      connectedNs.addEventListener(key, nsHandles[key]);
-    })
+    console.log('ws on open')
   }
 }
 

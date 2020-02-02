@@ -32,13 +32,22 @@ if(!global.IS_PRO){
 // }
 app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 // ============================ 前端加载结束 ============================
-if(global.IS_PRO){
-  app.use(middleWare.preventUnxhr);
-} else {
+
+
+if(global.CONF.CORS){
   app.get('/', function(req, res){
-    res.end('This is linux-remote server.');
+    res.end('Server CORS: ' + global.CONF.CORS);
   });
+  app.use(middleWare.CORS);
+} else {
+  if(global.IS_PRO){
+    app.use(middleWare.preventUnxhr);
+  }
 }
+
+// else {
+//   // require('linux-remote-client')(app, global.CONF.client);
+// }
 
 app.use(cookieParser());
 app.use(bodyParser.json());

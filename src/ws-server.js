@@ -4,11 +4,11 @@ const os = require('os');
 const WebSocket = require('ws');
 
 const { initSessUser } = require('./lib/session');
-const ws2ns = require('./lib/ws2ns');
+// const ws2ns = require('./lib/ws2ns');
 
 const wsServer = new WebSocket.Server({ noServer: true });
 const URL_PREFIX = '/api/user/';
-const tmpDir = os.tmpdir() + '/linux-remote/session';
+const TMP_DIR = os.tmpdir() + '/linux-remote';
 // url: ws://127.0.0.1:3000/api/user/:username
 function getUsername(url){
   if(url.indexOf(URL_PREFIX) === 0){
@@ -17,16 +17,57 @@ function getUsername(url){
   return '';
 }
 
-function initConnectedNs(user, hash, username, callback){
-  if(user.connectedNs){
-    callback(user.connectedNs);
+function initConnectedNs(user, session, username, callback){
+
+  if(user.connectedNs && !user.connectedNs.destroyed){
+    callback(null, user.connectedNs);
     return;
   }
-  const client = net.createConnection(`${tmpDir}/${hash}.${username}/sock`, () => {
+
+  
+  function _dataListener(data){
+    if(data === 'ok'){
+      end(null, client);
+    } else {
+      end(new Error('403'));
+    }
+  }
+  function _errListener(err){
+    end(err);
+  }
+
+  let isEnd = false;
+  let timer = null;
+
+  const client = net.createConnection(`${TMP_DIR}/${session.hash}.${username}`, () => {
+    client.setEncoding('utf-8');
+    client.write(session.id);
+    client.once('data', _dataListener);
+  });
+  client.once('error', _errListener);
+  timer = setTimeout(function(){
+    client.destroy();
+    end(new Error('userServerConnectTimeout'));
+  }, 5000);
+  function end(err){
+    if(isEnd){
+      return;
+    }
+    isEnd = true;
+    if(timer){
+      clearTimeout(timer);
+      timer = null;
+    }
+    client.off('data', _dataListener);
+    client.off('error', _errListener);
+    if(err){
+      return callback(err);
+    }
     user.connectedNs = client;
-    callback(client);
-  })
+    return callback(null, client);
+  }
 }
+
 function handleServerUpgrade(req, socket, head) {
   const username = getUsername(req.url);
   if(!username){
@@ -37,8 +78,12 @@ function handleServerUpgrade(req, socket, head) {
     if(!user){
       socket.destroy();
     }
-
-    initConnectedNs(user, req.session.hash, username, function(connectedNs){
+    console.log('initSessUser', user);
+    initConnectedNs(user, req.session, username, function(err, connectedNs){
+      if(err){
+        socket.close(1011, err.message);
+        return;
+      }
       wsServer.handleUpgrade(req, socket, head, function done(ws) {
         wsServer.emit('connection', ws, connectedNs);
       });
@@ -46,8 +91,17 @@ function handleServerUpgrade(req, socket, head) {
   })
 }
 
-wsServer.on('connection', ws2ns);
+// wsServer.on('connection', ws2ns);
+wsServer.on('connection', wsPipe);
+function wsPipe(ws, socket){
+  console.log('wsPipe');
+  const duplex = WebSocket.createWebSocketStream(ws, { encoding: 'utf8' });
+  duplex.pipe(socket);
+  socket.pipe(duplex);
+}
 
 module.exports = function wsServer(server){
+  console.log('server upgrade');
   server.on('upgrade', handleServerUpgrade);
 };
+

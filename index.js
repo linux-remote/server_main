@@ -1,6 +1,3 @@
-const net = require('net');
-const os = require('os');
-
 // Entry
 global.IS_PRO = process.env.NODE_ENV === 'production';
 
@@ -12,4 +9,4 @@ require('./src/inner-net-server.js');
 
 process.on('disconnect', function(){
   process.exit(1);
-})
+});

@@ -1,5 +1,5 @@
 // Copy from https://raw.githubusercontent.com/expressjs/session/v1.17.0/index.js
-// issecure: cookie.secure server side check. ???
+// issecure: cookie.secure server side check.
 
 /*!
  * express-session

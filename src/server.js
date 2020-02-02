@@ -22,6 +22,7 @@ global.CONF = conf;
 
 def(conf, 'xPoweredBy', false);
 def(conf, 'appTrustProxy', false);
+def(conf, 'cookie', Object.create(null));
 const app = require('./app');
 
 app.set('port', conf.port);

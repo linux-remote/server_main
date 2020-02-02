@@ -38,22 +38,24 @@ const server = net.createServer(function connectionListener(socket){
       }, function(){
         socket.end(resWrap('success'));
       });
-    } else if(type === 'userFirstConnect'){ 
-      ipcSay({
-        type: 'removeUserAutoDelTimer',
-        data: reqData.data
-      }, function(result){
-        if(result.status === 'success'){
-          socket.write(resWrap('success', result.data));
-        } else {
-          socket.end(resWrap('error', result.message));
-        }
-      });
     } else {
+      // else if(type === 'userFirstConnect'){ 
+      //   ipcSay({
+      //     type: 'removeUserAutoDelTimer',
+      //     data: reqData.data
+      //   }, function(result){
+      //     if(result.status === 'success'){
+      //       socket.write(resWrap('success', result.data));
+      //     } else {
+      //       socket.end(resWrap('error', result.message));
+      //     }
+      //   });
+      // }
       socket.destroy();
     }
   });
 });
+
 
 server.listen(PORT);
 

@@ -35,13 +35,24 @@ module.exports = {
   // hotload: {
 
   // }
-  cookieSecure: undefined, // Boolean, Cookie's option secure. If you are use https, You can set it true.
-  publicCDN: false,
-  publicCDNURL: undefined, // https://cdnjs.cloudflare.com/ajax/libs/
-  publicCDNTplMaps: {
-    Jquery: 'https://bottom.cn/abc{{version}}/.js'
+  cookie: {
+    secure: undefined,
+    sameSite: 'None',
   },
-  wsZip: true, // ws 压缩
+
+  CORS: 'http://127.0.0.1:4000',
+  // CORS: undefined,
+  // client: 'http://localhost:4000',
+  client: {
+    CDN: ''
+  },
+  // cookieSecure: undefined, // Boolean, Cookie's option secure. If you are use https, You can set it true.
+  // publicCDN: false,
+  // publicCDNURL: undefined, // https://cdnjs.cloudflare.com/ajax/libs/
+  // publicCDNTplMaps: {
+  //   Jquery: 'https://bottom.cn/abc{{version}}/.js'
+  // },
+  // wsZip: true, // ws 压缩
 
   // CORS 没必要，publicCDN 把除了 index.html 外的东西全放外面
   // index 也可动态生成。<ejs?>

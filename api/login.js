@@ -1,6 +1,6 @@
 const separateLogin = require('../lib/separate-login');
 const { setSid, setCookie } = require('../lib/session');
-const { halfProxy } = require('../lib/proxy');
+// const { halfProxy } = require('../lib/proxy');
 // remove IPv4's ::ffff:
 // http://www.voidcn.com/article/p-crckexby-bst.html
 // https://stackoverflow.com/questions/29411551

@@ -2,21 +2,43 @@
 const http = require('http');
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
+
+let isNotCORSVisit = function(){
+  return false;
+};
+if(global.IS_PRO){
+  isNotCORSVisit = function(req){
+    if(req.origin !== global.CONF.CORS){
+      return true;
+    }
+    return false;
+  }
+}
 exports.CORS = function(req, res, next) {
-  res.set('Access-Control-Allow-Origin', 'http://127.0.0.1:4000');
+  // Prevent share link potential attack.
+  if(isNotCORSVisit(req)){
+    res.status(400).end('CORS: not allowed origin.');
+    return;
+  }
+  res.set('Access-Control-Allow-Origin', global.CONF.CORS);
   res.set('Access-Control-Allow-Credentials', 'true');
 
   if (req.method == "OPTIONS") {
     res.set('Access-Control-Max-Age', ONE_YEAR_SECOND);
-    res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
-    res.send('ok');
+    // Keep Simple Request;
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Simple_requests
+    // GET, PUT, POST, DELETE, OPTIONS
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
+    res.set('Access-Control-Allow-Headers', 'content-type');
+    res.end('ok');
   } else {
     next();
   }
 }
 
-
+// Prevent share link potential attack.
 exports.preventUnxhr = function(req, res, next){
   if(!req.xhr) {
     res.status(400).end("xhr only");
