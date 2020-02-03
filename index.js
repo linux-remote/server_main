@@ -1,12 +1,9 @@
 // Entry
 global.IS_PRO = process.env.NODE_ENV === 'production';
+const client = require('./src/session-sotre-client.js');
 
-const server = require('./src/server.js');
-const wsServer = require('./src/ws-server.js');
-wsServer(server);
-
-require('./src/inner-net-server.js');
-
-process.on('disconnect', function(){
-  process.exit(1);
+client.on('connect', function(){
+  const server = require('./src/server.js');
+  const wsServer = require('./src/ws-server.js');
+  wsServer(server);
 });

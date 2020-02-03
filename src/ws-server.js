@@ -112,7 +112,6 @@ function wsPipe(ws, socket){
 }
 
 module.exports = function wsServer(server){
-  console.log('server upgrade');
   server.on('upgrade', handleServerUpgrade);
 };
 
