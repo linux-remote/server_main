@@ -14,7 +14,7 @@ function wsInitSessUser(req, username, callback){
 
 const wsServer = new WebSocket.Server({ noServer: true });
 const URL_PREFIX = '/api/user/';
-const TMP_DIR = os.tmpdir() + '/linux-remote';
+const TMP_DIR = global.__TMP_DIR__ + '/linux-remote';
 // url: ws://127.0.0.1:3000/api/user/:username
 function getUsername(url){
   if(url.indexOf(URL_PREFIX) === 0){

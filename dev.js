@@ -84,7 +84,7 @@ function loop(){
 _watch(path.join(__dirname, '../session-store/src'));
 loop();
 
-const PORT = os.tmpdir() + '/linux-remote-session-store.sock';
+const PORT = '/dev/shm/linux-remote-session-store.sock';
 _watchTree(path.join(__dirname, './src'), function(f){
   console.info('[lr-server] file changed', f);
 
