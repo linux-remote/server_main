@@ -57,9 +57,10 @@ exports.notFound = function(req, res, next) {
 //errHandle
 
 exports.errHandle = function(err, req, res, next) {
-  // if(!err.status){
-  //   console.error('errHandle', err);
-  // } else {
+  if(!err.status){
+    console.error('errHandle', err);
+  }
+  //  else {
   //   console.error('errHandle', err.status, err.name, err.message);
   // }
   setTimeout(() => {

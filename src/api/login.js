@@ -71,7 +71,7 @@ exports.login = function(req, res, next){
         message: result.message
       });
     }
-  })
+  });
 }
 
 // post2

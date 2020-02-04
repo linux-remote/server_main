@@ -3,8 +3,7 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const net = require('net');
-const os = require('os');
-
+const SocketRequest = require('../socket-request/index.js');
 const watch = require('watch');
 
 // _console style like nodemon.
@@ -89,9 +88,13 @@ _watchTree(path.join(__dirname, './src'), function(f){
   console.info('[lr-server] file changed', f);
 
   const client = net.createConnection(PORT, function(){
-    client.end(JSON.stringify({
+    const sr = new SocketRequest(client);
+    sr.request({
       type: 'reloadServer'
-    }));
+    });
+    // client.end(JSON.stringify({
+    //   type: 'reloadServer'
+    // }));
   });
   client.on('error', function(e){
     console.error(e.message);

@@ -1,7 +1,6 @@
 
 
 const { initSessUser } = require('../lib/session');
-// const ipcSay = require('../lib/ipc-say');
 
 function verifyUser(req, res, next){
   const user = initSessUser(req, req.params.username);

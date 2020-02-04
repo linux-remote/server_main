@@ -1,5 +1,4 @@
 const net = require('net');
-const os = require('os');
 const WebSocket = require('ws');
 
 const { initSession, initSessUser } = require('./lib/session');
