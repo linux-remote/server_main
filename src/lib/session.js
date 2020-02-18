@@ -29,7 +29,7 @@ function _getSidCookie(cookie = ''){
 
 function initSession(req, callback){
   const sid = _getSidCookie(req.headers['cookie']);
-  console.log('get sid', sid);
+
   if(!sid){
     callback();
     return;
@@ -42,7 +42,6 @@ function initSession(req, callback){
         hash: result.data.hash,
         userMap: genSessUserMap(result.data.users)
       }
-      console.log('get req.session', req.session);
     }
     callback();
   })

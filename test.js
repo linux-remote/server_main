@@ -31,4 +31,4 @@ function base64ToSafe(base64){
   });
 }
 
-console.log(base64ToSafe('abc='));
+//_console.log(base64ToSafe('abc='));

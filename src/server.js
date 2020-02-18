@@ -46,9 +46,9 @@ if(conf.secure){
 server.listen(conf.port);
 
 server.on('listening', function(){
-  console.log('[server]: Server start!');
-  console.log('Listening on ' + conf.port);
-  console.log('NODE_ENV ' + process.env.NODE_ENV);
+  console.info('[server]: Server start!');
+  console.info('Listening on ' + conf.port);
+  console.info('NODE_ENV ' + process.env.NODE_ENV);
 });
 
 server.on('error', function(err){

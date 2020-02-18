@@ -6,8 +6,8 @@ const fs = require('fs');
 function isOtherCanRW(filePath){
   const stat = fs.statSync(filePath);
   const mode = stat.mode;
-  console.log('mode', mode)
-  console.log('mode', mode & 4)
+  //_console.log('mode', mode)
+  //_console.log('mode', mode & 4)
   if((mode & 2) || (mode & 4)){
     return true;
   }

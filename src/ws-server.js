@@ -104,7 +104,7 @@ function handleServerUpgrade(req, socket, head) {
 // wsServer.on('connection', ws2ns);
 wsServer.on('connection', wsPipe);
 function wsPipe(ws, socket){
-  console.log('wsPipe');
+  //_console.log('wsPipe');
   const duplex = WebSocket.createWebSocketStream(ws, { encoding: 'utf8' });
   duplex.pipe(socket);
   socket.pipe(duplex);

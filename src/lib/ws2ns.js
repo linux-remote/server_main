@@ -86,9 +86,9 @@ function ws2ns(ws, connectedNs){
 
       // Blob Always save to disk?
       // https://books.google.com/books?id=hYGOBQAAQBAJ&lpg=PT413&ots=4_yRc_ZxPC&dq=browser%20websocket%20small%20blob%20save%20disk%3F&pg=PT413#v=onepage&q=browser%20websocket%20small%20blob%20save%20disk?&f=false
-      // console.log('ns on data', data);
+      // //_console.log('ns on data', data);
       // var binary = pako.deflate(data, {gzip: true});
-      // console.log(binary.length, data.length);
+      // //_console.log(binary.length, data.length);
 
       ws.send(data);
     },
@@ -120,7 +120,7 @@ function ws2ns(ws, connectedNs){
     connectedNs.on(key, nsHandles[key]);
   })
   ws.onopen = function(){
-    console.log('ws on open')
+    //_console.log('ws on open')
   }
 }
 
