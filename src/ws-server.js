@@ -2,8 +2,8 @@ const net = require('net');
 const WebSocket = require('ws');
 
 const { initSession, initSessUser } = require('./lib/session');
-// const ws2ns = require('./lib/ws2ns');
-
+const ws2ns = require('./lib/ws2ns');
+// const SocketRequest = require('../../socket-request.js');
 function wsInitSessUser(req, username, callback){
 
   initSession(req, function(){
@@ -11,7 +11,7 @@ function wsInitSessUser(req, username, callback){
   });
 }
 
-const wsServer = new WebSocket.Server({ noServer: true });
+const wsServer = new WebSocket.Server({ noServer: true, perMessageDeflate: false });
 const URL_PREFIX = '/api/user/';
 const TMP_DIR = global.__TMP_DIR__ + '/linux-remote';
 // url: ws://127.0.0.1:3000/api/user/:username
@@ -105,9 +105,19 @@ function handleServerUpgrade(req, socket, head) {
 wsServer.on('connection', wsPipe);
 function wsPipe(ws, socket){
   //_console.log('wsPipe');
-  const duplex = WebSocket.createWebSocketStream(ws, { encoding: 'utf8' });
-  duplex.pipe(socket);
-  socket.pipe(duplex);
+  // const sr = new SocketRequest(socket);
+  // ws.on('message', function(data){
+  //   sr.request(data, function(resData){
+  //     ws.send(resData);
+  //   })
+  // })
+  // sr.onRequest = function(data, reply){
+
+  // }
+  ws2ns(ws, socket);
+  // const duplex = WebSocket.createWebSocketStream(ws, { encoding: 'utf8' });
+  // duplex.pipe(socket);
+  // socket.pipe(duplex);
 }
 
 module.exports = function wsServer(server){

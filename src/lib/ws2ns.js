@@ -7,7 +7,8 @@
   https://nodejs.org/api/net.html#net_class_net_socket
 */
 
-// var pako = require('pako');
+var pako = require('pako');
+const maxLength = 1024 * 6;
 // server.handleUpgrade(request, socket, head, callback)
 // server.shouldHandle(request) X 无用
 
@@ -18,8 +19,15 @@ function ws2ns(ws, connectedNs){
   let wsError,  nsError;
   const wsHandles = {
     
-    message: function(data) {
-      connectedNs.write(data);
+    message: function(e) {
+      // e.data: {String|Buffer|ArrayBuffer|Buffer[]}
+      
+      // let data = e.data;
+      // if(typeof data !== 'string'){
+      //   data = pako.inflate(data);
+      // }
+
+      connectedNs.write(typeof e.data !== 'string' ? pako.inflate(e.data) : e.data);
     },
 
     close: function(closeEvent){
@@ -87,10 +95,14 @@ function ws2ns(ws, connectedNs){
       // Blob Always save to disk?
       // https://books.google.com/books?id=hYGOBQAAQBAJ&lpg=PT413&ots=4_yRc_ZxPC&dq=browser%20websocket%20small%20blob%20save%20disk%3F&pg=PT413#v=onepage&q=browser%20websocket%20small%20blob%20save%20disk?&f=false
       // //_console.log('ns on data', data);
-      // var binary = pako.deflate(data, {gzip: true});
-      // //_console.log(binary.length, data.length);
+      // let sendData = data;
+      // if(data.length > maxLength){
 
-      ws.send(data);
+      // }
+      // var binary = pako.deflate(data);
+      // //_console.log(binary.length, data.length);
+      // console.log('ns on data', data);
+      ws.send(data.length > maxLength ? pako.deflate(data) : data);
     },
     close: function(hadError){ // boolean
 
