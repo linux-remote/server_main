@@ -2,10 +2,18 @@
 
 const { initSessUser } = require('../lib/session');
 
-function verifyUser(req, res, next){
+function handleUser(req, res, next){
   const user = initSessUser(req, req.params.username);
   if(user){
-    next();
+    if(req.method === 'GET'){
+      if(req.url === '/alive'){
+        res.end('Y');
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
     return;
   }
   next({status: 403});
@@ -17,6 +25,4 @@ function verifyUser(req, res, next){
 
 // ws...
 
-module.exports = {
-  verifyUser
-};
+module.exports = handleUser;

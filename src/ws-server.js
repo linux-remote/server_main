@@ -1,8 +1,21 @@
 const net = require('net');
 const WebSocket = require('ws');
+const pako = require('pako');
 
 const { initSession, initSessUser } = require('./lib/session');
 const ws2ns = require('./lib/ws2ns');
+const maxLength = 1024 * 6;
+const ws2nsOption = {
+  beforeNsWrite(data){
+    return typeof data !== 'string' ? pako.inflate(data) : data
+  },
+  beforeWsSend(data){
+    return data.length > maxLength ? pako.deflate(data) : data;
+  },
+  // onWsUnexpectedClose(ns){
+
+  // }
+}
 // const SocketRequest = require('../../socket-request.js');
 function wsInitSessUser(req, username, callback){
 
@@ -77,6 +90,7 @@ function handleServerUpgrade(req, socket, head) {
   const username = getUsername(req.url);
   if(!username){
     socket.destroy();
+    return;
   }
   wsInitSessUser(req, username, function(user){
     if(!user){
@@ -91,7 +105,6 @@ function handleServerUpgrade(req, socket, head) {
         } else {
           console.error('userServerConnectError', err);
         }
-        
         return;
       }
       wsServer.handleUpgrade(req, socket, head, function done(ws) {
@@ -114,7 +127,7 @@ function wsPipe(ws, socket){
   // sr.onRequest = function(data, reply){
 
   // }
-  ws2ns(ws, socket);
+  ws2ns(ws, socket, ws2nsOption);
   // const duplex = WebSocket.createWebSocketStream(ws, { encoding: 'utf8' });
   // duplex.pipe(socket);
   // socket.pipe(duplex);

@@ -7,15 +7,20 @@
   https://nodejs.org/api/net.html#net_class_net_socket
 */
 
-var pako = require('pako');
-const maxLength = 1024 * 6;
+
 // server.handleUpgrade(request, socket, head, callback)
 // server.shouldHandle(request) X 无用
 
 // http server on upgrade -> verify session -> onnectedNs 
 // -> ws server handleUpgrade -> emit connection -> 
 // get ws and connectedNs
-function ws2ns(ws, connectedNs){
+function defHandle(data){
+  return data;
+}
+function ws2ns(ws, connectedNs, options){
+  options = options || Object.create(null);
+  const beforeNsWrite = options.beforeWriteNs || defHandle;
+  const beforeWsSend = options.beforeWsSend || defHandle;
   let wsError,  nsError;
   const wsHandles = {
     
@@ -26,8 +31,8 @@ function ws2ns(ws, connectedNs){
       // if(typeof data !== 'string'){
       //   data = pako.inflate(data);
       // }
-
-      connectedNs.write(typeof e.data !== 'string' ? pako.inflate(e.data) : e.data);
+      // typeof e.data !== 'string' ? pako.inflate(e.data) : e.data
+      connectedNs.write(beforeNsWrite(e.data));
     },
 
     close: function(closeEvent){
@@ -102,7 +107,8 @@ function ws2ns(ws, connectedNs){
       // var binary = pako.deflate(data);
       // //_console.log(binary.length, data.length);
       // console.log('ns on data', data);
-      ws.send(data.length > maxLength ? pako.deflate(data) : data);
+      // data.length > maxLength ? pako.deflate(data) : data
+      ws.send(beforeWsSend(data));
     },
     close: function(hadError){ // boolean
 

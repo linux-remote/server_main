@@ -56,7 +56,8 @@ app.get('/api/loggedInList', login.loggedInList);
 app.post('/api/login',  login.login);
 app.post('/api/logout',  login.logout);
 
-app.use('/api/user/:username', user.verifyUser);
+app.use('/api/user/:username', user);
+
 // // 上传
 // app.post('/api/user/:username/upload', function(req, res, next){
 //   res.end(req.params.username + 'upload');
