@@ -4,14 +4,20 @@ const pako = require('pako');
 
 const { initSession, initSessUser } = require('./lib/session');
 const ws2ns = require('./lib/ws2ns');
-const maxLength = 1024 * 6;
+const maxLength = 1460; // https://www.imperva.com/blog/mtu-mss-explained/
 const ws2nsOption = {
   beforeNsWrite(data){
-    return typeof data !== 'string' ? pako.inflate(data) : data
+    return typeof data !== 'string' ? pako.inflate(data) : data;
   },
   beforeWsSend(data){
     return data.length > maxLength ? pako.deflate(data) : data;
   },
+  onWsOpen(ns){
+
+  },
+  onWsUnexpectedClose(ns){
+    // ns.write('0,0\n');
+  }
   // onWsUnexpectedClose(ns){
 
   // }
@@ -59,6 +65,7 @@ function initConnectedNs(user, session, username, callback){
 
   const client = net.createConnection(`${TMP_DIR}/${session.hash}.${username}`, () => {
     client.setEncoding('utf-8');
+    client.setNoDelay();
     client.write(session.id);
     client.once('data', _dataListener);
   });

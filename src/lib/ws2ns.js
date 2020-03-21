@@ -17,6 +17,7 @@
 function defHandle(data){
   return data;
 }
+function noop(){}
 function ws2ns(ws, connectedNs, options){
   options = options || Object.create(null);
   const beforeNsWrite = options.beforeWriteNs || defHandle;
@@ -80,6 +81,9 @@ function ws2ns(ws, connectedNs, options){
       //   reason: closeEvent.reason
       // }));
       // 其它由ns 判定
+      if(options.onWsUnexpectedClose){
+        options.onWsUnexpectedClose(connectedNs);
+      }
     },
 
     error: function(){
@@ -90,8 +94,8 @@ function ws2ns(ws, connectedNs, options){
     // send from server away.
     //   // client not send
     // },
-    pong: function(){
-    }
+    // pong: function(){
+    // }
   }
   
   const nsHandles = {
@@ -138,6 +142,9 @@ function ws2ns(ws, connectedNs, options){
     connectedNs.on(key, nsHandles[key]);
   })
   ws.onopen = function(){
+    if(options.onWsOpen){
+      options.onWsOpen(connectedNs);
+    }
     //_console.log('ws on open')
   }
 }

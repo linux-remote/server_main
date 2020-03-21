@@ -58,7 +58,7 @@ exports.notFound = function(req, res, next) {
 
 exports.errHandle = function(err, req, res, next) {
   if(!err.status){
-    console.error('errHandle', err);
+    console.error('errHandle', err.message);
   }
   //  else {
   //   console.error('errHandle', err.status, err.name, err.message);
