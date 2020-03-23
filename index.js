@@ -4,10 +4,11 @@ global.IS_PRO = process.env.NODE_ENV === 'production';
 // Protect my disk
 global.__TMP_DIR__ = global.IS_PRO ? os.tmpdir() : '/dev/shm';
 
-const client = require('./src/session-sotre-client.js');
+const server = require('./src/server.js');
+const wsServer = require('./src/ws-server.js');
+wsServer(server);
 
-client.on('connect', function(){
-  const server = require('./src/server.js');
-  const wsServer = require('./src/ws-server.js');
-  wsServer(server);
+process.on('disconnect', () => {
+  console.log('serverProcess ondisconnect')
+  process.exit();
 });

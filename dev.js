@@ -1,9 +1,7 @@
 // watch file change and  restart server.
 
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const path = require('path');
-const net = require('net');
-const SocketRequest = require('../socket-request/index.js');
 const watch = require('watch');
 
 // _console style like nodemon.
@@ -59,11 +57,11 @@ function handleChildCrash(){
     setTimeout(handleChildCrash, 1000);
   }
 }
-
+const LR_SERVER_PATH = path.join(__dirname, './index.js');
 function loop(){
   child = spawn(process.argv[0], [path.join(__dirname, '../session-store/index.js')], {
     env: {
-      LR_SERVER_PATH: path.join(__dirname, './index.js'),
+      LR_SERVER_PATH,
       LR_USER_SERVER_PATH: path.join(__dirname, '../user-server/dev.js'),
       LR_LOGIN_BIN_PATH: '/opt/linux-remote/bin/lr-login'
     },
@@ -83,22 +81,32 @@ function loop(){
 _watch(path.join(__dirname, '../session-store/src'));
 loop();
 
-const PORT = '/dev/shm/linux-remote-session-store.sock';
 _watchTree(path.join(__dirname, './src'), function(f){
   console.info('[lr-server] file changed', f);
 
-  const client = net.createConnection(PORT, function(){
-    const sr = new SocketRequest(client);
-    sr.request({
-      type: 'reloadServer'
-    });
-    // client.end(JSON.stringify({
-    //   type: 'reloadServer'
-    // }));
-  });
-  client.on('error', function(e){
-    console.error(e.message);
-  });
+  reloadServer();
 });
 
+function reloadServer(){
+  exec('ps U linux-remote | grep ' + LR_SERVER_PATH, function(err, stdout){
+    if(err){
+      console.error('reloadServer error: ', err.message);
+      return;
+    }
+    if(stdout){
+      let pid = stdout.trim();
+      if(pid){
+        let i = pid.indexOf(' ');
+        pid = pid.substr(0, i);
+        console.log('reloadServer pid: ', pid);
+        exec('kill ' + pid, function(err){
+          if(err){
+            console.error('reloadServer kill error: ', err.message);
+          }
+        })
+      }
+    }
+
+  })
+}
 

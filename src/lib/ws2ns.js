@@ -17,7 +17,7 @@
 function defHandle(data){
   return data;
 }
-function noop(){}
+
 function ws2ns(ws, connectedNs, options){
   options = options || Object.create(null);
   const beforeNsWrite = options.beforeWriteNs || defHandle;
@@ -131,6 +131,7 @@ function ws2ns(ws, connectedNs, options){
     error: function(err){
       // https://nodejs.org/api/net.html#net_event_error_1
       // The 'close' event will be called directly following this event.
+      // console.log('nsError', err)
       nsError = err;
     }
   }

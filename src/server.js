@@ -3,7 +3,6 @@ const https = require('https');
 const path = require('path');
 const os = require('os');
 
-require('./lib/post-json')(http);
 const { initSecure } = require('./lib/secure');
 
 function def(obj, key, value){

@@ -10,47 +10,13 @@ function handleUser(req, res, next){
       if(req.path === '/alive'){
         res.end('Y');
       } else if(req.path === '/fs'){
-        let filePath = req.query.file;
-        if(filePath){
-          filePath = decodeURIComponent(filePath);
-          normalRequest({
-            hash: req.session.hash,
-            sid: req.session.id,
-            username: req.params.username,
-            method: 'download',
-            data: filePath
-          }, (err, {data, socket}) => {
-            if(err){
-              return next(err);
-            }
-            const etag = stattag(data);
-            if(req.get('If-None-Match') === etag){
-              res.status(304).end();
-              socket.end();
-              return;
-            }
-
-            res.type('png');
-            res.setHeader('Content-Length', data.size);
-            res.setHeader('Cache-Control', 'max-age=0');
-            res.setHeader('ETag', etag);
-            socket.write('go');
-            // socket.on('data', function(resData){
-            //   console.log('resData', typeof resData, resData.length);
-            // })
-            socket.pipe(res);
-          });
-        } else {
-          next({
-            message: 'not have filePath'
-          });
-        }
+        handleUserDownload(req, res, next);
       } else {
         next();
       }
     } else if(req.method === 'POST'){
       if(req.path === '/upload'){
-        handleUserUpload(user, req, res, next);
+        handleUserUpload(req, res, next);
       } else {
         next();
       }
@@ -62,18 +28,65 @@ function handleUser(req, res, next){
   next({status: 403});
 }
 
-function handleUserUpload(user, req, res, next){
+function handleUserDownload(req, res, next){
+  let filePath = req.query.file;
+  if(filePath){
+    filePath = decodeURIComponent(filePath);
+    normalRequest({
+      hash: req.session.hash,
+      sid: req.session.id,
+      username: req.params.username,
+      method: 'download',
+      data: filePath
+    }, (err, {data, socket}) => {
+      if(err){
+        return next(err);
+      }
+      const etag = stattag(data);
+      if(req.get('If-None-Match') === etag){
+        res.status(304).end();
+        socket.end();
+        return;
+      }
+
+      res.type('png');
+      res.setHeader('Content-Length', data.size);
+      res.setHeader('Cache-Control', 'max-age=0');
+      res.setHeader('ETag', etag);
+      socket.write('go');
+      // socket.on('data', function(resData){
+      //   console.log('resData', typeof resData, resData.length);
+      // })
+      socket.pipe(res);
+    });
+  } else {
+    next({
+      message: 'not have filePath'
+    });
+  }
+}
+
+function handleUserUpload(req, res, next){
+  const filePath = req.body.path;
   normalRequest({
     hash: req.session.hash,
     sid: req.session.id,
     username: req.params.username,
     method: 'uploadload',
     data: filePath
-  }, function(err, {data, socket}){
+  }, function(err, {socket}){
     if(err){
       return next(err);
     }
     req.pipe(socket);
+    req.on('aborted', () => { 
+      //  _console.log('user server aborted');
+      socket.destroy();
+    });
+    socket.once('error', function(err){
+      socket.destroy();
+      next(err);
+    });
     socket.once('close', function(hadError){
       if(hadError){
         next({
@@ -83,7 +96,7 @@ function handleUserUpload(user, req, res, next){
       }
       res.end('ok');
     })
-  }
+  });
 }
 
 const TMP_DIR = global.__TMP_DIR__ + '/linux-remote';
