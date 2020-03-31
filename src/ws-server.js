@@ -1,10 +1,14 @@
 const net = require('net');
 const WebSocket = require('ws');
 const pako = require('pako');
-
+const SocketRequest = require('../../../socket-request/index');
 const { initSession, initSessUser } = require('./lib/session');
 const ws2ns = require('./lib/ws2ns');
-const maxLength = 1460; // https://www.imperva.com/blog/mtu-mss-explained/
+const maxLength = SocketRequest.compressTriggerPoint; // https://www.imperva.com/blog/mtu-mss-explained/
+
+const wsOpenKey = 3;
+const wsOnCloseKey = 4;
+
 const ws2nsOption = {
   beforeNsWrite(data){
     return typeof data !== 'string' ? pako.inflate(data) : data;
@@ -13,14 +17,13 @@ const ws2nsOption = {
     return data.length > maxLength ? pako.deflate(data) : data;
   },
   onWsOpen(ns){
-
+    // console.log('onWsOpen', SocketRequest.wrapUnreplyMsg([wsOpenKey]));
+    ns.write(SocketRequest.wrapUnreplyMsg([wsOpenKey]));
   },
-  onWsUnexpectedClose(ns){
-    // ns.write('0,0\n');
+  onWsClose(ns, isNormal){
+    const innerUnReplyMsg = SocketRequest.wrapUnreplyMsg([wsOnCloseKey, Number(isNormal)]);
+    ns.write(innerUnReplyMsg);
   }
-  // onWsUnexpectedClose(ns){
-
-  // }
 }
 // const SocketRequest = require('../../socket-request.js');
 function wsInitSessUser(req, username, callback){

@@ -101,7 +101,7 @@ function reloadServer(){
         console.log('reloadServer pid: ', pid);
         exec('kill ' + pid, function(err){
           if(err){
-            console.error('reloadServer kill error: ', err.message);
+            console.error('[lr-server] reloadServer kill error: ', err.message);
           }
         })
       }

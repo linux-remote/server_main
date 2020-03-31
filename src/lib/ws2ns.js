@@ -20,9 +20,14 @@ function defHandle(data){
 
 function ws2ns(ws, connectedNs, options){
   options = options || Object.create(null);
-  const beforeNsWrite = options.beforeWriteNs || defHandle;
+  const beforeNsWrite = options.beforeNsWrite || defHandle;
   const beforeWsSend = options.beforeWsSend || defHandle;
   let wsError,  nsError;
+
+  if(options.onWsOpen){
+    options.onWsOpen(connectedNs);
+  }
+  
   const wsHandles = {
     
     message: function(e) {
@@ -33,24 +38,30 @@ function ws2ns(ws, connectedNs, options){
       //   data = pako.inflate(data);
       // }
       // typeof e.data !== 'string' ? pako.inflate(e.data) : e.data
+      
       connectedNs.write(beforeNsWrite(e.data));
     },
 
     close: function(closeEvent){
-      connectedNs.off('close', nsHandles.close);
 
+      Object.keys(nsHandles).forEach(key => {
+        connectedNs.off(key, nsHandles[key]);
+      });
       // https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
       const code = closeEvent.code;
-      if(code === 1000){
-        // 正常退出
-        connectedNs.destroy();
-        // connectedNs.end();
-        return;
+      let isNormal = (code === 1000);
+      // if(code === 1000){
+      //   // 正常退出
+      //   connectedNs.destroy();
+      //   // connectedNs.end();
+      //   return;
+      // }
+      if(options.onWsClose){
+        options.onWsClose(connectedNs, isNormal);
       }
-
       if(wsError){
         // webSocket 出错
-        console.error(wsError);
+        console.error('wsError', wsError);
         // connectedNs.destroy(wsError);
         // return;
       }
@@ -70,10 +81,8 @@ function ws2ns(ws, connectedNs, options){
         term：
           term.on('close') 没有问题。
       */
-      delete(nsHandles.close);
-      Object.keys(nsHandles).forEach(key => {
-        connectedNs.off(key, nsHandles[key]);
-      });
+
+
 
       // connectedNs.write(JSON.stringify({
       //   type: 'webSocketClose',
@@ -81,9 +90,7 @@ function ws2ns(ws, connectedNs, options){
       //   reason: closeEvent.reason
       // }));
       // 其它由ns 判定
-      if(options.onWsUnexpectedClose){
-        options.onWsUnexpectedClose(connectedNs);
-      }
+  
     },
 
     error: function(){
@@ -142,12 +149,13 @@ function ws2ns(ws, connectedNs, options){
   Object.keys(nsHandles).forEach(key => {
     connectedNs.on(key, nsHandles[key]);
   })
-  ws.onopen = function(){
-    if(options.onWsOpen){
-      options.onWsOpen(connectedNs);
-    }
-    //_console.log('ws on open')
-  }
+  // ws.onopen = function(){ // Don't trigger
+  //   console.log('ws.onopen');
+  //   if(options.onWsOpen){
+  //     options.onWsOpen(connectedNs);
+  //   }
+  //   //_console.log('ws on open')
+  // }
 }
 
 module.exports = ws2ns;
