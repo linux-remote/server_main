@@ -1,7 +1,7 @@
 const net = require('net');
 const WebSocket = require('ws');
 const pako = require('pako');
-const SocketRequest = require('../../../socket-request/index');
+const SocketRequest = require('@hezedu/socket-request');
 const { initSession, initSessUser } = require('./lib/session');
 const ws2ns = require('./lib/ws2ns');
 const maxLength = SocketRequest.compressTriggerPoint; // https://www.imperva.com/blog/mtu-mss-explained/
@@ -25,7 +25,7 @@ const ws2nsOption = {
     ns.write(innerUnReplyMsg);
   }
 }
-// const SocketRequest = require('../../socket-request.js');
+
 function wsInitSessUser(req, username, callback){
 
   initSession(req, function(){

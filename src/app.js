@@ -10,8 +10,8 @@ const login = require('./api/login');
 const user = require('./api/user.js');
 const app = express();
 
-app.set('x-powered-by', global.CONF.xPoweredBy);
 app.set('trust proxy', global.CONF.appTrustProxy);
+app.set('x-powered-by', global.CONF.xPoweredBy);
 
 if(!global.IS_PRO){
   app.use(logger('dev'));

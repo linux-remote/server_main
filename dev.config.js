@@ -1,11 +1,13 @@
 module.exports = {
-  port: 3000, // Website listen port. default: 3001
-  host: undefined, // 
+
+  /* Website listen port. default: 3001 */
+  port: 3000, 
+  
+  // host: undefined, // 
   // selfsigned ?
   // https://github.com/jfromaniello/selfsigned
 
   secure : null, // http model, default: null.
-  userTimeout: 15 * 1000 * 60, // 无操作 15 分钟退出。
   /*
   // Provide an Object to enter https model: 
   secure: {
@@ -27,9 +29,6 @@ module.exports = {
   trustProxy: false, // Boolean, If you used proxy, You need set it. Otherwise, you will not get the real IP when you login.
   // More settings:  https://expressjs.com/en/guide/behind-proxies.html
 
-  xPoweredBy: false, // Boolean, Enables the "X-Powered-By: Express" HTTP header.
-
-
   // ----------------- hotload -----------------
   // You change Just need linux-remote hotload.
   // hotload: {
@@ -46,16 +45,7 @@ module.exports = {
   client: {
     CDN: ''
   },
-  // cookieSecure: undefined, // Boolean, Cookie's option secure. If you are use https, You can set it true.
-  // publicCDN: false,
-  // publicCDNURL: undefined, // https://cdnjs.cloudflare.com/ajax/libs/
-  // publicCDNTplMaps: {
-  //   Jquery: 'https://bottom.cn/abc{{version}}/.js'
-  // },
-  // wsZip: true, // ws 压缩
 
-  // CORS 没必要，publicCDN 把除了 index.html 外的东西全放外面
-  // index 也可动态生成。<ejs?>
-  // CORS: false, // 前后端分离
-  // sssCA: '/somePath' // 只在前后端分离时作用
+
+  xPoweredBy: undefined // Boolean, Enables the "X-Powered-By: Express" HTTP header.
 };
