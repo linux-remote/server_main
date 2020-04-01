@@ -20,7 +20,10 @@
     "src",
     "index.js"
   ],
-  "license": "MIT",
+  "license": "MPL-2.0",
+  "engines": {
+    "node": ">=12.14.0"
+  },
   "dependencies": {
     "@hezedu/socket-request": "0.0.1",
     "body-parser": "^1.18.3",
