@@ -29,7 +29,7 @@ if(!global.IS_PRO){
 //   app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 //   app.use(middleWare.CORS);
 // }
-app.use(favicon(path.join(__dirname, 'favicon.png')));
+app.use(favicon(path.join(__dirname, '../logo_def.png')));
 // ============================ 前端加载结束 ============================
 
 

@@ -1,7 +1,7 @@
 {
   "name": "@linux-remote/server",
   "description": "linux-remote's server.",
-  "version": "4.0.1",
+  "version": "4.0.4",
   "author": {
     "name": "Du Wei",
     "email": "hezedu@hotmail.com"
@@ -18,6 +18,7 @@
   },
   "files": [
     "src",
+    "logo_def.png",
     "index.js"
   ],
   "license": "MPL-2.0",
