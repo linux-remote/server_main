@@ -1,7 +1,7 @@
 {
   "name": "@linux-remote/server",
   "description": "linux-remote's server.",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": {
     "name": "Du Wei",
     "email": "hezedu@hotmail.com"
