@@ -10,15 +10,19 @@ function def(obj, key, value){
     obj[key] = value;
   }
 }
-
+global.__HOME_DIR__ = os.userInfo().homedir;
 const confPath = global.IS_PRO ? 
-  path.join(os.userInfo().homedir, 'config.js') : 
+  path.join(global.__HOME_DIR__, 'config.js') : 
   path.join(__dirname, '../dev.config.js');
 
 // function createServer(){
 const conf = require(confPath);
 global.CONF = conf;
-
+if(conf.appTrustProxy === true){
+  process.send({type: 'exit', data: "can't set appTrustProxy true."});
+  return;
+}
+conf.CORS = typeof conf.client === 'string' ? conf.client : null;
 
 def(conf, 'appTrustProxy', false);
 def(conf, 'cookie', Object.create(null));

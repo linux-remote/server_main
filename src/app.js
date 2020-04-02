@@ -1,5 +1,5 @@
 const path = require('path');
-
+const fs = require('fs');
 const express = require('express');
 const logger = require('morgan');
 const favicon = require('serve-favicon');
@@ -9,7 +9,7 @@ const { sessionMid } = require('./lib/session');
 const login = require('./api/login');
 const user = require('./api/user.js');
 const app = express();
-
+let clientVersion;
 app.set('trust proxy', global.CONF.appTrustProxy);
 app.set('x-powered-by', global.CONF.xPoweredBy);
 
@@ -57,6 +57,42 @@ app.post('/api/login',  login.login);
 app.post('/api/logout',  login.logout);
 
 app.use('/api/user/:username', user);
+
+
+let projectPkg = fs.readFileSync(path.join(global.__HOME_DIR__ + '/package.json'), 'utf-8');
+projectPkg = JSON.parse(projectPkg);
+
+if(!global.CONF.CORS){
+  const client = global.CONF.client;
+  if(client.cdn){
+    clientVersion = projectPkg._lrClientVersionCache;
+
+    require('@linux-remote/client-mount')(app, express.static, {
+      cdn: client.cdn,
+      clientVersion,
+      CORS: global.CONF.CORS
+    });
+  } else {
+    clientVersion = projectPkg.dependencies['@linux-remote/client'];
+    require('@linux-remote/client')(app, express.static, {
+      clientVersion,
+      CORS: global.CONF.CORS
+    });
+  }
+} else {
+  clientVersion = projectPkg._lrClientVersionCache;
+}
+
+if(!global.IS_PRO){
+  clientVersion = 'dev';
+}
+
+if(!clientVersion){
+  process.send({type: 'exit', data: 'Not has clientVersion.'});
+  return;
+}
+
+global.__CLIENT_VERSION__ = clientVersion;
 
 // // 上传
 // app.post('/api/user/:username/upload', function(req, res, next){

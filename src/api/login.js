@@ -7,7 +7,10 @@ exports.loggedInList = function(req, res){
       users = Array.from(req.session.userMap.keys());
     }
   }
-  res.json(users || []);
+  res.json({
+    v: global.__CLIENT_VERSION__,
+    users: users || []
+  });
 }
 
 function setCookie(res, sid, cookie){

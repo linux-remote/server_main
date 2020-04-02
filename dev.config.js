@@ -39,12 +39,12 @@ module.exports = {
     sameSite: 'None',
   },
 
-  CORS: 'http://127.0.0.1:4000',
+  // CORS: 'http://127.0.0.1:4000',
   // CORS: undefined,
-  // client: 'http://localhost:4000',
-  client: {
-    CDN: ''
-  },
+  client: 'http://127.0.0.1:4000',
+  // client: {
+  //   cdn: ''
+  // },
 
 
   xPoweredBy: undefined // Boolean, Enables the "X-Powered-By: Express" HTTP header.
