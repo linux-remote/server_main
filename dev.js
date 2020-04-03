@@ -102,6 +102,8 @@ function reloadServer(){
         exec('kill ' + pid, function(err){
           if(err){
             console.error('[lr-server] reloadServer kill error: ', err.message);
+            fileIsChange = true;
+            child.kill();
           }
         })
       }

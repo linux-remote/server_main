@@ -55,6 +55,7 @@ server.on('listening', function(){
   console.info('[server]: Server start!');
   console.info('Listening on ' + conf.port);
   console.info('NODE_ENV ' + process.env.NODE_ENV);
+  process.send({type: 'serverListened'});
 });
 
 server.on('error', function(err){

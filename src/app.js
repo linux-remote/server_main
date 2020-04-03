@@ -12,8 +12,17 @@ const app = express();
 app.set('trust proxy', global.CONF.appTrustProxy);
 app.set('x-powered-by', global.CONF.xPoweredBy);
 
+
+let clientVersion;
+
 if(!global.IS_PRO){
+  clientVersion = 'dev';
   app.use(require('morgan')('dev'));
+} else {
+  let versionMap = fs.readFileSync(path.join(global.__HOME_DIR__ + '/.version-map.json'), 'utf-8');
+  versionMap = JSON.parse(versionMap);
+  clientVersion = versionMap['client'];
+  versionMap = null;
 }
 
 app.use(favicon(path.join(__dirname, '../logo_def.png')));
@@ -23,7 +32,7 @@ if(global.CONF.CORS){
     res.end('Server CORS: ' + global.CONF.CORS);
   });
   app.use(middleWare.CORS);
-} 
+}
 else {
   if(global.IS_PRO){
     app.use('/api', middleWare.preventUnxhr);
@@ -44,9 +53,7 @@ app.post('/api/logout',  login.logout);
 app.use('/api/user/:username', user);
 
 
-let versionMap = fs.readFileSync(path.join(global.__HOME_DIR__ + '/.version-map.json'), 'utf-8');
-versionMap = JSON.parse(versionMap);
-const clientVersion = versionMap['client'];
+
 
 if(!global.CONF.CORS){
   const client = global.CONF.client;
@@ -67,10 +74,6 @@ if(!global.CONF.CORS){
     CORS: global.CONF.CORS
   });
 
-}
-
-if(!global.IS_PRO){
-  clientVersion = 'dev';
 }
 
 if(!clientVersion){
