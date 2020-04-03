@@ -36,7 +36,11 @@ if(conf.secure){
   let errMsg = initSecure(conf.secure);
   if(errMsg){
     console.error(errMsg);
-    process.exit(1);
+    process.send({
+      type: 'exit',
+      message: errMsg
+    });
+    return;
   }
 
   server = https.createServer(secure, app);
@@ -54,11 +58,16 @@ server.on('listening', function(){
 });
 
 server.on('error', function(err){
+  let errMsg;
   if (err.code === 'EADDRINUSE') {
-    console.error('port ' + conf.port + ' is already in use.');
-    process.exit(1);
+    errMsg = 'port ' + conf.port + ' is already in use.';
+  } else {
+    errMsg = err.name + ': ' + err.message;
   }
-  throw err;
+  process.send({
+    type: 'exit',
+    message: errMsg
+  });
 });
 
 module.exports = server;
