@@ -3,7 +3,7 @@ module.exports = {
   /* Website listen port. default: 3001 */
   port: 3000, 
   
-  // host: undefined, // 
+  host: '192.168.56.101', // 
   // selfsigned ?
   // https://github.com/jfromaniello/selfsigned
 
@@ -47,5 +47,13 @@ module.exports = {
   // },
 
 
-  xPoweredBy: undefined // Boolean, Enables the "X-Powered-By: Express" HTTP header.
+  xPoweredBy: undefined, // Boolean, Enables the "X-Powered-By: Express" HTTP header.,
+
+  __demo: {
+    secure: {
+      keyPath: '/opt/linux-remote/ssl/192.168.56.101/server.key',
+      certPath: '/opt/linux-remote/ssl/192.168.56.101/server.crt'
+    },
+    port: 3002
+  }
 };

@@ -49,8 +49,7 @@ function initSecure(secure){
 
   secure[realKey] = content;
   delete(secure[k]);
-
-  if(k === 'key'){
+  if(realKey === 'key'){
     if(!secure.cert){
       secure.cert = fs.readFileSync(secure.certPath, 'utf-8');
       delete(secure.certPath);

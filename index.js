@@ -1,9 +1,6 @@
-const os = require('os');
+"use strict";
 
-global.IS_PRO = process.env.NODE_ENV === 'production';
-// Protect my disk
-global.__TMP_DIR__ = global.IS_PRO ? os.tmpdir() : '/dev/shm';
-
+require('./src/init.js');
 const server = require('./src/server.js');
 const wsServer = require('./src/ws-server.js');
 wsServer(server);

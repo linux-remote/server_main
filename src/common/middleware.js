@@ -2,24 +2,25 @@
 const http = require('http');
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
+const conf = global.CONF;
+// let isNotCORSVisit = function(){
+//   return false;
+// };
 
-let isNotCORSVisit = function(){
-  return false;
-};
-if(global.IS_PRO){
-  isNotCORSVisit = function(req){
-    if(req.origin === global.CONF.CORS){
-      return false;
-    }
-    return true;
-  }
-}
-exports.CORS = function(req, res, next) {
+// if(global.IS_PRO){
+//   isNotCORSVisit = function(req){
+//     if(req.origin === global.CONF.CORS){
+//       return false;
+//     }
+//     return true;
+//   }
+// }
+function CORS(req, res, next) {
   // Prevent share link potential attack.
-  if(isNotCORSVisit(req)){
-    res.status(400).end('CORS: not allowed origin.');
-    return;
-  }
+  // if(isNotCORSVisit(req)){
+  //   res.status(400).end('CORS: not allowed origin.');
+  //   return;
+  // }
   res.set('Access-Control-Allow-Origin', global.CONF.CORS);
   res.set('Access-Control-Allow-Credentials', 'true');
 
@@ -37,6 +38,15 @@ exports.CORS = function(req, res, next) {
     next();
   }
 }
+
+function hasHostCORS(req, res, next){
+  if(conf._host === req.headers.host){
+    return next();
+  }
+  CORS(req, res, next);
+}
+
+exports.CORS = conf.host ? hasHostCORS : CORS;
 
 // Prevent share link potential attack.
 exports.preventUnxhr = function(req, res, next){

@@ -8,39 +8,32 @@ const middleWare = require('./common/middleware');
 const { sessionMid } = require('./lib/session');
 const login = require('./api/login');
 const user = require('./api/user.js');
+const conf = global.CONF;
 const app = express();
-app.set('trust proxy', global.CONF.appTrustProxy);
-app.set('x-powered-by', global.CONF.xPoweredBy);
-
-
-let clientVersion;
+app.set('trust proxy', conf.appTrustProxy);
+app.set('x-powered-by', conf.xPoweredBy);
 
 if(!global.IS_PRO){
-  clientVersion = 'dev';
   app.use(require('morgan')('dev'));
-} else {
-  let versionMap = fs.readFileSync(path.join(global.__HOME_DIR__ + '/.version-map.json'), 'utf-8');
-  versionMap = JSON.parse(versionMap);
-  clientVersion = versionMap['client'];
-  versionMap = null;
 }
 
 app.use(favicon(path.join(__dirname, '../logo_def.png')));
 
-if(global.CONF.CORS){
-  app.get('/', function(req, res){
-    res.end('Server CORS: ' + global.CONF.CORS);
-  });
+app.get('/', function(req, res){
+  res.end('linux-remote server');
+});
+
+if(conf.CORS || 
+  conf.__demo // Just for demo
+  ){
   app.use(middleWare.CORS);
 }
-else {
-  if(global.IS_PRO){
-    app.use('/api', middleWare.preventUnxhr);
-  }
-}
 
+if(global.IS_PRO){
+  app.use('/api', middleWare.preventUnxhr);
+}
 // else {
-//   // require('linux-remote-client')(app, global.CONF.client);
+//   // require('linux-remote-client')(app, conf.client);
 // }
 
 // app.use(bodyParser.json());
@@ -55,8 +48,8 @@ app.use('/api/user/:username', user);
 
 
 
-if(!global.CONF.CORS){
-  const client = global.CONF.client;
+if(!conf.CORS){
+  const client = conf.client;
   let moduleName;
   if(client.cdn){
     moduleName = 'client-mount';
@@ -70,18 +63,11 @@ if(!global.CONF.CORS){
 
   require(moduleName)(app, express.static, {
     cdn: client.cdn,
-    clientVersion,
-    CORS: global.CONF.CORS
+    clientVersion: global.__CLIENT_VERSION__,
+    CORS: false
   });
-
 }
 
-if(!clientVersion){
-  process.send({type: 'exit', data: 'Not has clientVersion.'});
-  return;
-}
-
-global.__CLIENT_VERSION__ = clientVersion;
 
 // // 上传
 // app.post('/api/user/:username/upload', function(req, res, next){

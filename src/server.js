@@ -1,50 +1,13 @@
 const http = require('http');
 const https = require('https');
-const path = require('path');
-const os = require('os');
 
-const { initSecure } = require('./lib/secure');
+const conf = global.CONF;
 
-function def(obj, key, value){
-  if(obj[key] === undefined){
-    obj[key] = value;
-  }
-}
-global.__HOME_DIR__ = os.userInfo().homedir;
-const confPath = global.IS_PRO ? 
-  path.join(global.__HOME_DIR__, 'config.js') : 
-  path.join(__dirname, '../dev.config.js');
-
-// function createServer(){
-const conf = require(confPath);
-global.CONF = conf;
-if(conf.appTrustProxy === true){
-  process.send({type: 'exit', data: "can't set appTrustProxy true."});
-  return;
-}
-conf.CORS = typeof conf.client === 'string' ? conf.client : null;
-
-def(conf, 'appTrustProxy', false);
-def(conf, 'cookie', Object.create(null));
 const app = require('./app');
 
-app.set('port', conf.port);
-
 let server;
-const secure = conf.secure;
 if(conf.secure){
-  let errMsg = initSecure(conf.secure);
-  if(errMsg){
-    console.error(errMsg);
-    process.send({
-      type: 'exit',
-      message: errMsg
-    });
-    return;
-  }
-
-  server = https.createServer(secure, app);
-  
+  server = https.createServer(conf.secure, app);
 }else{
   server = http.createServer(app);
 }
@@ -63,12 +26,35 @@ server.on('error', function(err){
   if (err.code === 'EADDRINUSE') {
     errMsg = 'port ' + conf.port + ' is already in use.';
   } else {
+    console.error(err);
     errMsg = err.name + ': ' + err.message;
   }
   process.send({
     type: 'exit',
-    message: errMsg
+    data: errMsg
   });
 });
 
 module.exports = server;
+
+// JUST used for demo.
+if(conf.__demo){
+  (function(){
+    let _dconf = conf.__demo;
+    let { initSecure } = require('./lib/secure');
+    let errMsg = initSecure(_dconf.secure);
+    if(errMsg){
+      process.send({
+        type: 'exit',
+        data: 'server initSecure error: ' + errMsg
+      });
+      return;
+    }
+    const server2 = https.createServer(_dconf.secure, app);
+    server2.listen(_dconf.port);
+    server.on('listening', function(){
+      console.log('demo server is listening on ' + _dconf.port);
+    });
+  })();
+
+}
