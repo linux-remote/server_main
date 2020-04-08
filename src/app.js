@@ -11,7 +11,6 @@ const user = require('./api/user.js');
 const conf = global.CONF;
 const app = express();
 app.set('trust proxy', conf.appTrustProxy);
-app.set('x-powered-by', conf.xPoweredBy);
 
 if(!global.IS_PRO){
   app.use(require('morgan')('dev'));
