@@ -50,6 +50,7 @@ module.exports = {
   xPoweredBy: undefined, // Boolean, Enables the "X-Powered-By: Express" HTTP header.,
 
   __demo: {
+    _host: '192.168.56.101:3000',
     secure: {
       keyPath: '/opt/linux-remote/ssl/192.168.56.101/server.key',
       certPath: '/opt/linux-remote/ssl/192.168.56.101/server.crt'

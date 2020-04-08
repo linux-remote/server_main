@@ -53,11 +53,7 @@ conf.CORS = typeof conf.client === 'string' ? conf.client : null;
 
 _def(conf, 'appTrustProxy', false);
 _def(conf, 'cookie', Object.create(null));
-if(conf.host){
-  if(conf.port !== 80 || conf.port !== 443){
-    conf._host = conf.host + ':' + conf.port;
-  }
-}
+
 
 function _getClientVersion(){
   let versionMap = fs.readFileSync(path.join(global.__HOME_DIR__ + '/.version-map.json'), 'utf-8');
