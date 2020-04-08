@@ -1,6 +1,5 @@
 "use strict";
 const path = require('path');
-const fs = require('fs');
 const express = require('express');
 const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
@@ -17,10 +16,6 @@ if(!global.IS_PRO){
 }
 
 app.use(favicon(path.join(__dirname, '../logo_def.png')));
-
-app.get('/', function(req, res){
-  res.end('linux-remote server');
-});
 
 if(conf.CORS || 
   conf.__demo // Just for demo
@@ -49,21 +44,22 @@ app.use('/api/user/:username', user);
 
 if(!conf.CORS){
   const client = conf.client;
-  let moduleName;
-  if(client.cdn){
-    moduleName = 'client-mount';
-  } else {
-    moduleName = 'client';
-  }
+  let moduleName = 'client-mount';
   moduleName = '@linux-remote/' + moduleName;
+  const nodeModuleDir = path.join(global.__HOME_DIR__, 'node_modules');
   moduleName = require.resolve(moduleName, {
-    paths: [global.__HOME_DIR__ + 'node_modules']
+    paths: [nodeModuleDir]
   });
 
   require(moduleName)(app, express.static, {
     cdn: client.cdn,
     clientVersion: global.__CLIENT_VERSION__,
+    localunpkgdir: nodeModuleDir,
     CORS: false
+  });
+} else {
+  app.get('/', function(req, res){
+    res.end('LR Server CORS: ' + conf.CORS);
   });
 }
 

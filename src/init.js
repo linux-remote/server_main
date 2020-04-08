@@ -1,9 +1,11 @@
 "use strict";
 const os = require('os');
+const fs = require('fs');
 const path = require('path');
 const { initSecure } = require('./lib/secure');
 
 let isPro = process.env.NODE_ENV === 'production';
+
 let homeDir = os.userInfo().homedir;
 let tmpDir,
     clientVersion, 
@@ -56,10 +58,11 @@ _def(conf, 'cookie', Object.create(null));
 
 
 function _getClientVersion(){
-  let versionMap = fs.readFileSync(path.join(global.__HOME_DIR__ + '/.version-map.json'), 'utf-8');
+  let versionMap = fs.readFileSync(path.join(homeDir , '/.version-map.json'), 'utf-8');
   versionMap = JSON.parse(versionMap);
+  let clientVersion = versionMap['_client'] || versionMap['client'];
   versionMap = null;
-  return versionMap['_client'] || versionMap['client'];
+  return clientVersion;
 }
 
 function _def(obj, key, value){
