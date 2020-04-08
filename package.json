@@ -14,7 +14,8 @@
   "scripts": {
     "start": "node dev.js",
     "_devInstall": "cnpm i --by=npm --no-bin-links",
-    "linuxIpty": "npm install node-pty --save --no-bin-links"
+    "linuxIpty": "npm install node-pty --save --no-bin-links",
+    "publish": "node ../linux-remote/up-version-map.js"
   },
   "files": [
     "src",
