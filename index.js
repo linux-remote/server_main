@@ -1,9 +1,7 @@
 "use strict";
 
 require('./src/init.js');
-const server = require('./src/server.js');
-const wsServer = require('./src/ws-server.js');
-wsServer(server);
+require('./src/server.js');
 
 process.on('disconnect', () => {
   console.log('serverProcess ondisconnect');

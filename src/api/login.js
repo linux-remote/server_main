@@ -54,8 +54,10 @@ exports.login = function(req, res, next){
   }
   
   const {username, password} = req.body;
+  let sid;
   if(req.session){
     const userMap = req.session.userMap;
+    sid = req.session.id;
     if(userMap && userMap.has(username)){
       res.end('AlreadyLogined');
       return;
@@ -64,6 +66,7 @@ exports.login = function(req, res, next){
   ipcSay({type: 'login', data: {
     username,
     password,
+    sid,
     ip: getIP(req.ip)
   }}, (result) => {
     if(result.status === 'success'){

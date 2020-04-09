@@ -42,6 +42,7 @@ if(conf.appTrustProxy === true){
 
 if(conf.secure){
   let errMsg = initSecure(conf.secure);
+  console.error('initSecure errMsg', errMsg);
   if(errMsg){
     process.send({
       type: 'exit',

@@ -35,7 +35,9 @@ server.on('error', function(err){
   });
 });
 
-module.exports = server;
+const wsServer = require('./ws-server.js');
+
+wsServer(server);
 
 // JUST used for demo.
 if(conf.__demo){
@@ -44,17 +46,20 @@ if(conf.__demo){
     let { initSecure } = require('./lib/secure');
     let errMsg = initSecure(_dconf.secure);
     if(errMsg){
+      console.error('demo sercure errMsg', errMsg);
       process.send({
         type: 'exit',
         data: 'server initSecure error: ' + errMsg
       });
       return;
     }
+    
     const server2 = https.createServer(_dconf.secure, app);
     server2.listen(_dconf.port);
     server.on('listening', function(){
       console.log('demo server is listening on ' + _dconf.port);
     });
+    wsServer(server2);
   })();
 
 }
