@@ -41,17 +41,5 @@ module.exports = {
 
   // CORS: 'http://127.0.0.1:4000',
   // CORS: undefined,
-  client: 'http://127.0.0.1:4000',
-  // client: {
-  //   cdn: ''
-  // },
-
-
-  __demo: {
-    secure: {
-      keyPath: '/opt/linux-remote/ssl/192.168.56.101/server.key',
-      certPath: '/opt/linux-remote/ssl/192.168.56.101/server.crt'
-    },
-    port: 3002
-  }
+  client: 'http://127.0.0.1:4000'
 };

@@ -16,7 +16,7 @@ exports.loggedInList = function(req, res){
 function setCookie(res, sid, cookie){
   res.cookie('sid', sid, {
     httpOnly: true,
-    path: '/api',
+    path: global.__API_PATH__,
     secure: cookie.secure,
     sameSite: cookie.sameSite
   });

@@ -17,14 +17,12 @@ if(!global.IS_PRO){
 
 app.use(favicon(path.join(__dirname, '../logo_def.png')));
 
-if(conf.CORS || 
-  conf.__demo // Just for demo
-  ){
+if(conf.CORS ){
   app.use(middleWare.CORS);
 }
 
 if(global.IS_PRO){
-  app.use('/api', middleWare.preventUnxhr);
+  app.use(global.__API_PATH__, middleWare.preventUnxhr);
 }
 // else {
 //   // require('linux-remote-client')(app, conf.client);
@@ -33,11 +31,11 @@ if(global.IS_PRO){
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use('/api', sessionMid, bodyParser.json(), bodyParser.urlencoded({ extended: false }));
-app.get('/api/loggedInList', login.loggedInList);
-app.post('/api/login',  login.login);
-app.post('/api/logout',  login.logout);
-app.use('/api/user/:username', user);
+app.use(global.__API_PATH__, sessionMid, bodyParser.json(), bodyParser.urlencoded({ extended: false }));
+app.get(global.__API_PATH__ + '/loggedInList', login.loggedInList);
+app.post(global.__API_PATH__ + '/login',  login.login);
+app.post(global.__API_PATH__ + '/logout',  login.logout);
+app.use(global.__API_PATH__ + '/user/:username', user);
 
 
 

@@ -7,7 +7,7 @@ let isNotCORSVisit = function(){
   return false;
 };
 
-if(global.IS_PRO && !conf.__demo){
+if(global.IS_PRO){
   isNotCORSVisit = function(req){
     if(req.origin === global.CONF.CORS){
       return false;

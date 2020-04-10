@@ -26,6 +26,8 @@ if(!clientVersion){
   process.send({type: 'exit', data: 'Not has clientVersion.'});
   return;
 }
+// linux-remote Prevent cookies across ports
+global.__API_PATH__ = '/__LR_P_C_A_P__';
 global.__HOME_DIR__ = homeDir;
 global.IS_PRO = isPro;
 global.__TMP_DIR__ = tmpDir;
