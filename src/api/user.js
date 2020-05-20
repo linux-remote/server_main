@@ -145,7 +145,7 @@ function normalRequest(opt, callback){
 // ws...
 
 // ------------------------- npm module etag -------------------------
-// copyright https://github.com/jshttp/etag
+// copyright https://github.com/jshttp/etag MIT License
 // modifed: mtime is geted. add W/
 /**
  * Generate a tag for a stat.
