@@ -23,7 +23,8 @@ if(isPro){
 }
 
 if(!clientVersion){
-  process.send({type: 'exit', data: 'Not has clientVersion.'});
+  console.error('Not has clientVersion.');
+  process.exit(1);
   return;
 }
 // linux-remote Prevent cookies across ports
@@ -35,22 +36,16 @@ global.__CLIENT_VERSION__ = clientVersion;
 conf = global.CONF = require(confPath);
 
 if(conf.appTrustProxy === true){
-  process.send({
-    type: 'exit', 
-    data: "can't set appTrustProxy true."
-  });
-  return;
+  console.error("can't set appTrustProxy true.");
+  process.exit(1);
 }
 
 if(conf.secure){
   let errMsg = initSecure(conf.secure);
-  console.error('initSecure errMsg', errMsg);
+  
   if(errMsg){
-    process.send({
-      type: 'exit',
-      data: errMsg
-    });
-    return;
+    console.error('initSecure errMsg', errMsg);
+    process.exit(1);
   }
 }
 

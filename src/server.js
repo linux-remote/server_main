@@ -26,13 +26,9 @@ server.on('error', function(err){
   if (err.code === 'EADDRINUSE') {
     errMsg = 'port ' + conf.port + ' is already in use.';
   } else {
-    console.error(err);
     errMsg = err.name + ': ' + err.message;
   }
-  process.send({
-    type: 'exit',
-    data: errMsg
-  });
+  console.error(errMsg);
 });
 
 const wsServer = require('./ws-server.js');
