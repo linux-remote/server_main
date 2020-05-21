@@ -1,6 +1,6 @@
 {
-  "name": "@linux-remote/server",
-  "description": "linux-remote's server.",
+  "name": "@linux-remote/main-server",
+  "description": "Main server.",
   "version": "4.2.2",
   "author": {
     "name": "Du Wei",
@@ -9,7 +9,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:linux-remote/server.git"
+    "url": "git@github.com:linux-remote/main-server.git"
   },
   "scripts": {
     "start": "node dev.js",
