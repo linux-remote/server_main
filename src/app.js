@@ -34,7 +34,7 @@ if(global.IS_PRO){
 app.use(global.__API_PATH__, sessionMid, bodyParser.json(), bodyParser.urlencoded({ extended: false }));
 app.get(global.__API_PATH__ + '/loggedInList', login.loggedInList);
 app.post(global.__API_PATH__ + '/login',  login.login);
-app.post(global.__API_PATH__ + '/logout',  login.logout);
+// app.post(global.__API_PATH__ + '/logout',  login.logout);
 app.use(global.__API_PATH__ + '/user/:username', user);
 
 

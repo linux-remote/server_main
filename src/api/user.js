@@ -104,7 +104,6 @@ const TMP_DIR = global.__TMP_DIR__ + '/linux-remote';
 function normalRequest(opt, callback){
   const client = net.createConnection(`${TMP_DIR}/${opt.hash}.${opt.username}`, function(){
     // 不可 setEncoding，否则二进制文件传输不成功。
-    client.setNoDelay();
     client.once('data', function(buffer){
       const data = buffer.toString();
       if(data !== 'ok'){

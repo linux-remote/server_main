@@ -6,21 +6,18 @@
     "name": "Du Wei",
     "email": "hezedu@hotmail.com"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:linux-remote/server.git"
   },
   "scripts": {
-    "start": "node dev.js",
-    "_devInstall": "cnpm i --by=npm --no-bin-links",
-    "linuxIpty": "npm install node-pty --save --no-bin-links",
+    "vminstall": "npm install --no-bin-links --production",
     "publish": "node ../linux-remote/up-version-map.js"
   },
   "files": [
     "src",
-    "logo_def.png",
-    "index.js"
+    "logo_def.png"
   ],
   "license": "MPL-2.0",
   "engines": {
@@ -36,6 +33,7 @@
     "ws": "^7.2.1"
   },
   "devDependencies": {
-    "watch": "^1.0.2"
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.1.0"
   }
 }

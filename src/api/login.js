@@ -1,4 +1,5 @@
 const ipcSay = require('../lib/ipc-say.js');
+const { addUser } = require('../lib/session.js');
 // get
 exports.loggedInList = function(req, res){
   let users;
@@ -70,7 +71,10 @@ exports.login = function(req, res, next){
     ip: getIP(req.ip)
   }}, (result) => {
     if(result.status === 'success'){
-      setCookie(res, result.data.sid, global.CONF.cookie);
+      if(!sid){
+        setCookie(res, result.data.sid, global.CONF.cookie);
+      }
+      addUser(result.data.sid, username);
       res.end('ok');
     } else {
       next({
@@ -81,21 +85,21 @@ exports.login = function(req, res, next){
 }
 
 // post2
-exports.logout = function(req, res){
-  if(!req.session){
-    return res.end('ok');
-  }
-  const userMap = req.session.userMap;
-  if(!userMap){
-    return res.end('ok');
-  }
-  const username = req.body.username;
-  const user = userMap.get(username);
-  if(!user){
-    return res.end('ok');
-  }
-  ipcSay({type: 'logout', data: {sid: req.session.id, username}}, function(){
-    res.end('ok');
-  });
-}
+// exports.logout = function(req, res){
+//   if(!req.session){
+//     return res.end('ok');
+//   }
+//   const userMap = req.session.userMap;
+//   if(!userMap){
+//     return res.end('ok');
+//   }
+//   const username = req.body.username;
+//   const user = userMap.get(username);
+//   if(!user){
+//     return res.end('ok'); 
+//   }
+//   ipcSay({type: 'logout', data: {sid: req.session.id, username}}, function(){
+//     res.end('ok');
+//   });
+// }
 

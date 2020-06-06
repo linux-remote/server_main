@@ -1,3 +1,4 @@
+
 let id = 0;
 let cbMap = Object.create(null);
 
@@ -10,10 +11,14 @@ function say(data, callback){
 
 process.on('message', function(msgObj){
   const id = msgObj.id;
+  if(!id){
+    global.__handleProcessUnCbMsg__(msgObj);
+    return;
+  }
   let cb = cbMap[id];
   cb(msgObj);
   delete(cbMap[id]);
-})
+});
 
 
 module.exports = say;

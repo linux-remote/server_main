@@ -1,16 +1,22 @@
 "use strict";
+
 const os = require('os');
+if(os.userInfo().username !== 'linux-remote'){
+  console.error(`linux-remote must start by the 'linux-remote' user.`);
+  process.exit(1);
+}
+
 const fs = require('fs');
 const path = require('path');
 const { initSecure } = require('./lib/secure');
-
+const { initSidMap, removeUser } = require('./lib/session');
 let isPro = process.env.NODE_ENV === 'production';
 
 let homeDir = os.userInfo().homedir;
 let tmpDir,
-    clientVersion, 
-    confPath,
-    conf;
+  clientVersion, 
+  confPath,
+  conf;
 
 if(isPro){
   tmpDir = os.tmpdir();
@@ -19,13 +25,12 @@ if(isPro){
 }else {
   tmpDir = '/dev/shm'; // Protect my disk
   clientVersion = 'dev';
-  confPath = path.join(__dirname, '../dev.config.js');
+  confPath = path.join(__dirname, '../../server/config-dev.js');
 }
 
 if(!clientVersion){
   console.error('Not has clientVersion.');
   process.exit(1);
-  return;
 }
 // linux-remote Prevent cookies across ports
 global.__API_PATH__ = '/__LR_P_C_A_P__';
@@ -54,7 +59,6 @@ conf.CORS = typeof conf.client === 'string' ? conf.client : null;
 _def(conf, 'appTrustProxy', false);
 _def(conf, 'cookie', Object.create(null));
 
-
 function _getClientVersion(){
   let versionMap = fs.readFileSync(path.join(homeDir , '/.version-map.json'), 'utf-8');
   versionMap = JSON.parse(versionMap);
@@ -68,6 +72,17 @@ function _def(obj, key, value){
     obj[key] = value;
   }
 }
+
+global.__handleProcessUnCbMsg__ = function(msgObj){
+  if(msgObj.event === 'removeUser'){
+    console.log('removeUser main', Date.now())
+    removeUser(msgObj.sid, msgObj.username);
+  }
+}
+
+initSidMap(function(){
+  require('./server.js');
+});
 
 isPro = null;
 tmpDir = null;

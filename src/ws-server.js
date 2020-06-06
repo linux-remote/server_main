@@ -1,4 +1,3 @@
-const net = require('net');
 const WebSocket = require('ws');
 const pako = require('pako');
 const SocketRequest = require('@hezedu/socket-request');
@@ -35,7 +34,6 @@ function wsInitSessUser(req, username, callback){
 
 const wsServer = new WebSocket.Server({ noServer: true, perMessageDeflate: false });
 const URL_PREFIX = global.__API_PATH__ + '/user/';
-const TMP_DIR = global.__TMP_DIR__ + '/linux-remote';
 // url: ws://127.0.0.1:3000/api/user/:username
 function getUsername(url){
   if(url.indexOf(URL_PREFIX) === 0){
@@ -45,13 +43,29 @@ function getUsername(url){
 }
 
 function initConnectedNs(user, session, username, callback){
-
+  
   if(user.connectedNs && !user.connectedNs.destroyed){
     callback(null, user.connectedNs);
     return;
   }
 
-  
+  const timer = setTimeout(function(){
+    callback(new Error('Waiting ns timerout'));
+  }, 5000);
+
+  if(user.noNsConnected){
+    user.noNsConnected(true);
+  }
+
+  user.noNsConnected = function(isRepeat){
+    clearTimeout(timer);
+    if(isRepeat){
+      callback(new Error('repeat, used new one.'));
+      return;
+    }
+    callback(null, user.connectedNs);
+  }
+  /*
   function _dataListener(data){
     if(data === 'ok'){
       end(null, client);
@@ -68,7 +82,7 @@ function initConnectedNs(user, session, username, callback){
 
   const client = net.createConnection(`${TMP_DIR}/${session.hash}.${username}`, () => {
     client.setEncoding('utf-8');
-    client.setNoDelay();
+
     client.write(session.id);
     client.once('data', _dataListener);
   });
@@ -93,7 +107,7 @@ function initConnectedNs(user, session, username, callback){
     }
     user.connectedNs = client;
     return callback(null, client);
-  }
+  } */
 }
 
 function handleServerUpgrade(req, socket, head) {
