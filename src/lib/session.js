@@ -90,6 +90,7 @@ function getUser(sid, username){
 
 function sessionMid(req, res, next){
   initSession(req, next);
+  console.log('req.session', req.session);
 }
 
 function initSessUser(req, username){
@@ -105,6 +106,7 @@ function triggerOnceToken(onceToken, callback){
 }
 
 function removeUser(sid, username){
+  console.log('removeUser session', sid, username);
   const session = sidMap.get(sid);
   if(session){
     const userMap = session.userMap;

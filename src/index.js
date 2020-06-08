@@ -3,6 +3,6 @@
 require('./init.js');
 
 process.on('disconnect', () => {
-  console.log('serverProcess ondisconnect');
+  console.log('sever_main end');
   process.exit();
 });

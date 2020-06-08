@@ -15,8 +15,8 @@ if(conf.secure){
 server.listen(conf.port);
 
 server.on('listening', function(){
-  console.info('[server]: Server start!');
-  console.info('Listening on ' + conf.port);
+  console.info('server_main start');
+  console.info('listening on ' + conf.port);
   console.info('NODE_ENV ' + process.env.NODE_ENV);
   process.send({type: 'serverListened'});
 });

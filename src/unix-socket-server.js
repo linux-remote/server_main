@@ -4,44 +4,68 @@ const os = require('os');
 
 const { triggerOnceToken, getUser} = require('./lib/session.js');
 
-const PORT = os.tmpdir() + '/linux-remote-server_main.sock';
+const PORT = (global.IS_PRO ? os.tmpdir() : '/dev/shm') + '/linux-remote-server_main.sock';
 
 
 const server = net.createServer(function(socket){
 
   socket.once('data', function(buffer){
-    let onceToken = buffer.toString();
+    let msgs = buffer.toString();
     
-    if(typeof onceToken !== 'string'){
+    if(typeof msgs !== 'string'){
       socket.end('type error.');
       return;
     }
-    triggerOnceToken(onceToken, function(result){
-      if(result.status === 'error'){
-        socket.end(result.message);
-        return;
-      }
-      
-      const {sid, username} = result.data;
-      const user = getUser(sid, username);
-      socket.write('ok', function(){
-        // logined:
-        user.connectedNs = socket;
-        if(user.noNsConnected){
-          user.noNsConnected();
+    msgs = msgs.split(' ');
+    if(msgs.length === 2){
+      _done(msgs[0], msgs[1])
+    } else {
+      const onceToken = msgs[0];
+      triggerOnceToken(onceToken, function(result){
+        if(result.status === 'error'){
+          socket.end(result.message);
+          return;
         }
+        
+        const {sid, username} = result.data;
+        console.log('triggerOnceToken', sid, username)
+        _done(sid, username, true);
       });
-    });
+    }
+
+    function _done(sid, username, isSendSid){
+      const user = getUser(sid, username);
+      if(user){
+        let msg = 'ok';
+        if(isSendSid){
+          msg = msg + ' ' + sid;
+        }
+        socket.write(msg, function(){
+          // logined:
+          user.connectedNs = socket;
+          if(user.noNsConnected){
+            user.noNsConnected(); 
+          }
+        });
+      } else {
+        socket.end('not has user');
+      }
+
+    }
 
   });
 });
 
-server.listen({
-  path: PORT,
-  readableAll: true,
-  writableAll: true
-});
 
+
+function _listen(){
+  server.listen({
+    path: PORT,
+    readableAll: true,
+    writableAll: true
+  });
+}
+_listen();
 server.on('listening', function(){
   console.info('unix-socket-server listening on ' + PORT);
 });
@@ -50,7 +74,7 @@ server.on('error', (err) => {
   server.close();
   if (err.code === 'EADDRINUSE') {
     fs.unlinkSync(PORT);
-    server.listen(PORT);
+    _listen();
   }
 });
 

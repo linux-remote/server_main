@@ -42,7 +42,7 @@ function getUsername(url){
   return '';
 }
 
-function initConnectedNs(user, session, username, callback){
+function initConnectedNs(user, callback){
   
   if(user.connectedNs && !user.connectedNs.destroyed){
     callback(null, user.connectedNs);
@@ -50,19 +50,15 @@ function initConnectedNs(user, session, username, callback){
   }
 
   const timer = setTimeout(function(){
-    callback(new Error('Waiting ns timerout'));
+    callback(new Error('Waiting ns connect timerout'));
   }, 5000);
 
-  if(user.noNsConnected){
-    user.noNsConnected(true);
-  }
+  // if(user.noNsConnected){
+  //   user.noNsConnected(true);
+  // }
 
-  user.noNsConnected = function(isRepeat){
+  user.noNsConnected = function(){
     clearTimeout(timer);
-    if(isRepeat){
-      callback(new Error('repeat, used new one.'));
-      return;
-    }
     callback(null, user.connectedNs);
   }
   /*
@@ -121,7 +117,7 @@ function handleServerUpgrade(req, socket, head) {
       socket.destroy();
       return;
     }
-    initConnectedNs(user, req.session, username, function(err, connectedNs){
+    initConnectedNs(user, function(err, connectedNs){
       if(err){
         socket.destroy();
         if(err.message === '403'){
