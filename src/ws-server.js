@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const pako = require('pako');
 const SocketRequest = require('@hezedu/socket-request');
-const { initSession, initSessUser } = require('./lib/session');
+const { initSession, initSessUser, restartUserProcess } = require('./lib/session');
 const ws2ns = require('./lib/ws2ns');
 const maxLength = SocketRequest.compressTriggerPoint; // https://www.imperva.com/blog/mtu-mss-explained/
 
@@ -42,7 +42,7 @@ function getUsername(url){
   return '';
 }
 
-function initConnectedNs(user, callback){
+function initConnectedNs(sid, username, user, callback){
   
   if(user.connectedNs && !user.connectedNs.destroyed){
     callback(null, user.connectedNs);
@@ -53,13 +53,16 @@ function initConnectedNs(user, callback){
     callback(new Error('Waiting ns connect timerout'));
   }, 5000);
 
-  // if(user.noNsConnected){
-  //   user.noNsConnected(true);
-  // }
 
-  user.noNsConnected = function(){
+  user.onNsConnected = function(){
     clearTimeout(timer);
     callback(null, user.connectedNs);
+    user.connectedNs.on('close', function(){
+      user.connectedNs = null;
+      restartUserProcess(sid, username, function(){
+        console.log('restartUserProcess OK', sid, username);
+      })
+    });
   }
   /*
   function _dataListener(data){
@@ -117,7 +120,8 @@ function handleServerUpgrade(req, socket, head) {
       socket.destroy();
       return;
     }
-    initConnectedNs(user, function(err, connectedNs){
+    const sid = req.session.id;
+    initConnectedNs(sid, username, user, function(err, connectedNs){
       if(err){
         socket.destroy();
         if(err.message === '403'){

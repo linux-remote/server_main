@@ -105,8 +105,13 @@ function triggerOnceToken(onceToken, callback){
   ipcSay({type: 'userConnected', data: onceToken}, callback);
 }
 
+function restartUserProcess(sid, username, callback){
+  ipcSay({type: 'restartUserProcess', data: {
+    sid, username
+  }}, callback);
+}
+
 function removeUser(sid, username){
-  console.log('removeUser session', sid, username);
   const session = sidMap.get(sid);
   if(session){
     const userMap = session.userMap;
@@ -128,5 +133,6 @@ module.exports = {
   getUser,
   addUser,
   removeUser,
-  triggerOnceToken
+  triggerOnceToken,
+  restartUserProcess
 };

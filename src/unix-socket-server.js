@@ -40,11 +40,12 @@ const server = net.createServer(function(socket){
         if(isSendSid){
           msg = msg + ' ' + sid;
         }
+        console.log('done', msg);
         socket.write(msg, function(){
           // logined:
           user.connectedNs = socket;
-          if(user.noNsConnected){
-            user.noNsConnected(); 
+          if(user.onNsConnected){
+            user.onNsConnected(); 
           }
         });
       } else {
