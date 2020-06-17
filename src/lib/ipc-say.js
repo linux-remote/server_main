@@ -3,9 +3,11 @@ let id = 0;
 let cbMap = Object.create(null);
 
 function say(data, callback){
-  id = id + 1;
-  cbMap[id] = callback;
-  data.id = id;
+  if(callback){
+    id = id + 1;
+    cbMap[id] = callback;
+    data.id = id;
+  }
   process.send(data);
 }
 
@@ -16,6 +18,9 @@ process.on('message', function(msgObj){
     return;
   }
   let cb = cbMap[id];
+  if(!cb){
+    console.log('msgObj', msgObj)
+  }
   cb(msgObj);
   delete(cbMap[id]);
 });

@@ -1,10 +1,7 @@
 "use strict";
 
 const os = require('os');
-if(os.userInfo().username !== 'linux-remote'){
-  console.error(`linux-remote must start by the 'linux-remote' user.`);
-  process.exit(1);
-}
+
 
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +11,7 @@ let isPro = process.env.NODE_ENV === 'production';
 
 let homeDir = os.userInfo().homedir;
 let tmpDir,
-  clientVersion, 
+  clientVersion,
   confPath,
   conf;
 
@@ -81,6 +78,7 @@ global.__handleProcessUnCbMsg__ = function(msgObj){
 }
 
 initSidMap(function(){
+  require('./unix-socket-server.js');
   require('./server.js');
 });
 

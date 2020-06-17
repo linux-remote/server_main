@@ -64,7 +64,7 @@ function initSession(req, callback){
     callback();
     return;
   }
-
+  req.sessionId = sid;
   req.session = sidMap.get(sid);
   callback();
 
@@ -90,26 +90,16 @@ function getUser(sid, username){
 
 function sessionMid(req, res, next){
   initSession(req, next);
-  console.log('req.session', req.session);
 }
 
 function initSessUser(req, username){
   if(!req.session){
     return;
   }
-
   return req.session.userMap.get(username);
 }
 
-function triggerOnceToken(onceToken, callback){
-  ipcSay({type: 'userConnected', data: onceToken}, callback);
-}
 
-function restartUserProcess(sid, username, callback){
-  ipcSay({type: 'restartUserProcess', data: {
-    sid, username
-  }}, callback);
-}
 
 function removeUser(sid, username){
   const session = sidMap.get(sid);
@@ -119,7 +109,7 @@ function removeUser(sid, username){
     if(user){
       userMap.delete(username);
       if(userMap.size === 0){
-        sidMap.delete(session.id);
+        sidMap.delete(sid);
       }
     }
   }
@@ -132,7 +122,5 @@ module.exports = {
   initSessUser,
   getUser,
   addUser,
-  removeUser,
-  triggerOnceToken,
-  restartUserProcess
+  removeUser
 };

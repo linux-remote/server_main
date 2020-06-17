@@ -34,7 +34,7 @@ function handleUserDownload(req, res, next){
     filePath = decodeURIComponent(filePath);
     normalRequest({
       hash: req.session.hash,
-      sid: req.session.id,
+      sid: req.sessionId,
       username: req.params.username,
       method: 'download',
       data: filePath
@@ -70,7 +70,7 @@ function handleUserUpload(req, res, next){
   const filePath = req.body.path;
   normalRequest({
     hash: req.session.hash,
-    sid: req.session.id,
+    sid: req.sessionId,
     username: req.params.username,
     method: 'uploadload',
     data: filePath

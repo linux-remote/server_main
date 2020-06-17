@@ -1,57 +1,55 @@
 const fs = require('fs');
 const net = require('net');
 const os = require('os');
-
-const { triggerOnceToken, getUser} = require('./lib/session.js');
+const { getUser } = require('./lib/session.js');
+const userWsNsPipe = require('./lib/user-ws-ns-pipe.js');
 
 const PORT = (global.IS_PRO ? os.tmpdir() : '/dev/shm') + '/linux-remote-server_main.sock';
-
 
 const server = net.createServer(function(socket){
 
   socket.once('data', function(buffer){
     let msgs = buffer.toString();
-    
     if(typeof msgs !== 'string'){
       socket.end('type error.');
       return;
     }
     msgs = msgs.split(' ');
     if(msgs.length === 2){
-      _done(msgs[0], msgs[1])
-    } else {
-      const onceToken = msgs[0];
-      triggerOnceToken(onceToken, function(result){
-        if(result.status === 'error'){
-          socket.end(result.message);
-          return;
-        }
-        
-        const {sid, username} = result.data;
-        console.log('triggerOnceToken', sid, username)
-        _done(sid, username, true);
-      });
+      // sid + username
+      // when server_main reload use it.
+      _done(msgs[0], msgs[1]);
+    }  else {
+      socket.end('msgs length error.');
     }
 
-    function _done(sid, username, isSendSid){
+    function _done(sid, username){
       const user = getUser(sid, username);
       if(user){
-        let msg = 'ok';
-        if(isSendSid){
-          msg = msg + ' ' + sid;
+        if(user.wsWaitTimer === null){
+          socket.end('ws wait timeout.');
+          delete(user.wsWaitTimer);
+          return;
         }
-        console.log('done', msg);
-        socket.write(msg, function(){
-          // logined:
-          user.connectedNs = socket;
-          if(user.onNsConnected){
-            user.onNsConnected(); 
+        socket.write('ok');
+        // Avoid sticking
+        socket.once('data', function(){
+          
+          console.log('[server_main]: user connected');
+
+          user.ns = socket;
+          if(user.wsWaitTimer){
+            clearTimeout(user.wsWaitTimer);
+            delete(user.wsWaitTimer);
+          }
+          if(user.ws && user.ws.readyState === 1){
+            userWsNsPipe(user);
           }
         });
+
       } else {
         socket.end('not has user');
       }
-
     }
 
   });

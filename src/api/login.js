@@ -58,7 +58,7 @@ exports.login = function(req, res, next){
   let sid;
   if(req.session){
     const userMap = req.session.userMap;
-    sid = req.session.id;
+    sid = req.sessionId;
     if(userMap && userMap.has(username)){
       res.end('AlreadyLogined');
       return;
@@ -72,9 +72,9 @@ exports.login = function(req, res, next){
   }}, (result) => {
     if(result.status === 'success'){
       if(!sid){
-        setCookie(res, result.data.sid, global.CONF.cookie);
+        setCookie(res, result.data, global.CONF.cookie);
       }
-      addUser(result.data.sid, username);
+      addUser(result.data, username);
       res.end('ok');
     } else {
       next({
@@ -85,21 +85,21 @@ exports.login = function(req, res, next){
 }
 
 // post2
-// exports.logout = function(req, res){
-//   if(!req.session){
-//     return res.end('ok');
-//   }
-//   const userMap = req.session.userMap;
-//   if(!userMap){
-//     return res.end('ok');
-//   }
-//   const username = req.body.username;
-//   const user = userMap.get(username);
-//   if(!user){
-//     return res.end('ok'); 
-//   }
-//   ipcSay({type: 'logout', data: {sid: req.session.id, username}}, function(){
-//     res.end('ok');
-//   });
-// }
+exports.logout = function(req, res){
+  if(!req.session){
+    return res.end('ok');
+  }
+  const userMap = req.session.userMap;
+  if(!userMap){
+    return res.end('ok');
+  }
+  const username = req.body.username;
+  const user = userMap.get(username);
+  if(!user){
+    return res.end('ok'); 
+  }
+  ipcSay({type: 'logout', data: {sid: req.sessionId, username}}, function(){
+    res.end('ok');
+  });
+}
 

@@ -34,4 +34,4 @@ server.on('error', function(err){
 const wsServer = require('./ws-server.js');
 
 wsServer(server);
-require('./unix-socket-server.js');
+
