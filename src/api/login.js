@@ -1,5 +1,7 @@
 const ipcSay = require('../lib/ipc-say.js');
-const { addUser } = require('../lib/session.js');
+const { addUser, getUser } = require('../lib/session.js');
+// const SocketRequest = require('@hezedu/socket-request');
+
 // get
 exports.loggedInList = function(req, res){
   let users;
@@ -89,16 +91,17 @@ exports.logout = function(req, res){
   if(!req.session){
     return res.end('ok');
   }
-  const userMap = req.session.userMap;
-  if(!userMap){
-    return res.end('ok');
-  }
   const username = req.body.username;
-  const user = userMap.get(username);
+  const user = getUser(req.sessionId, username);
+
   if(!user){
     return res.end('ok'); 
   }
+  if(user.unpipe){
+    user.unpipe();
+  }
   ipcSay({type: 'logout', data: {sid: req.sessionId, username}}, function(){
+    user.ws.close(1000);
     res.end('ok');
   });
 }

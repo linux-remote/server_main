@@ -57,16 +57,14 @@ function addUser(sid, username){
   session.userMap.set(username, Object.create(null));
 }
 
-function initSession(req, callback){
+function initSession(req){
   const sid = _getSidCookie(req.headers['cookie']);
-  
   if(!sid){
-    callback();
     return;
   }
+
   req.sessionId = sid;
   req.session = sidMap.get(sid);
-  callback();
 
   // ipcSay({type: 'getSession', data: sid}, (result) => {
   //   if(result.data){
@@ -89,16 +87,9 @@ function getUser(sid, username){
 
 
 function sessionMid(req, res, next){
-  initSession(req, next);
+  initSession(req);
+  next();
 }
-
-function initSessUser(req, username){
-  if(!req.session){
-    return;
-  }
-  return req.session.userMap.get(username);
-}
-
 
 
 function removeUser(sid, username){
@@ -119,7 +110,6 @@ module.exports = {
   initSidMap,
   initSession,
   sessionMid,
-  initSessUser,
   getUser,
   addUser,
   removeUser

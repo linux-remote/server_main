@@ -14,7 +14,7 @@ const ws2nsOption = {
   beforeWsSend(data){
     return data.length > maxLength ? pako.deflate(data) : data;
   },
-  onBefore(ws, ns){
+  onOpen(ws, ns){
     ws.send(SocketRequest.wrapUnreplyMsg(['nsOpen']));
     ns.write(SocketRequest.wrapUnreplyMsg([wsOpenKey]));
   },
@@ -33,7 +33,7 @@ const ws2nsOption = {
 }
 
 function userWsNsPipe(user){
-  wsNsPipe(user.ws, user.ns, ws2nsOption);
+  user.unpipe = wsNsPipe(user.ws, user.ns, ws2nsOption);
 }
 
 module.exports = userWsNsPipe;

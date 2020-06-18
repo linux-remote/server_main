@@ -1,10 +1,13 @@
 
 
-const { initSessUser } = require('../lib/session');
+const { getUser } = require('../lib/session');
 const net = require('net');
 
 function handleUser(req, res, next){
-  const user = initSessUser(req, req.params.username);
+  let user;
+  if(req.sessionId){
+    user = getUser(req.sessionId, req.params.username);
+  }
   if(user){
     if(req.method === 'GET'){
       if(req.path === '/alive'){

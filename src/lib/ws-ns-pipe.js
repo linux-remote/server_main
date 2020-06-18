@@ -15,13 +15,13 @@ function defHandle(data){
   return data;
 }
 
-function wsNsPipe(ws, connectedNs, options){
+function wsNsPipe(ws, ns, options){
   options = options || Object.create(null);
   const beforeNsWrite = options.beforeNsWrite || defHandle;
   const beforeWsSend = options.beforeWsSend || defHandle;
   
-  if(options.onBefore){
-    options.onBefore(ws, connectedNs);
+  if(options.onOpen){
+    options.onOpen(ws, ns);
   }
   
   let wsError, nsError;
@@ -30,17 +30,15 @@ function wsNsPipe(ws, connectedNs, options){
     message: function(e) {
       // e.data: {String|Buffer|ArrayBuffer|Buffer[]}
 
-      connectedNs.write(beforeNsWrite(e.data));
+      ns.write(beforeNsWrite(e.data));
     },
 
     close: function(code, reason){
 
-      Object.keys(nsHandles).forEach(key => {
-        connectedNs.off(key, nsHandles[key]);
-      });
+      _unBindNs(nsHandles, ns);
 
       if(options.onWsClose){
-        options.onWsClose(connectedNs, code, reason, wsError);
+        options.onWsClose(ns, code, reason, wsError);
       }
       if(wsError){
         wsError = null;
@@ -76,10 +74,8 @@ function wsNsPipe(ws, connectedNs, options){
       ws.send(beforeWsSend(data));
     },
     close: function(hadTransmissionError){ // boolean
-      console.log('---------- hadTransmissionError ----------', hadTransmissionError);
-      Object.keys(wsHandles).forEach(key => {
-        ws.removeEventListener(key, wsHandles[key]);
-      });
+
+      _unBindWs(wsHandles, ws);
 
       if(options.onNsClose){
         options.onNsClose(ws, hadTransmissionError, nsError);
@@ -95,23 +91,46 @@ function wsNsPipe(ws, connectedNs, options){
     }
   }
 
-  connectedNs.setEncoding('utf-8');
+  ns.setEncoding('utf-8');
 
-  Object.keys(wsHandles).forEach(key => {
-    ws.addEventListener(key, wsHandles[key]);
-  })
+  _bindWs(wsHandles, ws);
+  _bindNs(nsHandles, ns);
 
-  Object.keys(nsHandles).forEach(key => {
-    connectedNs.on(key, nsHandles[key]);
-  });
 
+  return function unpipe(){
+    _unBindWs(wsHandles, ws);
+    _unBindNs(nsHandles, ns);
+  }
   // ws.onopen = function(){ // Don't trigger
   //   console.log('ws.onopen');
   //   if(options.onWsOpen){
-  //     options.onWsOpen(connectedNs);
+  //     options.onWsOpen(ns);
   //   }
   //   //_console.log('ws on open')
   // }
+}
+
+function _bindNs(nsHandles, ns){
+  Object.keys(nsHandles).forEach(key => {
+    ns.on(key, nsHandles[key]);
+  });
+}
+
+function _unBindNs(nsHandles, ns){
+  Object.keys(nsHandles).forEach(key => {
+    ns.off(key, nsHandles[key]);
+  });
+}
+
+function _bindWs(wsHandles, ws){
+  Object.keys(wsHandles).forEach(key => {
+    ws.addEventListener(key, wsHandles[key]);
+  })
+}
+function _unBindWs(wsHandles, ws){
+  Object.keys(wsHandles).forEach(key => {
+    ws.removeEventListener(key, wsHandles[key]);
+  });
 }
 
 module.exports = wsNsPipe;

@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-const { initSession, initSessUser } = require('./lib/session');
+const { initSession, getUser } = require('./lib/session.js');
 const userWsNsPipe = require('./lib/user-ws-ns-pipe.js');
 const ipcSay = require('./lib/ipc-say.js');
 const wsWaitTimerout = 5000;
@@ -22,30 +22,29 @@ function handleServerUpgrade(req, socket, head) {
     socket.destroy();
     return;
   }
-  _wsInitSessUser(req, username, function(user){
-    if(!user){
-      socket.destroy();
-      return;
+  initSession(req);
+  let user;
+  if(req.sessionId){
+    user = getUser(req.sessionId, username);
+  }
+  if(!user){
+    socket.destroy();
+    return;
+  }
+  const sid = req.sessionId;
+  wsServer.handleUpgrade(req, socket, head, function done(ws) {
+    user.ws = ws;
+    
+    if(user.ns && !user.ns.destroyed){
+      console.log(typeof user.ns, user.ns.destroyed);
+      userWsNsPipe(user);
+    } else {
+      ipcSay({type: 'startUser', data: {sid, username}});
+      user.wsWaitTimer = setTimeout(function(){
+        ws.close(1011, 'wait ns timerout.');
+        user.wsWaitTimer = null;
+      }, wsWaitTimerout);
     }
-    const sid = req.sessionId;
-    wsServer.handleUpgrade(req, socket, head, function done(ws) {
-      user.ws = ws;
-      if(user.ns && !user.ns.destroyed){
-        userWsNsPipe(user);
-      } else {
-        ipcSay({type: 'startUser', data: {sid, username}});
-        user.wsWaitTimer = setTimeout(function(){
-          ws.close(1011, 'wait ns timerout.');
-          user.wsWaitTimer = null;
-        }, wsWaitTimerout);
-      }
-    });
-  })
-}
-
-function _wsInitSessUser(req, username, callback){
-  initSession(req, function(){
-    callback(initSessUser(req, username));
   });
 }
 
