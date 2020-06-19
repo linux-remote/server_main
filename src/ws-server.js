@@ -1,6 +1,5 @@
 const WebSocket = require('ws');
 const { initSession, getUser } = require('./lib/session.js');
-const userWsNsPipe = require('./lib/user-ws-ns-pipe.js');
 const ipcSay = require('./lib/ipc-say.js');
 const wsWaitTimerout = 5000;
 
@@ -33,11 +32,8 @@ function handleServerUpgrade(req, socket, head) {
   }
   const sid = req.sessionId;
   wsServer.handleUpgrade(req, socket, head, function done(ws) {
-    user.ws = ws;
-    
-    if(user.ns && !user.ns.destroyed){
-      console.log(typeof user.ns, user.ns.destroyed);
-      userWsNsPipe(user);
+    if(user.isNsReady()){
+      user.newWsPipeNs(ws);
     } else {
       ipcSay({type: 'startUser', data: {sid, username}});
       user.wsWaitTimer = setTimeout(function(){

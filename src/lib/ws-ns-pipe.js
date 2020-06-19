@@ -73,12 +73,12 @@ function wsNsPipe(ws, ns, options){
       // data.length > maxLength ? pako.deflate(data) : data
       ws.send(beforeWsSend(data));
     },
-    close: function(hadTransmissionError){ // boolean
+    close: function(){ // boolean
 
       _unBindWs(wsHandles, ws);
 
       if(options.onNsClose){
-        options.onNsClose(ws, hadTransmissionError, nsError);
+        options.onNsClose(ws, nsError);
       }
       if(nsError){
         nsError = null;

@@ -1,5 +1,6 @@
 
-const ipcSay = require('./ipc-say');
+const ipcSay = require('./ipc-say.js');
+const User = require('./user.js');
 let sidMap = new Map();
 const SID_MARK = 'sid=';
 
@@ -11,12 +12,12 @@ function initSidMap(callback){
       const userMap = new Map();
 
       Object.keys(sess.userMap).forEach(function(username){
-        const user = sess.userMap[username];
-        userMap.set(username, user);
+        const userData = sess.userMap[username];
+        userMap.set(username, new User(userData));
       });
       sess.userMap = userMap;
       sidMap.set(sid, sess);
-    })
+    });
     callback(null);
   })
 }
@@ -46,7 +47,7 @@ function _getSidCookie(cookie = ''){
   return str;
 }
 
-function addUser(sid, username){
+function addUser(sid, username, userData){
   let session = sidMap.get(sid);
   if(!session){
     session = {
@@ -54,7 +55,7 @@ function addUser(sid, username){
     }
     sidMap.set(sid, session);
   }
-  session.userMap.set(username, Object.create(null));
+  session.userMap.set(username, new User(userData));
 }
 
 function initSession(req){

@@ -2,7 +2,6 @@ const fs = require('fs');
 const net = require('net');
 const os = require('os');
 const { getUser } = require('./lib/session.js');
-const userWsNsPipe = require('./lib/user-ws-ns-pipe.js');
 
 const PORT = (global.IS_PRO ? os.tmpdir() : '/dev/shm') + '/linux-remote-server_main.sock';
 
@@ -37,14 +36,11 @@ const server = net.createServer(function(socket){
           
           console.log('[server_main]: user connected');
 
-          user.ns = socket;
           if(user.wsWaitTimer){
             clearTimeout(user.wsWaitTimer);
             delete(user.wsWaitTimer);
           }
-          if(user.ws && user.ws.readyState === 1){
-            userWsNsPipe(user);
-          }
+          user.newNsPipeWs(socket);
         });
 
       } else {

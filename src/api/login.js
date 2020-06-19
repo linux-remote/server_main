@@ -74,9 +74,10 @@ exports.login = function(req, res, next){
   }}, (result) => {
     if(result.status === 'success'){
       if(!sid){
-        setCookie(res, result.data, global.CONF.cookie);
+        sid = result.data;
+        setCookie(res, sid, global.CONF.cookie);
       }
-      addUser(result.data, username);
+      addUser(sid, username);
       res.end('ok');
     } else {
       next({
@@ -95,14 +96,11 @@ exports.logout = function(req, res){
   const user = getUser(req.sessionId, username);
 
   if(!user){
-    return res.end('ok'); 
+    return res.end('ok');
   }
-  if(user.unpipe){
-    user.unpipe();
-  }
-  ipcSay({type: 'logout', data: {sid: req.sessionId, username}}, function(){
-    user.ws.close(1000);
+  user.exit(req.sessionId, username, false, function(){
     res.end('ok');
   });
+
 }
 
