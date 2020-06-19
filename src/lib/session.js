@@ -99,6 +99,7 @@ function removeUser(sid, username){
     const userMap = session.userMap;
     const user = userMap.get(username);
     if(user){
+      user.clear();
       userMap.delete(username);
       if(userMap.size === 0){
         sidMap.delete(sid);

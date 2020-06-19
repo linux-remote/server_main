@@ -27,7 +27,7 @@ const server = net.createServer(function(socket){
       if(user){
         if(user.wsWaitTimer === null){
           socket.end('ws wait timeout.');
-          delete(user.wsWaitTimer);
+          user.wsWaitTimer = undefined;
           return;
         }
         socket.write('ok');

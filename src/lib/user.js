@@ -38,9 +38,9 @@ function User(userData){
   this.data = userData;
   this.ws = null;
   this.ns = null;
-  this.wsWaitTimer = undefined;
   this.unWsNsPipe = noop;
   this.unloadTimer = undefined;
+  this.wsWaitTimer = undefined;
 }
 
 User.prototype.isWsReady = function(){
@@ -114,6 +114,13 @@ User.prototype.exit = function(sid, username, isUnNormal, callback){
     }
   });
 }
-
+User.prototype.clear = function(){
+  this.wsNsUnPipe();
+  this.ensureClearUnloadTimeout();
+  if(this.wsWaitTimer){
+    clearTimeout(this.wsWaitTimer);
+    this.wsWaitTimer = undefined;
+  }
+}
 
 module.exports = User;
