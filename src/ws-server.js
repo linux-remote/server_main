@@ -30,12 +30,11 @@ function handleServerUpgrade(req, socket, head) {
     socket.destroy();
     return;
   }
-  const sid = req.sessionId;
+  user.ensureClearUnloadTimeout();
   wsServer.handleUpgrade(req, socket, head, function done(ws) {
-    if(user.isNsReady()){
-      user.newWsPipeNs(ws);
-    } else {
-      ipcSay({type: 'startUser', data: {sid, username}});
+    let isNsReady = user.newWsPipeNs(ws);
+    if(!isNsReady){
+      ipcSay({type: 'startUser', data: {sid: req.sessionId, username}});
       user.wsWaitTimer = setTimeout(function(){
         ws.close(1011, 'wait ns timerout.');
         user.wsWaitTimer = null;

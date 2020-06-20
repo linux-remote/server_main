@@ -16,6 +16,7 @@ const ws2nsOption = {
     return data.length > maxLength ? pako.deflate(data) : data;
   },
   onOpen(ws, ns){
+    console.log('onOpen')
     ws.send(SocketRequest.wrapUnreplyMsg(['nsOpen']));
     ns.write(SocketRequest.wrapUnreplyMsg([wsOpenKey]));
   },
@@ -38,7 +39,7 @@ function User(userData){
   this.data = userData;
   this.ws = null;
   this.ns = null;
-  this.unWsNsPipe = noop;
+  this.wsNsUnPipe = noop;
   this.unloadTimer = undefined;
   this.wsWaitTimer = undefined;
 }
@@ -73,19 +74,23 @@ User.prototype.newNsPipeWs = function(newNs){
   this.ns = newNs;
   if(this.isWsReady()){
     this._wsNsPipe();
+    return true;
   }
+  return false;
 }
 
 User.prototype.newWsPipeNs = function(newWs){
-  this.ensureClearUnloadTimeout();
   this.ws = newWs;
   if(this.isNsReady()){
     this._wsNsPipe();
+    return true;
   }
+  return false;
 }
 
 User.prototype._wsNsPipe = function(){
-  this.wsNsUnPipe = wsNsPipe(this.ws, this.ns, ws2nsOption);
+  const unPipe = wsNsPipe(this.ws, this.ns, ws2nsOption);
+  this.wsNsUnPipe = unPipe;
 }
 
 User.prototype.ensureClearUnloadTimeout = function(){

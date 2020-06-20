@@ -2,7 +2,6 @@
 const http = require('http');
 var ONE_YEAR_SECOND  = 60 * 60 * 24 * 365;
 
-const conf = global.CONF;
 let isNotCORSVisit = function(){
   return false;
 };
@@ -59,7 +58,12 @@ exports.notFound = function(req, res, next) {
 
 exports.errHandle = function(err, req, res, next) {
   if(!err.status){
-    console.error('errHandle', err.message);
+    if(err.name !== 'Error'){
+      console.error('errHandle', err);
+    } else {
+      console.error('errHandle', err.name, err.message);
+    }
+    
   }
   //  else {
   //   console.error('errHandle', err.status, err.name, err.message);

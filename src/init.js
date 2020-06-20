@@ -72,7 +72,6 @@ function _def(obj, key, value){
 
 global.__handleProcessUnCbMsg__ = function(msgObj){
   if(msgObj.event === 'removeUser'){
-    console.log('[server_main]: removeUser', msgObj);
     const data = msgObj.data;
     removeUser(data.sid, data.username);
   }
