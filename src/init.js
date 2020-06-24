@@ -29,13 +29,14 @@ if(!clientVersion){
   console.error('Not has clientVersion.');
   process.exit(1);
 }
+conf = global.CONF = require(confPath);
 // linux-remote Prevent cookies across ports
-global.__API_PATH__ = '/__LR_P_C_A_P__';
+global.__API_PATH__ = '/_LRPCA_' + conf.port;
 global.__HOME_DIR__ = homeDir;
 global.IS_PRO = isPro;
 global.__TMP_DIR__ = tmpDir;
 global.__CLIENT_VERSION__ = clientVersion;
-conf = global.CONF = require(confPath);
+
 
 if(conf.appTrustProxy === true){
   console.error("can't set appTrustProxy true.");
