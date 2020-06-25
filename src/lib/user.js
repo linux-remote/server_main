@@ -16,7 +16,6 @@ const ws2nsOption = {
     return data.length > maxLength ? pako.deflate(data) : data;
   },
   onOpen(ws, ns){
-    console.log('onOpen')
     ws.send(SocketRequest.wrapUnreplyMsg(['nsOpen']));
     ns.write(SocketRequest.wrapUnreplyMsg([wsOpenKey]));
   },

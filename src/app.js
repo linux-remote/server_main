@@ -1,7 +1,6 @@
 "use strict";
 const path = require('path');
 const express = require('express');
-const favicon = require('serve-favicon');
 const bodyParser = require('body-parser');
 const middleWare = require('./common/middleware');
 const { sessionMid } = require('./lib/session');
@@ -9,13 +8,19 @@ const login = require('./api/login');
 const user = require('./api/user.js');
 const conf = global.CONF;
 const app = express();
-app.set('trust proxy', conf.appTrustProxy);
 
 if(!global.IS_PRO){
   app.use(require('morgan')('dev'));
 }
 
-app.use(favicon(path.join(__dirname, '../logo_def.png')));
+app.get('/favicon.ico', (req, res) => {
+  res.set({
+    'Cache-Control': 'public, max-age=91104000'
+  });
+  res.status(410).end('Gone');
+});
+
+app.set('trust proxy', conf.appTrustProxy);
 
 if(conf.CORS ){
   app.use(middleWare.CORS);
