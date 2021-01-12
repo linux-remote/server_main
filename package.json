@@ -13,6 +13,7 @@
   },
   "scripts": {
     "vminstall": "npm install --no-bin-links --production",
+    "iDevDeps": "npm install --only=dev",
     "publish": "node ../linux-remote/up-version-map.js",
     "p": "npm publish --access public"
   },

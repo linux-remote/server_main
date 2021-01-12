@@ -18,8 +18,7 @@ function handleUser(req, res, next){
         next();
       }
     } else if(req.method === 'POST'){
-      if(req.path === '/pageUnload'){
-        console.log('pageUnload')
+      if(req.path === '/unload'){
         user.handlePageUnload(req.sessionId, req.params.username);
         res.end('');
       } else if(req.path === '/upload'){
