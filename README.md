@@ -1,8 +1,11 @@
 # server_main
 ## Development
-### Install
-In linux VM:
-`npm rm vminstall`
+## Install
+- Linux(vm): `npm install --no-bin-links --production`
+- Window: `npm install --only=dev`
+## Start
+- Linux(vm): `sudo node inner-reload.js`
+- Window: `node out-watch.js`
 
-Other:
-`npm install --only=dev`
+## pubish
+`npm run p`
