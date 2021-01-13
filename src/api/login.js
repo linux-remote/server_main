@@ -74,7 +74,7 @@ exports.login = function(req, res, next){
   }}, (result) => {
     if(result.status === 'success'){
       if(!sid){
-        sid = result.data.sid;
+        sid = result.data;
         setCookie(res, sid, global.CONF.cookie);
       }
       addUser(sid, username);
