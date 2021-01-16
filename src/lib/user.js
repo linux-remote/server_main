@@ -4,7 +4,7 @@ const pako = require('pako');
 const SocketRequest = require('@hezedu/socket-request');
 
 const maxLength = SocketRequest.compressTriggerPoint; // https://www.imperva.com/blog/mtu-mss-explained/
-
+const PAGE_UNLOAD_WAIT_TIME = 30000; // 浏览器关闭或刷新等待时间.
 const wsOpenKey = 3;
 const wsOnCloseKey = 4;
 function noop(){}
@@ -106,7 +106,7 @@ User.prototype.handlePageUnload = function(sid, username){
       console.log('exit by page unload.');
       this.exit(sid, username, true);
     }
-  }, 5000);
+  }, PAGE_UNLOAD_WAIT_TIME);
 }
 
 User.prototype.exit = function(sid, username, isUnNormal, callback){
