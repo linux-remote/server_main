@@ -18,9 +18,6 @@ process.on('message', function(msgObj){
     return;
   }
   let cb = cbMap[id];
-  if(!cb){
-    console.log('msgObj', msgObj)
-  }
   cb(msgObj);
   delete(cbMap[id]);
 });
